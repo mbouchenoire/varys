@@ -1,25 +1,26 @@
 package org.varys.jenkins.model;
 
-import java.awt.*;
+import org.varys.common.model.NotificationType;
+
 import java.util.Arrays;
 import java.util.Objects;
 
 public enum JenkinsBuildResult {
-    SUCCESS("SUCCESS", "Successful", TrayIcon.MessageType.INFO),
-    FAILURE("FAILURE", "Failed", TrayIcon.MessageType.ERROR),
-    ABORTED("ABORTED", "Aborted", TrayIcon.MessageType.WARNING),
-    UNSTABLE("UNSTABLE", "Unstable", TrayIcon.MessageType.WARNING),
-    NOT_BUILT("NOT_BUILT", "Not built", TrayIcon.MessageType.WARNING),
-    NONE(null, "?", TrayIcon.MessageType.NONE);
+    SUCCESS("SUCCESS", "Successful", NotificationType.INFO),
+    FAILURE("FAILURE", "Failed", NotificationType.ERROR),
+    ABORTED("ABORTED", "Aborted", NotificationType.WARNING),
+    UNSTABLE("UNSTABLE", "Unstable", NotificationType.WARNING),
+    NOT_BUILT("NOT_BUILT", "Not built", NotificationType.WARNING),
+    NONE(null, "?", NotificationType.NONE);
 
     private final String code;
     private final String adjective;
-    private final TrayIcon.MessageType messageType;
+    private final NotificationType notificationType;
 
-    JenkinsBuildResult(String code, String adjective, TrayIcon.MessageType messageType) {
+    JenkinsBuildResult(String code, String adjective, NotificationType notificationType) {
         this.code = code;
         this.adjective = adjective;
-        this.messageType = messageType;
+        this.notificationType = notificationType;
     }
 
     static JenkinsBuildResult of(String code) {
@@ -33,7 +34,7 @@ public enum JenkinsBuildResult {
         return adjective;
     }
 
-    public TrayIcon.MessageType getMessageType() {
-        return messageType;
+    public NotificationType getNotificationType() {
+        return notificationType;
     }
 }

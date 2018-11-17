@@ -1,6 +1,7 @@
 package org.varys.jenkins.notifier;
 
 
+import org.varys.common.model.Notification;
 import org.varys.common.service.CacheService;
 import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
@@ -82,21 +83,6 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
                 .forEach(Runnable::run);
     }
 
-    private JenkinsBuild notifyUser(JenkinsBuild jenkinsBuild) {
-        final String title = jenkinsBuild.getResult().getAdjective() + " Jenkins build";
-
-        final String description =
-                jenkinsBuild.getFullDisplayName() + "\n" +
-                jenkinsBuild.getCause().orElse("Unknown cause");
-
-        this.notificationService.notify(
-                title,
-                description,
-                jenkinsBuild.getResult().getMessageType());
-
-        return jenkinsBuild;
-    }
-
     private Runnable traverseJenkinsNode(JenkinsNode jenkinsNode) {
         final long childrenCount = jenkinsNode.getChildren().size();
 
@@ -155,7 +141,10 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
                     .min(LATEST_BUILD_FIRST_COMPARATOR)
                     .filter(this::branchFilter)
                     .filter(this::buildStatusFilter)
-                    .map(this::notifyUser);
+                    .map(jenkinsBuild -> {
+                        this.notificationService.send(jenkinsBuild);
+                        return jenkinsBuild;
+                    });
         } catch (Throwable t) {
             Log.error(t, "??");
             return null;

@@ -2,6 +2,8 @@ package org.varys.jenkins.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.varys.common.model.Notification;
+import org.varys.common.model.NotificationType;
 
 import java.beans.Transient;
 import java.util.Collections;
@@ -11,7 +13,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class JenkinsBuild implements JenkinsBuildNumber {
+public class JenkinsBuild implements JenkinsBuildNumber, Notification {
 
     private static final String BUILD_DATA_CLASS = "hudson.plugins.git.util.BuildData";
     private static final String CAUSE_ACTION_CLASS = "hudson.model.CauseAction";
@@ -77,7 +79,7 @@ public class JenkinsBuild implements JenkinsBuildNumber {
     }
 
     @Transient
-    public Optional<String> getCause() {
+    private Optional<String> getCause() {
         return this.actions.stream()
                 .filter(JenkinsBuild::isCauseAction)
                 .findFirst()
@@ -106,6 +108,25 @@ public class JenkinsBuild implements JenkinsBuildNumber {
                 .map(lastBuiltRevision)
                 .map(firstBranchFound)
                 .map(branchName);
+    }
+
+    @Transient
+    @Override
+    public String getTitle() {
+        return this.getResult().getAdjective() + " Jenkins build";
+    }
+
+    @Transient
+    @Override
+    public String getDescription() {
+        return this.getFullDisplayName() + "\n" +
+                this.getCause().orElse("Unknown cause");
+    }
+
+    @Transient
+    @Override
+    public NotificationType getType() {
+        return this.getResult().getNotificationType();
     }
 
     @Override

@@ -3,13 +3,13 @@ package org.varys;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.varys.common.model.GitConfig;
 import org.varys.common.model.LoggingConfig;
+import org.varys.common.model.StartupNotification;
 import org.varys.common.service.ConfigFactory;
 import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
 import org.varys.common.service.NotifierModule;
 import org.varys.common.service.NotifierModuleFactory;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -31,8 +31,7 @@ public class App {
         final Collection<JsonNode> moduleNodes = ConfigFactory.findModuleNodes(configFile);
         final Collection<NotifierModule> notifierModules = notifierModuleFactory.createAll(moduleNodes);
 
-        new NotificationService("uptodev")
-                .notify("Uptodev is up and running!", "", TrayIcon.MessageType.INFO);
+        new NotificationService("varys").send(new StartupNotification());
 
         final ForkJoinPool forkJoinPool = new ForkJoinPool(FORK_JOIN_POOL_SIZE);
         forkJoinPool.invokeAll(notifierModules);

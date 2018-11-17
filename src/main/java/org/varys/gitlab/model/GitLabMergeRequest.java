@@ -3,20 +3,17 @@ package org.varys.gitlab.model;
 import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class GitLabMergeRequestDetails implements MergeRequest {
+public class GitLabMergeRequest implements MergeRequest {
 
     private final long id;
     private final long iid;
     private final GitLabProject project;
     private final String title;
     private final GitLabMergeRequestState state;
-    private final Date createdAt;
-    private final Date updatedAt;
     private final String targetBranch;
     private final String sourceBranch;
     private final GitLabUser author;
@@ -25,14 +22,12 @@ public class GitLabMergeRequestDetails implements MergeRequest {
     private final List<GitLabCommit> commits;
     private final String url;
 
-    GitLabMergeRequestDetails() {
+    GitLabMergeRequest() {
         this.id = -1;
         this.iid = -1;
         this.project = null;
         this.title = null;
         this.state = null;
-        this.createdAt = null;
-        this.updatedAt = null;
         this.targetBranch = null;
         this.sourceBranch = null;
         this.author = null;
@@ -42,7 +37,7 @@ public class GitLabMergeRequestDetails implements MergeRequest {
         this.url = null;
     }
 
-    public GitLabMergeRequestDetails(
+    public GitLabMergeRequest(
             GitLabMergeRequestListItem mergeRequestListItem,
             GitLabProject project,
             List<GitLabNote> notes,
@@ -53,8 +48,6 @@ public class GitLabMergeRequestDetails implements MergeRequest {
         this.project = project;
         this.title = mergeRequestListItem.getTitle();
         this.state = mergeRequestListItem.getState();
-        this.createdAt = mergeRequestListItem.getCreatedAt();
-        this.updatedAt = mergeRequestListItem.getUpdatedAt();
         this.targetBranch = mergeRequestListItem.getTargetBranch();
         this.sourceBranch = mergeRequestListItem.getSourceBranch();
         this.author = mergeRequestListItem.getAuthor();
@@ -101,14 +94,6 @@ public class GitLabMergeRequestDetails implements MergeRequest {
         return this.getState().equals(GitLabMergeRequestState.CLOSED);
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
     public String getTargetBranch() {
         return targetBranch;
     }
@@ -125,11 +110,11 @@ public class GitLabMergeRequestDetails implements MergeRequest {
         return assignee;
     }
 
-    public boolean sameAssignee(GitLabMergeRequestDetails mergeRequest) {
+    public boolean sameAssignee(GitLabMergeRequest mergeRequest) {
         return Objects.equals(this.assignee, mergeRequest.assignee);
     }
 
-    public long addedCommitsCount(GitLabMergeRequestDetails other) {
+    public long addedCommitsCount(GitLabMergeRequest other) {
         return this.getCommits().stream()
                 .filter(commit -> !other.containsCommit(commit))
                 .count();
@@ -140,7 +125,7 @@ public class GitLabMergeRequestDetails implements MergeRequest {
                 .anyMatch(commit -> commit.getId().equals(otherCommit.getId()));
     }
 
-    public long addedUserNotesCount(GitLabMergeRequestDetails other) {
+    public long addedUserNotesCount(GitLabMergeRequest other) {
         return this.getUserNotes().stream()
                 .filter(userNote -> !other.containsUserNote(userNote))
                 .count();
@@ -156,7 +141,7 @@ public class GitLabMergeRequestDetails implements MergeRequest {
     }
 
     @Transient
-    public List<GitLabNote> getUserNotes() {
+    private List<GitLabNote> getUserNotes() {
         return notes.stream()
                 .filter(note -> !note.isAutomaticComment())
                 .collect(Collectors.toList());
@@ -177,14 +162,12 @@ public class GitLabMergeRequestDetails implements MergeRequest {
 
     @Override
     public String toString() {
-        return "GitLabMergeRequestDetails{" +
+        return "GitLabMergeRequest{" +
                 "id=" + id +
                 ", iid=" + iid +
                 ", project=" + project +
                 ", title='" + title + '\'' +
                 ", state=" + state +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
                 ", targetBranch='" + targetBranch + '\'' +
                 ", sourceBranch='" + sourceBranch + '\'' +
                 ", author=" + author +

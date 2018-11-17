@@ -1,5 +1,8 @@
 package org.varys.common.service;
 
+import org.varys.common.model.Linkable;
+import org.varys.common.model.Notification;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
@@ -46,14 +49,17 @@ public class NotificationService {
         }
     }
 
-    public void notify(String title, String description, TrayIcon.MessageType messageType) {
+    public void send(Notification notification) {
         Log.info("[NOTIFICATION][{}] title={}; description={}; type={}",
                 this.moduleName,
-                title,
-                description.replace("\\n", ""),
-                messageType);
+                notification.getTitle(),
+                notification.getDescription(),
+                notification.getType());
 
-        this.trayIcon.displayMessage(title, description, messageType);
+        this.trayIcon.displayMessage(
+                notification.getTitle(),
+                notification.getDescription(),
+                notification.getType().getTrayIconMessageType());
     }
 
     @Override

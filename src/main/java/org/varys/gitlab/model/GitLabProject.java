@@ -15,6 +15,11 @@ public class GitLabProject {
         this.pathWithNamespace = null;
     }
 
+    public GitLabProject(long id, String pathWithNamespace) {
+        this.id = id;
+        this.pathWithNamespace = pathWithNamespace;
+    }
+
     public long getId() {
         return id;
     }

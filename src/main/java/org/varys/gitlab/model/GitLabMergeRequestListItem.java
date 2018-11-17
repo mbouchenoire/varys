@@ -45,6 +45,36 @@ public class GitLabMergeRequestListItem implements MergeRequest {
         this.url = null;
     }
 
+    public GitLabMergeRequestListItem(
+            long id,
+            long iid,
+            long projectId,
+            String title,
+            GitLabMergeRequestState state,
+            Date createdAt,
+            Date updatedAt,
+            String targetBranch,
+            String sourceBranch,
+            GitLabUser author,
+            GitLabUser assignee,
+            long userNotesCount,
+            String url) {
+
+        this.id = id;
+        this.iid = iid;
+        this.projectId = projectId;
+        this.title = title;
+        this.state = state;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.targetBranch = targetBranch;
+        this.sourceBranch = sourceBranch;
+        this.author = author;
+        this.assignee = assignee;
+        this.userNotesCount = userNotesCount;
+        this.url = url;
+    }
+
     @Override
     public long getId() {
         return id;

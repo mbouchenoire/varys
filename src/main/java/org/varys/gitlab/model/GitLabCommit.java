@@ -17,6 +17,12 @@ public class GitLabCommit {
         this.authorName = null;
     }
 
+    public GitLabCommit(String id, String message, String authorName) {
+        this.id = id;
+        this.message = message;
+        this.authorName = authorName;
+    }
+
     public String getId() {
         return id;
     }

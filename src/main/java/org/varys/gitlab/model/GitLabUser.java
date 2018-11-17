@@ -8,7 +8,7 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GitLabUser {
 
-    public static final GitLabUser UNASSIGNED =
+    static final GitLabUser UNASSIGNED =
             new GitLabUser(-1, "Unassigned", "Unassigned", "", "");
 
     private final long id;
@@ -27,7 +27,7 @@ public class GitLabUser {
         this.url = null;
     }
 
-    private GitLabUser(long id, String name, String username, String avatarUrl, String url) {
+    public GitLabUser(long id, String name, String username, String avatarUrl, String url) {
         this.id = id;
         this.name = name;
         this.username = username;

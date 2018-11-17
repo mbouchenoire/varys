@@ -4,7 +4,7 @@ import org.varys.common.service.Log;
 import org.varys.common.service.OkHttpClientFactory;
 import org.varys.gitlab.model.GitLabApiConfig;
 import org.varys.gitlab.model.GitLabCommit;
-import org.varys.gitlab.model.GitLabMergeRequestDetails;
+import org.varys.gitlab.model.GitLabMergeRequest;
 import org.varys.gitlab.model.GitLabMergeRequestListItem;
 import org.varys.gitlab.model.GitLabMergeRequestState;
 import org.varys.gitlab.model.GitLabNote;
@@ -40,7 +40,7 @@ public class GitLabApiV4 implements GitLabApi {
     }
 
     @Override
-    public List<GitLabMergeRequestDetails> getMergeRequests(GitLabMergeRequestState state) {
+    public List<GitLabMergeRequest> getMergeRequests(GitLabMergeRequestState state) {
         try {
             final List<GitLabMergeRequestListItem> listItems = this.gitLabApiV4Retrofit.getMergeRequests(
                     this.apiConfig.getPrivateToken(), state.getCode()).execute().body();
@@ -61,7 +61,7 @@ public class GitLabApiV4 implements GitLabApi {
     }
 
     @Override
-    public Optional<GitLabMergeRequestDetails> getMergeRequest(long projectId, long mergeRequestId, long mergeRequestIid) {
+    public Optional<GitLabMergeRequest> getMergeRequest(long projectId, long mergeRequestId, long mergeRequestIid) {
         try {
             final GitLabMergeRequestListItem mergeRequestListItem = this.gitLabApiV4Retrofit.getMergeRequest(
                     this.apiConfig.getPrivateToken(), projectId, mergeRequestIid).execute().body();
@@ -83,7 +83,7 @@ public class GitLabApiV4 implements GitLabApi {
         }
     }
 
-    private Optional<GitLabMergeRequestDetails> fetchDetails(GitLabMergeRequestListItem mergeRequest) {
+    private Optional<GitLabMergeRequest> fetchDetails(GitLabMergeRequestListItem mergeRequest) {
         final long projectId = mergeRequest.getProjectId();
         final long mergeRequestIid = mergeRequest.getIid();
 
@@ -91,7 +91,7 @@ public class GitLabApiV4 implements GitLabApi {
                 .map(project -> {
                     final List<GitLabNote> notes = this.getNotes(projectId, mergeRequestIid);
                     final List<GitLabCommit> commits = this.getCommits(projectId, mergeRequestIid);
-                    return new GitLabMergeRequestDetails(mergeRequest, project, notes, commits);
+                    return new GitLabMergeRequest(mergeRequest, project, notes, commits);
                 });
     }
 

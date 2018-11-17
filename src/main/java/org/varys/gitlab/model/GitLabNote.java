@@ -17,6 +17,12 @@ public class GitLabNote {
         this.author = null;
     }
 
+    public GitLabNote(long id, String body, GitLabUser author) {
+        this.id = id;
+        this.body = body;
+        this.author = author;
+    }
+
     public long getId() {
         return id;
     }
@@ -30,7 +36,7 @@ public class GitLabNote {
     }
 
     @Transient
-    public boolean isAutomaticComment() {
+    boolean isAutomaticComment() {
         if (body == null) {
             return true;
         }
