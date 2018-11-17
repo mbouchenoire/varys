@@ -9,6 +9,7 @@ import org.varys.gitlab.model.GitLabMergeRequestListItem;
 import org.varys.gitlab.model.GitLabMergeRequestState;
 import org.varys.gitlab.model.GitLabNote;
 import org.varys.gitlab.model.GitLabProject;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -42,18 +43,21 @@ public class GitLabApiV4 implements GitLabApi {
     @Override
     public List<GitLabMergeRequest> getMergeRequests(GitLabMergeRequestState state) {
         try {
-            final List<GitLabMergeRequestListItem> listItems = this.gitLabApiV4Retrofit.getMergeRequests(
-                    this.apiConfig.getPrivateToken(), state.getCode()).execute().body();
+            final Response<List<GitLabMergeRequestListItem>> response = this.gitLabApiV4Retrofit.getMergeRequests(
+                    this.apiConfig.getPrivateToken(), state.getCode()).execute();
 
-            assert listItems != null;
-
-            Log.debug("Fetched {} GitLab merge request(s) (opened)", listItems.size());
-
-            return listItems.parallelStream()
-                    .map(this::fetchDetails)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toList());
+            if (response.isSuccessful()) {
+                final List<GitLabMergeRequestListItem> listItems = response.body();
+                assert listItems != null;
+                Log.debug("Fetched {} GitLab merge request(s) (opened)", listItems.size());
+                return listItems.parallelStream()
+                        .map(this::fetchDetails)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList());
+            } else {
+                throw new IOException(response.message());
+            }
         } catch (IOException e) {
             Log.error(e, "Failed to retreive GitLab merge requests");
             return Collections.emptyList();

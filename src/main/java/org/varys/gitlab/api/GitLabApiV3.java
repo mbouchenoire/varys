@@ -10,6 +10,7 @@ import org.varys.gitlab.model.GitLabMergeRequestState;
 import org.varys.gitlab.model.GitLabNote;
 import org.varys.gitlab.model.GitLabProject;
 import org.varys.gitlab.model.GitLabProjectListItem;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -43,10 +44,13 @@ public class GitLabApiV3 implements GitLabApi {
     @Override
     public List<GitLabMergeRequest> getMergeRequests(GitLabMergeRequestState state) {
         try {
-            final List<GitLabProjectListItem> projectListItems =
-                    this.gitLabApiV3Retrofit.getProjects(this.apiConfig.getPrivateToken()).execute().body();
+            final Response<List<GitLabProjectListItem>> response = this.gitLabApiV3Retrofit.getProjects(this.apiConfig.getPrivateToken()).execute();
 
-            if (projectListItems != null) {
+            if (response.isSuccessful()) {
+                final List<GitLabProjectListItem> projectListItems = response.body();
+
+                assert projectListItems != null;
+
                 return projectListItems.parallelStream()
                         .flatMap(project -> this.getMergeRequests(project.getId(), state).stream())
                         .map(this::fetchDetails)
@@ -54,8 +58,7 @@ public class GitLabApiV3 implements GitLabApi {
                         .map(Optional::get)
                         .collect(Collectors.toList());
             } else {
-                Log.error("Failed to fetch GitLab projects");
-                return Collections.emptyList();
+                throw new IOException(response.message());
             }
         } catch (IOException e) {
             Log.error(e, "Failed to fetch GitLab merge requests with state=" + state);
@@ -79,16 +82,15 @@ public class GitLabApiV3 implements GitLabApi {
     @Override
     public Optional<GitLabMergeRequest> getMergeRequest(long projectId, long mergeRequestId, long mergeRequestIid) {
         try {
-            final GitLabMergeRequestListItem mergeRequestListItem = this.gitLabApiV3Retrofit.getMergeRequest(
-                    this.apiConfig.getPrivateToken(), projectId, mergeRequestId).execute().body();
+            final Response<GitLabMergeRequestListItem> response = this.gitLabApiV3Retrofit.getMergeRequest(
+                    this.apiConfig.getPrivateToken(), projectId, mergeRequestId).execute();
 
-            if (mergeRequestListItem != null) {
+            if (response.isSuccessful()) {
+                final GitLabMergeRequestListItem mergeRequestListItem = response.body();
+                assert mergeRequestListItem != null;
                 return this.fetchDetails(mergeRequestListItem);
             } else {
-                Log.error("Failed to fetch GitLab merge request with id={} within project with id={}",
-                        mergeRequestId, projectId);
-
-                return Optional.empty();
+                throw new IOException(response.message());
             }
         } catch (IOException e) {
             Log.error(e, "Failed to fetch GitLab merge request with project_id={} and iid={}",
@@ -114,14 +116,15 @@ public class GitLabApiV3 implements GitLabApi {
 
     private Optional<GitLabProject> getProject(long projectId) {
         try {
-            final GitLabProject gitLabProject = this.gitLabApiV3Retrofit.getProject(
-                    this.apiConfig.getPrivateToken(), projectId).execute().body();
+            final Response<GitLabProject> response = this.gitLabApiV3Retrofit.getProject(
+                    this.apiConfig.getPrivateToken(), projectId).execute();
 
-            if (gitLabProject != null) {
+            if (response.isSuccessful()) {
+                final GitLabProject gitLabProject = response.body();
+                assert gitLabProject != null;
                 return Optional.of(gitLabProject);
             } else {
-                Log.error("Failed to fetch GitLab project with id={}", projectId);
-                return Optional.empty();
+                throw new IOException(response.message());
             }
         } catch (IOException e) {
             Log.error(e, "Failed to fetch GitLab project with id={}", projectId);

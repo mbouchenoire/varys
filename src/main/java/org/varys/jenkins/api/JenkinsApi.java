@@ -1,14 +1,10 @@
 package org.varys.jenkins.api;
 
 import org.varys.common.service.Log;
-import org.varys.common.service.SSLUtils;
+import org.varys.common.service.OkHttpClientFactory;
 import org.varys.jenkins.model.JenkinsApiConfig;
 import org.varys.jenkins.model.JenkinsBuild;
 import org.varys.jenkins.model.JenkinsNode;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.pmw.tinylog.Logger;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -21,29 +17,13 @@ public class JenkinsApi {
     private final JenkinsApiConfig apiConfig;
 
     public JenkinsApi(JenkinsApiConfig apiConfig) {
-        try {
-            //noinspection deprecation, will change later
-            final OkHttpClient client = new OkHttpClient().newBuilder()
-                .sslSocketFactory(SSLUtils.createSocketFactory())
-                .hostnameVerifier((s, sslSession) -> true)
-                .addInterceptor(chain -> {
-                    final Request request = chain.request();
-                    Logger.trace(request);
-                    final Response response = chain.proceed(chain.request());
-                    Logger.trace(response);
-                    return response;
-                }).build();
+        final Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(apiConfig.getBaseUrl())
+                .client(OkHttpClientFactory.create())
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build();
 
-            final Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(apiConfig.getBaseUrl())
-                    .client(client)
-                    .addConverterFactory(JacksonConverterFactory.create())
-                    .build();
-
-            this.jenkinsRetrofitApi = retrofit.create(JenkinsRetrofitApi.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this.jenkinsRetrofitApi = retrofit.create(JenkinsRetrofitApi.class);
 
         this.apiConfig = apiConfig;
     }
