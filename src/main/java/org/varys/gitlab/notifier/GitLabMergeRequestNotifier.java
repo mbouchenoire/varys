@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -45,9 +47,7 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
 
     @Override
     public void startModule() {
-        boolean running = true;
-
-        while (running) {
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             final LocalDateTime start = LocalDateTime.now();
 
             Log.info("Starting notification process for the GitLab module...");
@@ -56,16 +56,7 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
             final LocalDateTime end = LocalDateTime.now();
             final Duration between = Duration.between(start, end);
             Log.debug("GitLab module notification process duration: {} seconds", between.getSeconds());
-
-            try {
-                Thread.sleep(this.config.getNotificationsConfig().getPeriodSeconds() * 1000);
-            } catch (InterruptedException e) {
-                Log.error(e, "Failed to pause the GitLab module");
-                running = false;
-            }
-        }
-
-        Log.warn("Stopped GitLab module");
+        }, 0, config.getNotificationsConfig().getPeriodSeconds(), TimeUnit.SECONDS);
     }
 
     private void notifyUser() {
@@ -134,7 +125,7 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
 
         Log.debug("{} is not a relevant merge request", mergeRequest.getIdentifier());
 
-        return relevant;
+         return relevant;
     }
 
     private List<GitLabMergeRequest> getCachedMergeRequests() {

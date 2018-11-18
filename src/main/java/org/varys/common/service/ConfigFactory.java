@@ -14,6 +14,20 @@ import java.util.List;
 
 public class ConfigFactory {
 
+    public static int getThreadPoolSize(File configFile) throws IOException {
+        Log.debug("Retreiving thread pool size from config file: {}...", configFile);
+        final JsonNode configRootNode = new ObjectMapper().readValue(configFile, JsonNode.class);
+        final JsonNode threadPoolSizeNode = configRootNode.get("thread_pool_size");
+
+        if (threadPoolSizeNode != null) {
+            return threadPoolSizeNode.asInt();
+        } else {
+            final int defaultValue = Runtime.getRuntime().availableProcessors();
+            Log.debug("Value 'thread_pool_size' is not configured, using default value: {}", defaultValue);
+            return defaultValue;
+        }
+    }
+
     public static LoggingConfig createLoggingConfig(File configFile) throws IOException {
         Log.debug("Retreiving logging config from file: {}...", configFile);
         final JsonNode configRootNode = new ObjectMapper().readValue(configFile, JsonNode.class);

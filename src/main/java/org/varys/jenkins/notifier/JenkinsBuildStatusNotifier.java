@@ -1,7 +1,6 @@
 package org.varys.jenkins.notifier;
 
 
-import org.varys.common.model.Notification;
 import org.varys.common.service.CacheService;
 import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
@@ -19,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -48,9 +49,7 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
 
     @Override
     public void startModule() {
-        boolean running = true;
-
-        while (running) {
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             final LocalDateTime start = LocalDateTime.now();
 
             Log.info("Starting notification process for the Jenkins module...");
@@ -59,16 +58,7 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
             final LocalDateTime end = LocalDateTime.now();
             final Duration between = Duration.between(start, end);
             Log.debug("Jenkins module notification process duration: {} seconds", between.getSeconds());
-
-            try {
-                Thread.sleep(this.config.getNotificationsConfig().getPeriodSeconds() * 1000);
-            } catch (InterruptedException e) {
-                Log.error(e, "Failed to pause the Jenkins module");
-                running = false;
-            }
-        }
-
-        Log.warn("Stopped Jenkins module");
+        }, 0, this.config.getNotificationsConfig().getPeriodSeconds(), TimeUnit.SECONDS);
     }
 
     private void notifyUser() {

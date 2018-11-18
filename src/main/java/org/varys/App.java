@@ -17,14 +17,14 @@ import java.util.concurrent.ForkJoinPool;
 
 public class App {
 
-    private static final int FORK_JOIN_POOL_SIZE = 50;
-
     public static void main(String[] args) throws IOException {
         final String configFilePath = args[0];
         final File configFile = new File(configFilePath);
 
         final LoggingConfig loggingConfig = ConfigFactory.createLoggingConfig(configFile);
         Log.init(loggingConfig);
+
+        final int threadPoolSize = ConfigFactory.getThreadPoolSize(configFile);
 
         final GitConfig gitConfig = ConfigFactory.createGitConfig(configFile);
         final NotifierModuleFactory notifierModuleFactory = new NotifierModuleFactory(gitConfig);
@@ -33,7 +33,15 @@ public class App {
 
         new NotificationService("varys").send(new StartupNotification());
 
-        final ForkJoinPool forkJoinPool = new ForkJoinPool(FORK_JOIN_POOL_SIZE);
+        final ForkJoinPool forkJoinPool = new ForkJoinPool(
+                threadPoolSize,
+                ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+                (t, e) -> Log.error(e, "Uncaught exception"),
+                false);
+
         forkJoinPool.invokeAll(notifierModules);
+
+        final int input = System.in.read();
+        Log.info("Varys is shutting down (input: {})...", input);
     }
 }
