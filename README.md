@@ -1,6 +1,6 @@
 # Varys
-[![Build Status](https://travis-ci.org/mbouchenoire/jsync.svg?branch=master)](https://travis-ci.org/mbouchenoire/varys)&nbsp;
-[![Coverage Status](https://coveralls.io/repos/github/mbouchenoire/jsync/badge.svg?branch=master)](https://coveralls.io/github/mbouchenoire/varys?branch=master)
+[![Build Status](https://travis-ci.org/mbouchenoire/varys.svg?branch=master)](https://travis-ci.org/mbouchenoire/varys)&nbsp;
+[![Coverage Status](https://coveralls.io/repos/github/mbouchenoire/varys/badge.svg?branch=master)](https://coveralls.io/github/mbouchenoire/varys?branch=master)
 
 ## Quickstart (temporary)
 ```console

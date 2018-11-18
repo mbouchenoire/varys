@@ -1,6 +1,5 @@
 package org.varys.common.service;
 
-import org.varys.common.model.Linkable;
 import org.varys.common.model.Notification;
 
 import javax.imageio.ImageIO;
