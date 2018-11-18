@@ -1,0 +1,6 @@
+language: java
+jdk:
+- openjdk8
+
+after_success:
+- mvn clean test -Pcoverage jacoco:report coveralls:report

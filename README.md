@@ -1,12 +1,14 @@
 # Varys
+[![Build Status](https://travis-ci.org/mbouchenoire/jsync.svg?branch=master)](https://travis-ci.org/mbouchenoire/varys)&nbsp;
+[![Coverage Status](https://coveralls.io/repos/github/mbouchenoire/jsync/badge.svg?branch=master)](https://coveralls.io/github/mbouchenoire/varys?branch=master)
 
 ## Quickstart (temporary)
-```bash
-git clone https://github.com/mbouchenoire/varys.git
-cd varys
-mvn clean package
-vi src/main/resources/config.json  # see the Configuration section
-java -cp org.varys.App target/varys-<version>.jar src/main/resources/config.json
+```console
+root@localhost:~/git$ git clone https://github.com/mbouchenoire/varys.git
+root@localhost:~/git$ cd varys
+root@localhost:~/git/varys$ mvn clean package
+root@localhost:~/git/varys$ vi src/main/resources/config.json  # see the Configuration section
+root@localhost:~/git/varys$ java -cp org.varys.App target/varys-<version>.jar src/main/resources/config.json
 ```
 
 ## Configuration (temporary)
