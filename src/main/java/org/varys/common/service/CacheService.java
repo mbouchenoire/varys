@@ -91,14 +91,22 @@ public class CacheService {
         return buildCacheFile(path).exists();
     }
 
-    public <T> T get(File file, Class<T> cacheClass) {
+    public <T> Optional<T> get(File file, Class<T> cacheClass) {
         Log.debug("Retreiving cached {} from file={}", cacheClass.getSimpleName(), file);
 
         try {
-            return new ObjectMapper().readValue(file, cacheClass);
+            final T value = new ObjectMapper().readValue(file, cacheClass);
+            return Optional.ofNullable(value);
         } catch (IOException e) {
-            throw new IllegalArgumentException(
-                    "Failed to deserialize cached object from file: " + file.getAbsolutePath());
+            Log.error(e, "Failed to retreive cached object (file: {})", file);
+
+            if (file.delete()) {
+                Log.debug("Successfuly deleted cache file (file: {})", file);
+            } else {
+                Log.error("Failed to delete cache file ({})", file);
+            }
+
+            return Optional.empty();
         }
     }
 
@@ -109,8 +117,6 @@ public class CacheService {
             return Optional.empty();
         }
 
-        final T object = this.get(cacheFile, cacheClass);
-
-        return Optional.of(object);
+        return this.get(cacheFile, cacheClass);
     }
 }

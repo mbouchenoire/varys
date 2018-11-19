@@ -130,11 +130,12 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
 
     private List<GitLabMergeRequest> getCachedMergeRequests() {
         //noinspection ConstantConditions
-
         return Arrays.stream(this.cacheService.getRootDirectory().listFiles())
                 .flatMap(domainDirectory -> Arrays.stream(domainDirectory.listFiles()))
                 .flatMap(projectDirectory -> Arrays.stream(projectDirectory.listFiles()))
                 .map(mergeRequestFile -> this.cacheService.get(mergeRequestFile, GitLabMergeRequest.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toList());
     }
 
