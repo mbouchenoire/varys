@@ -36,7 +36,10 @@
         },
         "notifications": {
           "period": 30,
-          "tray_icon_url": "https://gitlab.com/gitlab-com/gitlab-artwork/raw/master/logo/logo.png"
+          "tray_icon_url": "https://gitlab.com/gitlab-com/gitlab-artwork/raw/master/logo/logo.png",
+          "filters": {
+            "assigned_to_me_only": true
+          }
         }
       }
     }

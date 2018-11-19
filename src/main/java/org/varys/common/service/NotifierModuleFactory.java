@@ -5,6 +5,7 @@ import org.varys.common.model.GitConfig;
 import org.varys.git.GitService;
 import org.varys.gitlab.api.GitLabApiFactory;
 import org.varys.gitlab.model.GitLabApiConfig;
+import org.varys.gitlab.model.GitLabMergeRequestNotificationsFilter;
 import org.varys.gitlab.model.GitLabMergeRequestNotifierConfig;
 import org.varys.gitlab.model.GitLabMergeRequestNotifierNotificationsConfig;
 import org.varys.gitlab.notifier.GitLabMergeRequestNotifier;
@@ -117,14 +118,22 @@ public class NotifierModuleFactory {
         final String apiPrivateToken = apiConfigNode.get("private_token").asText();
         final GitLabApiConfig apiConfig = new GitLabApiConfig(apiVersion, apiBaseUrl, apiPrivateToken);
 
-        final long periodSeconds = configNode.get("notifications").get("period").asLong();
+        final JsonNode notificationsNode = configNode.get("notifications");
+
+        final long periodSeconds = notificationsNode.get("period").asLong();
+
+        final JsonNode filtersNode = notificationsNode.get("filters");
+        final boolean assignedToMeOnly = filtersNode.get("assigned_to_me_only").asBoolean(true);
+        final GitLabMergeRequestNotificationsFilter notificationsFilter =
+                new GitLabMergeRequestNotificationsFilter(assignedToMeOnly);
+
         final GitLabMergeRequestNotifierNotificationsConfig notificationsConfig =
-                new GitLabMergeRequestNotifierNotificationsConfig(periodSeconds);
+                new GitLabMergeRequestNotifierNotificationsConfig(periodSeconds, notificationsFilter);
 
         final GitLabMergeRequestNotifierConfig notifierConfig =
                 new GitLabMergeRequestNotifierConfig(apiConfig, notificationsConfig);
 
-        final String trayIconUrl = configNode.get("notifications").get("tray_icon_url").asText();
+        final String trayIconUrl = notificationsNode.get("tray_icon_url").asText();
 
         return new GitLabMergeRequestNotifier(
                 notifierConfig,

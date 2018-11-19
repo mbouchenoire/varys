@@ -9,6 +9,7 @@ import org.varys.gitlab.api.GitLabApi;
 import org.varys.gitlab.model.GitLabMergeRequest;
 import org.varys.gitlab.model.GitLabMergeRequestNotifierConfig;
 import org.varys.gitlab.model.GitLabMergeRequestState;
+import org.varys.gitlab.model.GitLabUser;
 import org.varys.gitlab.model.notification.MergeRequestUpdateNotificationChain;
 import org.varys.gitlab.model.notification.NewMergeRequestNotification;
 
@@ -66,7 +67,7 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
         Log.debug("Processing {} (fetched) GitLab merge request(s) (opened)", liveMergeRequests.size());
 
         liveMergeRequests.parallelStream()
-                .filter(this::isRelevant)
+                .filter(this::userFilter)
                 .forEach(this::notifyUserLiveMergeRequest);
 
         final List<GitLabMergeRequest> cachedMergeRequests = this.getCachedMergeRequests();
@@ -116,16 +117,14 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
         this.cache(mergeRequest);
     }
 
-    private boolean isRelevant(GitLabMergeRequest mergeRequest) {
-        final String sourceBranch = mergeRequest.getSourceBranch();
-        final String targetBranch = mergeRequest.getTargetBranch();
+    private boolean userFilter(GitLabMergeRequest mergeRequest) {
+        final boolean assignedToMeOnly = config.getNotificationsConfig().getNotificationsFilter().isAssignedToMeOnly();
 
-        final boolean relevant = this.gitService.hasLocalBranch(sourceBranch)
-                || this.gitService.hasLocalBranch(targetBranch);
+        if (!assignedToMeOnly) {
+            return true;
+        }
 
-        Log.debug("{} is not a relevant merge request", mergeRequest.getIdentifier());
-
-         return relevant;
+        return mergeRequest.getAssignee().getId() == this.gitLabApi.getUser().map(GitLabUser::getId).orElse(-1L);
     }
 
     private List<GitLabMergeRequest> getCachedMergeRequests() {

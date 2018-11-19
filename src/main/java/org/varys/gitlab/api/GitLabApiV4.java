@@ -9,6 +9,7 @@ import org.varys.gitlab.model.GitLabMergeRequestListItem;
 import org.varys.gitlab.model.GitLabMergeRequestState;
 import org.varys.gitlab.model.GitLabNote;
 import org.varys.gitlab.model.GitLabProject;
+import org.varys.gitlab.model.GitLabUser;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -38,6 +39,23 @@ public class GitLabApiV4 implements GitLabApi {
     @Override
     public String getBaseUrl() {
         return this.apiConfig.getBaseUrl();
+    }
+
+    @Override
+    public Optional<GitLabUser> getUser() {
+        try {
+            final Response<GitLabUser> response =
+                    this.gitLabApiV4Retrofit.getUser(this.apiConfig.getPrivateToken()).execute();
+
+            if (response.isSuccessful()) {
+                return Optional.ofNullable(response.body());
+            } else {
+                throw new IOException(response.message());
+            }
+        } catch (IOException e) {
+            Log.error(e, "Failed to fetch GitLab user");
+            return Optional.empty();
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.varys.gitlab.model.GitLabMergeRequestListItem;
 import org.varys.gitlab.model.GitLabNote;
 import org.varys.gitlab.model.GitLabProject;
 import org.varys.gitlab.model.GitLabProjectListItem;
+import org.varys.gitlab.model.GitLabUser;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -14,6 +15,10 @@ import retrofit2.http.Query;
 import java.util.List;
 
 interface GitLabApiV3Retrofit {
+
+    @GET("api/v3/user")
+    Call<GitLabUser> getUser(
+            @Header("Private-Token") String privateToken);
 
     @GET("api/v3/projects")
     Call<List<GitLabProjectListItem>> getProjects(

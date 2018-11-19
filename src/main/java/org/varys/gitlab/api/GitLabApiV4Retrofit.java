@@ -4,6 +4,7 @@ import org.varys.gitlab.model.GitLabCommit;
 import org.varys.gitlab.model.GitLabMergeRequestListItem;
 import org.varys.gitlab.model.GitLabNote;
 import org.varys.gitlab.model.GitLabProject;
+import org.varys.gitlab.model.GitLabUser;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -13,6 +14,10 @@ import retrofit2.http.Query;
 import java.util.List;
 
 interface GitLabApiV4Retrofit {
+
+    @GET("api/v4/user")
+    Call<GitLabUser> getUser(
+            @Header("Private-Token") String privateToken);
 
     @GET("api/v4/merge_requests")
     Call<List<GitLabMergeRequestListItem>> getMergeRequests(
