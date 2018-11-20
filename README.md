@@ -31,7 +31,7 @@ C:\Users\user\git> git clone https://github.com/mbouchenoire/varys.git
 C:\Users\user\git> cd varys
 C:\Users\user\git\varys> mvnw clean package
 C:\Users\user\git\varys> notepad src\main\resources\config.json  # see the Configuration section
-C:\Users\user\git\varys> java -cp target/varys-<version>.jar org.varys.App src\main\resources\config.json
+C:\Users\user\git\varys> java -cp target\varys-<version>.jar org.varys.App src\main\resources\config.json
 ```
 
 ## Configuration
@@ -45,7 +45,7 @@ The configuration file is currently located here (temporary):
 Varys will search for `.git` directories as deep as 3 levels below.
 
 #### Jenkins module (`modules[name=jenkins].config`)
-- `jenkins_api.api_token`: You can obtain your Jenkins API token using ;
+- `jenkins_api.api_token`: You can obtain your Jenkins API token using
  [this procedure](https://stackoverflow.com/questions/45466090/how-to-get-the-api-token-for-jenkins) ;
 - `notifications.period`: The time (in seconds) between each notification process ;
 - `notifications.filters.local_branches_only`: `true` if you want to receive notifications only
