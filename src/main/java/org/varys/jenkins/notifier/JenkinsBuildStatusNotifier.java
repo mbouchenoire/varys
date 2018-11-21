@@ -52,13 +52,15 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             final LocalDateTime start = LocalDateTime.now();
 
-            Log.info("Starting notification process for the Jenkins module...");
+            Log.info("Starting notification iteration for the Jenkins module...");
             this.notifyUser();
 
             final LocalDateTime end = LocalDateTime.now();
             final Duration between = Duration.between(start, end);
-            Log.debug("Jenkins module notification process duration: {} seconds", between.getSeconds());
+            Log.info("Jenkins module notification iteration duration: {} seconds", between.getSeconds());
         }, 0, this.config.getNotificationsConfig().getPeriodSeconds(), TimeUnit.SECONDS);
+
+        Log.info("Successfuly started Jenkins module");
     }
 
     private void notifyUser() {

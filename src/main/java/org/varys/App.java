@@ -39,6 +39,7 @@ public class App {
                 (t, e) -> Log.error(e, "Uncaught exception"),
                 false);
 
+        Log.info("Starting {} module(s)...", notifierModules.size());
         forkJoinPool.invokeAll(notifierModules);
 
         final int input = System.in.read();

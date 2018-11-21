@@ -18,14 +18,16 @@ public class NotificationService {
 
     public NotificationService(String moduleName) {
         this(moduleName, null);
+
+        if (SystemTray.isSupported()) {
+            Log.debug("SystemTray is supported");
+        }
     }
 
     NotificationService(String moduleName, String trayIconUrl) {
         this.moduleName = moduleName;
 
-        if (SystemTray.isSupported()) {
-            Log.debug("SystemTray is supported");
-        } else {
+        if (!SystemTray.isSupported()) {
             Log.warn("SystemTray is not supported");
         }
 

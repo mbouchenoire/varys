@@ -51,13 +51,15 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             final LocalDateTime start = LocalDateTime.now();
 
-            Log.info("Starting notification process for the GitLab module...");
+            Log.info("Starting notification iteration for the GitLab module...");
             this.notifyUser();
 
             final LocalDateTime end = LocalDateTime.now();
             final Duration between = Duration.between(start, end);
-            Log.debug("GitLab module notification process duration: {} seconds", between.getSeconds());
+            Log.info("GitLab module notification iteration duration: {} second(s)", between.getSeconds());
         }, 0, config.getNotificationsConfig().getPeriodSeconds(), TimeUnit.SECONDS);
+
+        Log.info("Successfuly started GitLab module");
     }
 
     private void notifyUser() {

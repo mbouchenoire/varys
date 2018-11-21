@@ -23,7 +23,7 @@ public class ConfigFactory {
             return threadPoolSizeNode.asInt();
         } else {
             final int defaultValue = Runtime.getRuntime().availableProcessors();
-            Log.debug("Value 'thread_pool_size' is not configured, using default value: {}", defaultValue);
+            Log.info("Undefined configuration key 'thread_pool_size', using default value: {}", defaultValue);
             return defaultValue;
         }
     }
