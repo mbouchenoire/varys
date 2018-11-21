@@ -5,7 +5,11 @@ import java.net.URISyntaxException;
 
 public interface RestApi {
 
+    String getLabel();
+
     String getBaseUrl();
+
+    boolean isOnline();
 
     default String getDomainName() {
         try {

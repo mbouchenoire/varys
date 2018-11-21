@@ -138,7 +138,6 @@ public class NotifierModuleFactory {
         return new GitLabMergeRequestNotifier(
                 notifierConfig,
                 GitLabApiFactory.create(apiConfig),
-                new GitService(gitConfig),
                 new CacheService(moduleName),
                 new NotificationService(
                         moduleName,

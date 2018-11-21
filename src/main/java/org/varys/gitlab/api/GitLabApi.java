@@ -10,6 +10,11 @@ import java.util.Optional;
 
 public interface GitLabApi extends RestApi {
 
+    @Override
+    default String getLabel() {
+        return "GitLab";
+    }
+
     Optional<GitLabUser> getUser();
     List<GitLabMergeRequest> getMergeRequests(GitLabMergeRequestState state);
     Optional<GitLabMergeRequest> getMergeRequest(long projectId, long mergeRequestId, long mergeRequestIid);

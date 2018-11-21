@@ -11,7 +11,7 @@ import java.util.Optional;
 public class CacheService {
 
     private static final String TEMP_DIR_SYSTEM_ROOT = System.getProperty("java.io.tmpdir");
-    private static final String TEMP_DIR_APP_ROOT_NAME = "devtoast";
+    private static final String TEMP_DIR_APP_ROOT_NAME = "varys";
 
     private final File tempDirectoryModuleRoot;
 

@@ -5,6 +5,7 @@ import org.varys.common.service.CacheService;
 import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
 import org.varys.common.service.NotifierModule;
+import org.varys.common.service.RestApiService;
 import org.varys.git.GitService;
 import org.varys.jenkins.api.JenkinsApi;
 import org.varys.jenkins.model.JenkinsBuild;
@@ -13,6 +14,7 @@ import org.varys.jenkins.model.JenkinsBuildNotifierConfig;
 import org.varys.jenkins.model.JenkinsBuildNumber;
 import org.varys.jenkins.model.JenkinsNode;
 
+import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -30,6 +32,7 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
 
     private final JenkinsApi jenkinsApi;
     private final JenkinsBuildNotifierConfig config;
+    private final RestApiService restApiService;
     private final GitService gitService;
     private final CacheService cacheService;
     private final NotificationService notificationService;
@@ -40,9 +43,10 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
             CacheService cacheService,
             NotificationService notificationService) {
 
-        this.gitService = gitService;
         this.jenkinsApi = new JenkinsApi(config.getJenkinsApiConfig());
         this.config = config;
+        this.restApiService = new RestApiService(cacheService, notificationService);
+        this.gitService = gitService;
         this.cacheService = cacheService;
         this.notificationService = notificationService;
     }
@@ -64,7 +68,13 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
     }
 
     private void notifyUser() {
-        this.jenkinsApi.getRootNode().ifPresent(this::notifyUser);
+        final boolean apiIsOnline = this.restApiService.notifyApiStatus(this.jenkinsApi);
+
+        if (apiIsOnline) {
+            this.jenkinsApi.getRootNode().ifPresent(this::notifyUser);
+        } else {
+            Log.error("Jenkins API is down");
+        }
     }
 
     private void notifyUser(JenkinsNode jenkinsNode) {
@@ -148,7 +158,7 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
     }
 
     private static String cachePath(JenkinsNode node, JenkinsBuildNumber jenkinsBuildNumber) {
-        return node.getName() + "/" + jenkinsBuildNumber.getNumber();
+        return node.getName() + File.separator + jenkinsBuildNumber.getNumber();
     }
 
     private JenkinsBuild cache(JenkinsNode node, JenkinsBuild jenkinsBuild) {

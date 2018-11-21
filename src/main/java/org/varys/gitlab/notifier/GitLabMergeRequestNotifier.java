@@ -4,7 +4,7 @@ import org.varys.common.service.CacheService;
 import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
 import org.varys.common.service.NotifierModule;
-import org.varys.git.GitService;
+import org.varys.common.service.RestApiService;
 import org.varys.gitlab.api.GitLabApi;
 import org.varys.gitlab.model.GitLabMergeRequest;
 import org.varys.gitlab.model.GitLabMergeRequestNotifierConfig;
@@ -28,20 +28,19 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
 
     private GitLabMergeRequestNotifierConfig config;
     private final GitLabApi gitLabApi;
-    private final GitService gitService;
+    private final RestApiService restApiService;
     private final CacheService cacheService;
     private final NotificationService notificationService;
 
     public GitLabMergeRequestNotifier(
             GitLabMergeRequestNotifierConfig config,
             GitLabApi gitLabApi,
-            GitService gitService,
             CacheService cacheService,
             NotificationService notificationService) {
 
         this.config = config;
         this.gitLabApi = gitLabApi;
-        this.gitService = gitService;
+        this.restApiService = new RestApiService(cacheService, notificationService);
         this.cacheService = cacheService;
         this.notificationService = notificationService;
     }
@@ -63,6 +62,13 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
     }
 
     private void notifyUser() {
+        final boolean apiIsOnline = this.restApiService.notifyApiStatus(this.gitLabApi);
+
+        if (!apiIsOnline) {
+            Log.error("GitLab API is down");
+            return;
+        }
+
         final List<GitLabMergeRequest> liveMergeRequests =
                 this.gitLabApi.getMergeRequests(GitLabMergeRequestState.OPENED);
 

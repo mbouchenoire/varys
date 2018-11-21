@@ -37,6 +37,18 @@ public class GitLabApiV4 implements GitLabApi {
     }
 
     @Override
+    public boolean isOnline() {
+        try {
+            final Response<GitLabUser> response =
+                    this.gitLabApiV4Retrofit.getUser(this.apiConfig.getPrivateToken()).execute();
+
+            return response.isSuccessful();
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    @Override
     public String getBaseUrl() {
         return this.apiConfig.getBaseUrl();
     }
