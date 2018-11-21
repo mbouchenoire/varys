@@ -12,27 +12,18 @@ import org.varys.gitlab.model.GitLabUser;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class MergeRequestUpdateNotificationTest {
 
     private static final GitLabUser GIT_LAB_USER_A = new GitLabUser(
             1,
-            "user1",
-            "username1",
-            "avatarurl.com",
-            "userurl.com");
+            "user1");
 
     private static final GitLabUser GIT_LAB_USER_B = new GitLabUser(
             2,
-            "user2",
-            "username2",
-            "avatarurl2.com",
-            "user2url.com");
+            "user2");
 
     private static final GitLabProject GIT_LAB_PROJECT = new GitLabProject(1, "projectNamespace");
 
@@ -43,8 +34,6 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.OPENED,
-                    new Date(),
-                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -53,8 +42,8 @@ public class MergeRequestUpdateNotificationTest {
                     "url.com"
             ),
             GIT_LAB_PROJECT,
-            Collections.singletonList(new GitLabNote(1, "body", GIT_LAB_USER_A)),
-            Collections.singletonList(new GitLabCommit("1", "message", "authorName"))
+            Collections.singletonList(new GitLabNote(1, "body")),
+            Collections.singletonList(new GitLabCommit("1"))
     );
 
     private static final GitLabMergeRequest ADDED_COMMIT = new GitLabMergeRequest(
@@ -64,8 +53,6 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.OPENED,
-                    new Date(),
-                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -74,10 +61,10 @@ public class MergeRequestUpdateNotificationTest {
                     "url.com"
             ),
             GIT_LAB_PROJECT,
-            Collections.singletonList(new GitLabNote(1, "body", GIT_LAB_USER_A)),
+            Collections.singletonList(new GitLabNote(1, "body")),
             Arrays.asList(
-                    new GitLabCommit("1", "message", "authorName"),
-                    new GitLabCommit("2", "message2", "authorName"))
+                    new GitLabCommit("1"),
+                    new GitLabCommit("2"))
     );
 
     private static final GitLabMergeRequest ADDED_COMMENT = new GitLabMergeRequest(
@@ -87,8 +74,6 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.OPENED,
-                    new Date(),
-                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -98,9 +83,9 @@ public class MergeRequestUpdateNotificationTest {
             ),
             GIT_LAB_PROJECT,
             Arrays.asList(
-                    new GitLabNote(1, "body", GIT_LAB_USER_A),
-                    new GitLabNote(2, "body2", GIT_LAB_USER_A)),
-            Collections.singletonList(new GitLabCommit("1", "message", "authorName"))
+                    new GitLabNote(1, "body"),
+                    new GitLabNote(2, "body2")),
+            Collections.singletonList(new GitLabCommit("1"))
     );
 
     private static final GitLabMergeRequest OTHER_ASSIGNEE = new GitLabMergeRequest(
@@ -110,8 +95,6 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.OPENED,
-                    new Date(),
-                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -120,8 +103,8 @@ public class MergeRequestUpdateNotificationTest {
                     "url.com"
             ),
             GIT_LAB_PROJECT,
-            Collections.singletonList(new GitLabNote(1, "body", GIT_LAB_USER_A)),
-            Collections.singletonList(new GitLabCommit("1", "message", "authorName"))
+            Collections.singletonList(new GitLabNote(1, "body")),
+            Collections.singletonList(new GitLabCommit("1"))
     );
 
     private static final GitLabMergeRequest MERGED = new GitLabMergeRequest(
@@ -131,8 +114,6 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.MERGED,
-                    new Date(),
-                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -141,8 +122,8 @@ public class MergeRequestUpdateNotificationTest {
                     "url.com"
             ),
             GIT_LAB_PROJECT,
-            Collections.singletonList(new GitLabNote(1, "body", GIT_LAB_USER_A)),
-            Collections.singletonList(new GitLabCommit("1", "message", "authorName"))
+            Collections.singletonList(new GitLabNote(1, "body")),
+            Collections.singletonList(new GitLabCommit("1"))
     );
 
     private static final GitLabMergeRequest CLOSED = new GitLabMergeRequest(
@@ -152,8 +133,6 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.CLOSED,
-                    new Date(),
-                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -162,8 +141,8 @@ public class MergeRequestUpdateNotificationTest {
                     "url.com"
             ),
             GIT_LAB_PROJECT,
-            Collections.singletonList(new GitLabNote(1, "body", GIT_LAB_USER_A)),
-            Collections.singletonList(new GitLabCommit("1", "message", "authorName"))
+            Collections.singletonList(new GitLabNote(1, "body")),
+            Collections.singletonList(new GitLabCommit("1"))
     );
 
     private static final GitLabMergeRequest MERGED_WITH_COMMENT = new GitLabMergeRequest(
@@ -173,8 +152,6 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.MERGED,
-                    new Date(),
-                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -184,9 +161,9 @@ public class MergeRequestUpdateNotificationTest {
             ),
             GIT_LAB_PROJECT,
             Arrays.asList(
-                    new GitLabNote(1, "body", GIT_LAB_USER_A),
-                    new GitLabNote(2, "body2", GIT_LAB_USER_A)),
-            Collections.singletonList(new GitLabCommit("1", "message", "authorName"))
+                    new GitLabNote(1, "body"),
+                    new GitLabNote(2, "body2")),
+            Collections.singletonList(new GitLabCommit("1"))
     );
 
     @Test

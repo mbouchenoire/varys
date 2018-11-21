@@ -28,10 +28,6 @@ public class GitLabProject {
         return pathWithNamespace;
     }
 
-    public String formatMergeRequest(MergeRequest mergeRequest) {
-        return String.format("%s!%d", this.pathWithNamespace, mergeRequest.getIid());
-    }
-
     @Override
     public String toString() {
         return "GitLabProject{" +

@@ -1,7 +1,6 @@
 package org.varys.gitlab.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
 
@@ -9,30 +8,19 @@ import java.util.Objects;
 public class GitLabUser {
 
     static final GitLabUser UNASSIGNED =
-            new GitLabUser(-1, "Unassigned", "Unassigned", "", "");
+            new GitLabUser(-1, "Unassigned");
 
     private final long id;
     private final String name;
-    private final String username;
-    @JsonProperty("avatar_url")
-    private final String avatarUrl;
-    @JsonProperty("web_url")
-    private final String url;
 
     GitLabUser() {
         this.id = -1;
         this.name = null;
-        this.username = null;
-        this.avatarUrl = null;
-        this.url = null;
     }
 
-    public GitLabUser(long id, String name, String username, String avatarUrl, String url) {
+    public GitLabUser(long id, String name) {
         this.id = id;
         this.name = name;
-        this.username = username;
-        this.avatarUrl = avatarUrl;
-        this.url = url;
     }
 
     public long getId() {
@@ -41,18 +29,6 @@ public class GitLabUser {
 
     public String getName() {
         return name;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     @Override
@@ -73,9 +49,6 @@ public class GitLabUser {
         return "GitLabUser{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", username='" + username + '\'' +
-                ", avatarUrl='" + avatarUrl + '\'' +
-                ", url='" + url + '\'' +
                 '}';
     }
 }

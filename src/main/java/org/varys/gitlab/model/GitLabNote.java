@@ -9,30 +9,19 @@ public class GitLabNote {
 
     private final long id;
     private final String body;
-    private final GitLabUser author;
 
     GitLabNote() {
         this.id = -1;
         this.body = null;
-        this.author = null;
     }
 
-    public GitLabNote(long id, String body, GitLabUser author) {
+    public GitLabNote(long id, String body) {
         this.id = id;
         this.body = body;
-        this.author = author;
     }
 
     public long getId() {
         return id;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public GitLabUser getAuthor() {
-        return author;
     }
 
     @Transient
@@ -52,7 +41,6 @@ public class GitLabNote {
         return "GitLabNote{" +
                 "id=" + id +
                 ", body='" + body + '\'' +
-                ", author=" + author +
                 '}';
     }
 }
