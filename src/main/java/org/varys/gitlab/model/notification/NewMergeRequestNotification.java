@@ -13,8 +13,8 @@ public class NewMergeRequestNotification extends MergeRequestNotification {
     }
 
     @Override
-    public String getTitle() {
-        return "New merge request\n" + this.mergeRequest.getTitle();
+    public String getHeader() {
+        return "New merge request on " + this.mergeRequest.getProject().getName();
     }
 
     @Override

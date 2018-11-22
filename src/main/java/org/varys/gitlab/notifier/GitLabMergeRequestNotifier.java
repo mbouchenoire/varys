@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -115,6 +114,7 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
     private void notifyUserLiveMergeRequest(GitLabMergeRequest liveMergeRequest) {
         final GitLabMergeRequest mergeRequest = this.getCache(liveMergeRequest)
                 .map(cachedMergeRequest -> {
+                    this.notificationService.send(new NewMergeRequestNotification(cachedMergeRequest));
                     this.notififyUpdate(liveMergeRequest, cachedMergeRequest);
                     return liveMergeRequest;
                 })

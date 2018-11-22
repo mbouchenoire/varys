@@ -17,23 +17,25 @@ public abstract class MergeRequestNotification implements Notification {
         return mergeRequest;
     }
 
+    protected abstract String getHeader();
+
+    @Override
+    public String getTitle() {
+        final String authorName = mergeRequest.getAuthor().getName().split(" ")[0];
+        final String assigneeName = mergeRequest.getAuthor().getName().split(" ")[0];
+        return this.getHeader() + "\nBy " + authorName + " for " + assigneeName;
+    }
+
     @Override
     public String getDescription() {
         return this.description;
     }
 
     private static String formatMergeRequestDescription(GitLabMergeRequest mergeRequest) {
-        final String descriptionTemplate =
-                "%s\n" +
-                        "%s\n" +
-                        "%s into %s\n" +
-                        "by %s for %s";
-
-        return String.format(descriptionTemplate,
+        return String.format("%s\n%s\n%s into %s",
                 mergeRequest.getTitle(),
                 mergeRequest.getIdentifier(),
-                mergeRequest.getSourceBranch(), mergeRequest.getTargetBranch(),
-                mergeRequest.getAuthor().getName(), mergeRequest.getAssignee().getName()
+                mergeRequest.getSourceBranch(), mergeRequest.getTargetBranch()
         );
     }
 }

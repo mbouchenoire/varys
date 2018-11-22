@@ -25,7 +25,7 @@ public class MergeRequestUpdateNotificationTest {
             2,
             "user2");
 
-    private static final GitLabProject GIT_LAB_PROJECT = new GitLabProject(1, "projectNamespace");
+    private static final GitLabProject GIT_LAB_PROJECT = new GitLabProject(1, "name", "projectNamespace");
 
     private static final GitLabMergeRequest MERGE_REQUEST = new GitLabMergeRequest(
             new GitLabMergeRequestListItem(

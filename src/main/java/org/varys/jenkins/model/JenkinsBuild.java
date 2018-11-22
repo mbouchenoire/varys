@@ -20,6 +20,7 @@ public class JenkinsBuild implements JenkinsBuildNumber, Notification {
 
     private final List<JsonNode> actions;
     private final String fullDisplayName;
+    private final long duration;
     private final String id;
     private final long number;
     private final String result;
@@ -28,6 +29,7 @@ public class JenkinsBuild implements JenkinsBuildNumber, Notification {
     JenkinsBuild() {
         this.actions = Collections.emptyList();
         this.fullDisplayName = null;
+        this.duration = -1;
         this.id = null;
         this.number = -1;
         this.result = null;
@@ -40,6 +42,10 @@ public class JenkinsBuild implements JenkinsBuildNumber, Notification {
 
     public String getFullDisplayName() {
         return fullDisplayName;
+    }
+
+    public long getDuration() {
+        return duration;
     }
 
     public String getId() {
@@ -116,11 +122,25 @@ public class JenkinsBuild implements JenkinsBuildNumber, Notification {
         return this.getResult().getAdjective() + " Jenkins build";
     }
 
+    private static String timeConversion(long totalMillis) {
+        final int MINUTES_IN_AN_HOUR = 60;
+        final int SECONDS_IN_A_MINUTE = 60;
+
+        final long totalSeconds = totalMillis / 1000;
+        final long seconds = totalSeconds % SECONDS_IN_A_MINUTE;
+        final long totalMinutes = totalSeconds / SECONDS_IN_A_MINUTE;
+        final long minutes = totalMinutes % MINUTES_IN_AN_HOUR;
+        final long hours = totalMinutes / MINUTES_IN_AN_HOUR;
+
+        return  minutes + "mn " + seconds + "s";
+    }
+
     @Transient
     @Override
     public String getDescription() {
         return this.getFullDisplayName() + "\n" +
-                this.getCause().orElse("Unknown cause");
+                this.getCause().orElse("Unknown cause") + "\n" +
+                "Duration: " + timeConversion(this.duration);
     }
 
     @Transient

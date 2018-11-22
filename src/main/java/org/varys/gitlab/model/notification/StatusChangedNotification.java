@@ -15,8 +15,8 @@ class StatusChangedNotification extends MergeRequestUpdateNotification {
     }
 
     @Override
-    public String getTitle() {
-        return "Merge request changed status\n" + this.getMergeRequest().getTitle();
+    public String getHeader() {
+        return "Merge request changed status";
     }
 
     @Override

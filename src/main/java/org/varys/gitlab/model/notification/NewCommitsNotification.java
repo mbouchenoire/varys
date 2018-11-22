@@ -15,11 +15,10 @@ class NewCommitsNotification extends MergeRequestUpdateNotification {
     }
 
     @Override
-    public String getTitle() {
+    public String getHeader() {
         final long addedCommitsCount = this.getMergeRequest().addedCommitsCount(this.getPreviousVersion());
         final String s = addedCommitsCount > 1 ? "s" : "";
-        return String.format("%d new commit%s on merge request\n%s",
-                addedCommitsCount, s, this.getMergeRequest().getTitle());
+        return String.format("%d new commit%s on merge request", addedCommitsCount, s);
     }
 
     @Override

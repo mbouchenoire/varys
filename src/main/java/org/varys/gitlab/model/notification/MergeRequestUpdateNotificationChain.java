@@ -44,6 +44,11 @@ public class MergeRequestUpdateNotificationChain extends MergeRequestUpdateNotif
     }
 
     @Override
+    protected String getHeader() {
+        return null;
+    }
+
+    @Override
     public String getTitle() {
         return this.title;
     }
