@@ -21,8 +21,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GitLabMergeRequestNotifier implements NotifierModule {
 
@@ -137,13 +139,20 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
 
     private List<GitLabMergeRequest> getCachedMergeRequests() {
         //noinspection ConstantConditions
-        return Arrays.stream(this.cacheService.getRootDirectory().listFiles())
-                .flatMap(domainDirectory -> Arrays.stream(domainDirectory.listFiles()))
-                .flatMap(projectDirectory -> Arrays.stream(projectDirectory.listFiles()))
+        final File[] rootDirectoryFiles = this.cacheService.getRootDirectory().listFiles();
+
+        return Arrays.stream(rootDirectoryFiles != null ? rootDirectoryFiles : new File[0])
+                .flatMap(this::mapDirectoryFileStream)
+                .flatMap(this::mapDirectoryFileStream)
                 .map(mergeRequestFile -> this.cacheService.get(mergeRequestFile, GitLabMergeRequest.class))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
+    }
+
+    private Stream<? extends File> mapDirectoryFileStream(File domainDirectory) {
+        final File[] array = domainDirectory.listFiles();
+        return Arrays.stream(array != null ? array : new File[0]);
     }
 
     private void notififyUpdate(
