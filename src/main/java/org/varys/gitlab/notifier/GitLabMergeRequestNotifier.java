@@ -114,7 +114,6 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
     private void notifyUserLiveMergeRequest(GitLabMergeRequest liveMergeRequest) {
         final GitLabMergeRequest mergeRequest = this.getCache(liveMergeRequest)
                 .map(cachedMergeRequest -> {
-                    this.notificationService.send(new NewMergeRequestNotification(cachedMergeRequest));
                     this.notififyUpdate(liveMergeRequest, cachedMergeRequest);
                     return liveMergeRequest;
                 })

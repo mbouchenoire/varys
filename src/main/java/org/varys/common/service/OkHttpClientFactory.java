@@ -28,13 +28,6 @@ public final class OkHttpClientFactory {
         return response;
     }
 
-    private static Response utf8EncodingInterceptor(Interceptor.Chain chain) throws IOException {
-        return chain.proceed(chain.request())
-                .newBuilder()
-                .addHeader("Content-Type", "application/json; charset=utf-8")
-                .build();
-    }
-
     public static OkHttpClient create() {
 
         try {
@@ -43,7 +36,6 @@ public final class OkHttpClientFactory {
                     .sslSocketFactory(SSLUtils.createSocketFactory())
                     .hostnameVerifier((s, sslSession) -> true)
                     .addInterceptor(OkHttpClientFactory::loggingInterceptor)
-                    .addInterceptor(OkHttpClientFactory::utf8EncodingInterceptor)
                     .build();
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);

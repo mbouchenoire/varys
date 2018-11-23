@@ -1,12 +1,12 @@
 package org.varys.common.service;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -76,16 +76,14 @@ public class CacheService {
                         cachedObjectFile.getAbsolutePath());
             }
 
-            try (PrintWriter out = new PrintWriter(cachedObjectFile)) {
-                final String cachedObjectString = new ObjectMapper().writeValueAsString(object);
+            final ObjectMapper mapper = new ObjectMapper();
+            final ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+            writer.writeValue(cachedObjectFile, object);
 
-                out.println(cachedObjectString);
-
-                Log.debug(
-                        "Successfuly cached object '{}' in file '{}'",
-                        cachedObjectString,
-                        cachedObjectFile.getAbsolutePath());
-            }
+            Log.debug(
+                    "Successfuly cached object '{}' in file '{}'",
+                    object,
+                    cachedObjectFile.getAbsolutePath());
         } catch (JsonProcessingException e) {
             Log.error(e,"Failed to serialize object to cache: {}", object);
         } catch (IOException e) {
@@ -103,16 +101,6 @@ public class CacheService {
         try {
             final T value = new ObjectMapper().readValue(file, cacheClass);
             return Optional.ofNullable(value);
-        } catch (JsonParseException e) {
-            Log.error(e, "Failed to retreive cached object (file: {})", file);
-
-            if (e.getMessage().contains("UTF-8")) {
-                convertToUtf8(file.toPath());
-                return this.get(file, cacheClass);
-            } else {
-                deleteFile(file);
-                return Optional.empty();
-            }
         } catch (IOException e) {
             Log.error(e, "Failed to retreive cached object (file: {})", file);
             deleteFile(file);
