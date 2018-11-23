@@ -22,7 +22,7 @@ public abstract class MergeRequestNotification implements Notification {
     @Override
     public String getTitle() {
         final String authorName = mergeRequest.getAuthor().getName().split(" ")[0];
-        final String assigneeName = mergeRequest.getAuthor().getName().split(" ")[0];
+        final String assigneeName = mergeRequest.getAssignee().getName().split(" ")[0];
         return this.getHeader() + "\nBy " + authorName + " for " + assigneeName;
     }
 

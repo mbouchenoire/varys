@@ -4,13 +4,14 @@
 
 **Varys** is a local process that crawls trough your dev environment (GitLab, Jenkins...) giving you instant feedback
 (via desktop notifications) on things that you care about. This (currently) includes:
-- new merge requests (assigned to you, or other people),
+- new merge requests (assigned to you, other people, or both),
 - updates on those merge requests:
   - status change (merged, closed...),
   - assignee change,
   - new comments,
   - new commits.
-- build statuses of your local Git branches (configurable).
+- remote build statuses of your local Git branches (configurable),
+- services downtimes.
 
 
 
