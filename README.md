@@ -13,31 +13,18 @@
 - remote build statuses of your local Git branches (configurable),
 - services downtimes.
 
-
-
 ## Build & Run from sources
-
-### Linux
-```console
-root@localhost:~/git$ git clone https://github.com/mbouchenoire/varys.git
-root@localhost:~/git$ cd varys
-root@localhost:~/git/varys$ ./mvnw clean package
-root@localhost:~/git/varys$ vi src/main/resources/config.json  # see the Configuration section
-root@localhost:~/git/varys$ java -cp target/varys-<version>.jar org.varys.App src/main/resources/config.json
-```
 
 ### Windows
 ```console
-C:\Users\user\git> git clone https://github.com/mbouchenoire/varys.git
-C:\Users\user\git> cd varys
+C:\Users\user\git> git clone https://github.com/mbouchenoire/varys.git && cd varys
 C:\Users\user\git\varys> mvnw clean package
-C:\Users\user\git\varys> notepad src\main\resources\config.json  # see the Configuration section
-C:\Users\user\git\varys> java -cp target\varys-<version>.jar org.varys.App src\main\resources\config.json
+C:\Users\user\git\varys> bin\varys-start.bat config\config.json # See the Configuration section
 ```
 
 ## Configuration
-The configuration file is currently located here (temporary):
-`src/main/resources/config.json`.
+The configuration file is currently located here:
+`config/config.json`.
 
 ### Configuration values:
 
