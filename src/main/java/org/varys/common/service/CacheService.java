@@ -1,11 +1,17 @@
 package org.varys.common.service;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 public class CacheService {
@@ -97,16 +103,40 @@ public class CacheService {
         try {
             final T value = new ObjectMapper().readValue(file, cacheClass);
             return Optional.ofNullable(value);
-        } catch (IOException e) {
+        } catch (JsonParseException e) {
             Log.error(e, "Failed to retreive cached object (file: {})", file);
 
-            if (file.delete()) {
-                Log.debug("Successfuly deleted cache file (file: {})", file);
+            if (e.getMessage().contains("UTF-8")) {
+                convertToUtf8(file.toPath());
+                return this.get(file, cacheClass);
             } else {
-                Log.error("Failed to delete cache file ({})", file);
+                deleteFile(file);
+                return Optional.empty();
             }
-
+        } catch (IOException e) {
+            Log.error(e, "Failed to retreive cached object (file: {})", file);
+            deleteFile(file);
             return Optional.empty();
+        }
+    }
+
+    private static void deleteFile(File file) {
+        if (file.delete()) {
+            Log.debug("Successfully deleted cache file (file: {})", file);
+        } else {
+            Log.error("Failed to delete cache file ({})", file);
+        }
+    }
+
+    private static void convertToUtf8(Path path) {
+        try {
+            Log.debug("Converting file '{}' to UTF-8...", path);
+            final ByteBuffer bb = ByteBuffer.wrap(Files.readAllBytes(path));
+            final CharBuffer cb = Charset.forName("windows-1252").decode(bb);
+            final ByteBuffer encodedBb = Charset.forName("UTF-8").encode(cb);
+            Files.write(path, encodedBb.array());
+        } catch (IOException e) {
+            Log.error(e, "Failed to convert file to UTF-8");
         }
     }
 
