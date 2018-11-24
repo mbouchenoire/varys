@@ -7,11 +7,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 
 public class CacheService {
@@ -43,10 +39,11 @@ public class CacheService {
         Log.debug("Deleting cached object with path={}...", path);
 
         final File cachedObjectFile = buildCacheFile(path);
-        final boolean isDeleted = cachedObjectFile.delete();
 
-        if (!isDeleted) {
-            Log.error("Failed to delete cache file: " + cachedObjectFile.getAbsolutePath());
+        try {
+            Files.delete(cachedObjectFile.toPath());
+        } catch (IOException e) {
+            Log.error(e, "Failed to delete cache file: {}", cachedObjectFile.getAbsolutePath());
         }
     }
 
@@ -113,18 +110,6 @@ public class CacheService {
             Log.debug("Successfully deleted cache file (file: {})", file);
         } else {
             Log.error("Failed to delete cache file ({})", file);
-        }
-    }
-
-    private static void convertToUtf8(Path path) {
-        try {
-            Log.debug("Converting file '{}' to UTF-8...", path);
-            final ByteBuffer bb = ByteBuffer.wrap(Files.readAllBytes(path));
-            final CharBuffer cb = Charset.forName("windows-1252").decode(bb);
-            final ByteBuffer encodedBb = Charset.forName("UTF-8").encode(cb);
-            Files.write(path, encodedBb.array());
-        } catch (IOException e) {
-            Log.error(e, "Failed to convert file to UTF-8");
         }
     }
 

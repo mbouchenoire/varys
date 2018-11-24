@@ -40,7 +40,7 @@ public abstract class MergeRequestNotification implements Notification {
     }
 
     private static String formatMergeRequestDescription(GitLabMergeRequest mergeRequest) {
-        return String.format("%s\n%s\n%s into %s",
+        return String.format("%s%n%s%n%s into %s",
                 mergeRequest.getTitle(),
                 mergeRequest.getIdentifier(),
                 mergeRequest.getSourceBranch(), mergeRequest.getTargetBranch()

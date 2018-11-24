@@ -1,6 +1,5 @@
 package org.varys.jenkins.notifier;
 
-
 import org.varys.common.service.CacheService;
 import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
@@ -15,13 +14,9 @@ import org.varys.jenkins.model.JenkinsBuildNumber;
 import org.varys.jenkins.model.JenkinsNode;
 
 import java.io.File;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -52,22 +47,17 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
     }
 
     @Override
-    public void startModule() {
-        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-            final LocalDateTime start = LocalDateTime.now();
-
-            Log.info("Starting notification iteration for the Jenkins module...");
-            this.notifyUser();
-
-            final LocalDateTime end = LocalDateTime.now();
-            final Duration between = Duration.between(start, end);
-            Log.info("Jenkins module notification iteration duration: {} seconds", between.getSeconds());
-        }, 0, this.config.getNotificationsConfig().getPeriodSeconds(), TimeUnit.SECONDS);
-
-        Log.info("Successfuly started Jenkins module");
+    public String getName() {
+        return "Jenkins";
     }
 
-    private void notifyUser() {
+    @Override
+    public long getPeriodSeconds() {
+        return this.config.getNotificationsConfig().getPeriodSeconds();
+    }
+
+    @Override
+    public void iterate() {
         final boolean apiIsOnline = this.restApiService.notifyApiStatus(this.jenkinsApi);
 
         if (apiIsOnline) {

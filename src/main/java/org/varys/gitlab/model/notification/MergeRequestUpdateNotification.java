@@ -11,7 +11,7 @@ abstract class MergeRequestUpdateNotification extends MergeRequestNotification {
         this.previousVersion = previousVersion;
     }
 
-    abstract public boolean shouldNotify();
+    public abstract boolean shouldNotify();
 
     GitLabMergeRequest getPreviousVersion() {
         return previousVersion;

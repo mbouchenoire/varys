@@ -11,7 +11,7 @@ public final class VarysTrayIcon {
 
     private static final String DEFAULT_TRAY_ICON_IMAGE_URL = "https://i.imgur.com/Mlg9Atp.png";
 
-    private static final long LINKABLE_MENU_ITEMS_DURATION = 5 * 60 * 1000; // 5 minutes
+    private static final long LINKABLE_MENU_ITEMS_DURATION = 5L * 60L * 1000L; // 5 minutes
 
     private static final TrayIcon trayIcon;
     private static final PopupMenu popupMenu;
@@ -47,6 +47,10 @@ public final class VarysTrayIcon {
             trayIcon = null;
             popupMenu = null;
         }
+    }
+
+    private VarysTrayIcon() {
+        super();
     }
 
     public static void addPermanentClickableMenu(String text, Runnable runnable) {

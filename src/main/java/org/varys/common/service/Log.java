@@ -1,13 +1,17 @@
 package org.varys.common.service;
 
-import org.pmw.tinylog.policies.DailyPolicy;
-import org.varys.common.model.LoggingConfig;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.policies.DailyPolicy;
 import org.pmw.tinylog.policies.SizePolicy;
 import org.pmw.tinylog.writers.RollingFileWriter;
+import org.varys.common.model.LoggingConfig;
 
-public class Log {
+public final class Log {
+
+    private Log() {
+        super();
+    }
 
     public static void init(LoggingConfig config) {
         final RollingFileWriter fileWriter = new RollingFileWriter(
@@ -29,6 +33,10 @@ public class Log {
 
     public static void trace(String message, Object... argumengs) {
         Logger.trace(message, argumengs);
+    }
+
+    public static void trace(Exception e, String message, Object ... arguments) {
+        Logger.trace(e, message, arguments);
     }
 
     public static void debug(String message) {

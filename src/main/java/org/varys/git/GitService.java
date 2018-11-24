@@ -1,9 +1,10 @@
 package org.varys.git;
 
-import org.varys.common.model.GitConfig;
-import org.varys.git.model.GitRepository;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.varys.common.model.GitConfig;
+import org.varys.common.service.Log;
+import org.varys.git.model.GitRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,8 +12,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GitService {
 
@@ -24,13 +28,16 @@ public class GitService {
         this.config = config;
     }
 
-    private static Repository toRepository(Path gitDirectoryPath) {
+    private static Optional<Repository> toRepository(Path gitDirectoryPath) {
         try {
-            return new FileRepositoryBuilder()
+            final Repository repository = new FileRepositoryBuilder()
                     .setGitDir(gitDirectoryPath.toFile())
                     .build();
+
+            return Optional.ofNullable(repository);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to process git directory", e);
+            Log.error(e, "Failed to parse directory as Git repository: {}", gitDirectoryPath);
+            return Optional.empty();
         }
     }
 
@@ -40,15 +47,16 @@ public class GitService {
         final BiPredicate<Path, BasicFileAttributes> isGitDirectory =
                 (filePath, fileAttr) -> filePath.endsWith(".git");
 
-        try {
-
-            return Files
-                    .find(Paths.get(rootDirectoryPath), MAX_DEPTH, isGitDirectory)
+        try (Stream<Path> pathStream = Files.find(Paths.get(rootDirectoryPath), MAX_DEPTH, isGitDirectory)) {
+            return pathStream
                     .map(GitService::toRepository)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .map(GitRepository::new)
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Log.error(e, "Failed to list local Git repositories");
+            return Collections.emptyList();
         }
     }
 

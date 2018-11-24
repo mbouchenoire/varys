@@ -27,16 +27,14 @@ public final class NotificationService {
                 notification.getDescription().orElse(null),
                 notification.getType().getTrayIconMessageType());
 
-        notification.getLinkable().ifPresent(linkable -> {
-            VarysTrayIcon.addTemporaryClickableMenu(
-                    linkable.getLabel(),
-                    () -> {
-                        try {
-                            Desktop.getDesktop().browse(new URI(linkable.getUrl()));
-                        } catch (IOException | URISyntaxException e) {
-                            Log.error(e, "Failed to start browser");
-                        }
-                    });
-        });
+        notification.getLinkable().ifPresent(linkable -> VarysTrayIcon.addTemporaryClickableMenu(
+                linkable.getLabel(),
+                () -> {
+                    try {
+                        Desktop.getDesktop().browse(new URI(linkable.getUrl()));
+                    } catch (IOException | URISyntaxException e) {
+                        Log.error(e, "Failed to start browser");
+                    }
+                }));
     }
 }

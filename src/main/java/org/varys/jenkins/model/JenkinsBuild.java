@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JenkinsBuild implements JenkinsBuildNumber, Notification, Linkable {
@@ -105,8 +106,8 @@ public class JenkinsBuild implements JenkinsBuildNumber, Notification, Linkable 
 
     @Transient
     public Optional<String> getBranchName() {
-        final Function<JsonNode, JsonNode> lastBuiltRevision = buildData -> buildData.get("lastBuiltRevision");
-        final Function<JsonNode, JsonNode> firstBranchFound = revision -> revision.get("branch").elements().next();
+        final UnaryOperator<JsonNode> lastBuiltRevision = buildData -> buildData.get("lastBuiltRevision");
+        final UnaryOperator<JsonNode> firstBranchFound = revision -> revision.get("branch").elements().next();
         final Function<JsonNode, String> branchName = branch -> branch.get("name").asText();
 
         return this.actions.stream()

@@ -14,13 +14,9 @@ import org.varys.gitlab.model.notification.MergeRequestUpdateNotificationChain;
 import org.varys.gitlab.model.notification.NewMergeRequestNotification;
 
 import java.io.File;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,22 +43,17 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
     }
 
     @Override
-    public void startModule() {
-        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
-            final LocalDateTime start = LocalDateTime.now();
-
-            Log.info("Starting notification iteration for the GitLab module...");
-            this.notifyUser();
-
-            final LocalDateTime end = LocalDateTime.now();
-            final Duration between = Duration.between(start, end);
-            Log.info("GitLab module notification iteration duration: {} second(s)", between.getSeconds());
-        }, 0, config.getNotificationsConfig().getPeriodSeconds(), TimeUnit.SECONDS);
-
-        Log.info("Successfuly started GitLab module");
+    public String getName() {
+        return "GitLab";
     }
 
-    private void notifyUser() {
+    @Override
+    public long getPeriodSeconds() {
+        return this.config.getNotificationsConfig().getPeriodSeconds();
+    }
+
+    @Override
+    public void iterate() {
         final boolean apiIsOnline = this.restApiService.notifyApiStatus(this.gitLabApi);
 
         if (!apiIsOnline) {

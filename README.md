@@ -1,5 +1,6 @@
 # Varys
 [![Build Status](https://travis-ci.org/mbouchenoire/varys.svg?branch=master)](https://travis-ci.org/mbouchenoire/varys)&nbsp;
+[![Mainainability](https://sonarcloud.io/api/project_badges/measure?project=mbouchenoire_varys&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=mbouchenoire_varys)&nbsp;
 [![Coverage Status](https://coveralls.io/repos/github/mbouchenoire/varys/badge.svg?branch=master)](https://coveralls.io/github/mbouchenoire/varys?branch=master)
 
 **Varys** is a local process that crawls trough your dev environment (GitLab, Jenkins...) giving you instant feedback

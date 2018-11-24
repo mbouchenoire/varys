@@ -106,6 +106,8 @@ public class NotifierModuleFactory {
     }
 
     private static GitLabMergeRequestNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) {
+        Log.trace("Unused git config for GitLab module: {}", gitConfig);
+
         final String moduleName = moduleNode.get("name").asText();
         final JsonNode configNode = moduleNode.get("config");
 

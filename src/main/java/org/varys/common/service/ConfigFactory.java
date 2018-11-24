@@ -12,7 +12,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public class ConfigFactory {
+public final class ConfigFactory {
+
+    private ConfigFactory() {
+        super();
+    }
 
     public static int getThreadPoolSize(File configFile) throws IOException {
         Log.debug("Retreiving thread pool size from config file: {}...", configFile);
