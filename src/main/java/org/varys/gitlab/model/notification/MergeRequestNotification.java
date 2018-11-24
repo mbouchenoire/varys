@@ -1,7 +1,10 @@
 package org.varys.gitlab.model.notification;
 
+import org.varys.common.model.Linkable;
 import org.varys.common.model.Notification;
 import org.varys.gitlab.model.GitLabMergeRequest;
+
+import java.util.Optional;
 
 public abstract class MergeRequestNotification implements Notification {
 
@@ -27,8 +30,13 @@ public abstract class MergeRequestNotification implements Notification {
     }
 
     @Override
-    public String getDescription() {
-        return this.description;
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(this.description);
+    }
+
+    @Override
+    public Optional<Linkable> getLinkable() {
+        return Optional.of(this.mergeRequest);
     }
 
     private static String formatMergeRequestDescription(GitLabMergeRequest mergeRequest) {

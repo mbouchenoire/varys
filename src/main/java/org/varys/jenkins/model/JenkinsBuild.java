@@ -2,6 +2,7 @@ package org.varys.jenkins.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.varys.common.model.Linkable;
 import org.varys.common.model.Notification;
 import org.varys.common.model.NotificationType;
 
@@ -13,7 +14,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class JenkinsBuild implements JenkinsBuildNumber, Notification {
+public class JenkinsBuild implements JenkinsBuildNumber, Notification, Linkable {
 
     private static final String BUILD_DATA_CLASS = "hudson.plugins.git.util.BuildData";
     private static final String CAUSE_ACTION_CLASS = "hudson.model.CauseAction";
@@ -130,23 +131,36 @@ public class JenkinsBuild implements JenkinsBuildNumber, Notification {
         final long seconds = totalSeconds % SECONDS_IN_A_MINUTE;
         final long totalMinutes = totalSeconds / SECONDS_IN_A_MINUTE;
         final long minutes = totalMinutes % MINUTES_IN_AN_HOUR;
-        final long hours = totalMinutes / MINUTES_IN_AN_HOUR;
 
         return  minutes + "mn " + seconds + "s";
     }
 
     @Transient
     @Override
-    public String getDescription() {
-        return this.getFullDisplayName() + "\n" +
+    public Optional<String> getDescription() {
+        final String description = this.getFullDisplayName() + "\n" +
                 this.getCause().orElse("Unknown cause") + "\n" +
                 "Duration: " + timeConversion(this.duration);
+
+        return Optional.of(description);
     }
 
     @Transient
     @Override
     public NotificationType getType() {
         return this.getResult().getNotificationType();
+    }
+
+    @Transient
+    @Override
+    public String getLabel() {
+        return "Jenkins - " + this.fullDisplayName;
+    }
+
+    @Transient
+    @Override
+    public Optional<Linkable> getLinkable() {
+        return Optional.of(this);
     }
 
     @Override

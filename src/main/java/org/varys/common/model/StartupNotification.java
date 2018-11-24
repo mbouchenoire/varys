@@ -8,11 +8,6 @@ public class StartupNotification implements Notification {
     }
 
     @Override
-    public String getDescription() {
-        return null;
-    }
-
-    @Override
     public NotificationType getType() {
         return NotificationType.INFO;
     }

@@ -83,7 +83,6 @@ public class NotifierModuleFactory {
         final JenkinsApiConfig apiConfig = new JenkinsApiConfig(apiBaseUrl, apiToken);
 
         final JsonNode notificationsConfigNode = configNode.get("notifications");
-        final String trayIconUrl = notificationsConfigNode.get("tray_icon_url").asText();
 
         final long periodSeconds = notificationsConfigNode.get("period").asLong();
 
@@ -103,9 +102,7 @@ public class NotifierModuleFactory {
                 notifierConfig,
                 new GitService(gitConfig),
                 new CacheService(moduleName),
-                new NotificationService(
-                        moduleName,
-                        trayIconUrl));
+                new NotificationService(moduleName));
     }
 
     private static GitLabMergeRequestNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) {
@@ -133,14 +130,10 @@ public class NotifierModuleFactory {
         final GitLabMergeRequestNotifierConfig notifierConfig =
                 new GitLabMergeRequestNotifierConfig(apiConfig, notificationsConfig);
 
-        final String trayIconUrl = notificationsNode.get("tray_icon_url").asText();
-
         return new GitLabMergeRequestNotifier(
                 notifierConfig,
                 GitLabApiFactory.create(apiConfig),
                 new CacheService(moduleName),
-                new NotificationService(
-                        moduleName,
-                        trayIconUrl));
+                new NotificationService(moduleName));
     }
 }

@@ -16,11 +16,6 @@ public final class ApiDownNotification implements Notification {
     }
 
     @Override
-    public String getDescription() {
-        return null;
-    }
-
-    @Override
     public NotificationType getType() {
         return NotificationType.WARNING;
     }

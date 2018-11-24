@@ -2,52 +2,17 @@ package org.varys.common.service;
 
 import org.varys.common.model.Notification;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-public class NotificationService {
-
-    private static final String DEFAULT_TRAY_ICON_IMAGE_URL =
-            "https://ssl.gstatic.com/images/branding/product/1x/alerts_512dp.png";
+public final class NotificationService {
 
     private final String moduleName;
-    private final TrayIcon trayIcon;
 
     public NotificationService(String moduleName) {
-        this(moduleName, null);
-
-        if (SystemTray.isSupported()) {
-            Log.debug("SystemTray is supported");
-        }
-    }
-
-    NotificationService(String moduleName, String trayIconUrl) {
         this.moduleName = moduleName;
-
-        if (!SystemTray.isSupported()) {
-            Log.warn("SystemTray is not supported");
-        }
-
-        final Image image = buildTrayIconImage(trayIconUrl);
-
-//            final PopupMenu popup = new PopupMenu();
-//            MenuItem item = new MenuItem("contextual menu label");
-//            item.addActionListener(e -> Log.error("clicked on contextual menu!"));
-//            popup.add(item);
-
-//            final TrayIcon trayIcon = new TrayIcon(image, title, popup);
-
-        this.trayIcon = new TrayIcon(image, this.moduleName);
-        this.trayIcon.setImageAutoSize(true);
-
-        try {
-            SystemTray.getSystemTray().add(this.trayIcon);
-        } catch (AWTException e) {
-            Log.error(e, "Failed to initialize tray icon for module '{}'", this.moduleName);
-        }
     }
 
     public void send(Notification notification) {
@@ -57,37 +22,21 @@ public class NotificationService {
                 notification.getDescription(),
                 notification.getType());
 
-        this.trayIcon.displayMessage(
+        VarysTrayIcon.notify(
                 notification.getTitle(),
-                notification.getDescription(),
+                notification.getDescription().orElse(null),
                 notification.getType().getTrayIconMessageType());
-    }
 
-    @Override
-    protected void finalize() {
-        SystemTray.getSystemTray().remove(this.trayIcon);
-    }
-
-    private static Image buildTrayIconImage(String textUrl) {
-        final URL url = getTrayIconUrl(textUrl);
-
-        try {
-            return ImageIO.read(url);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static URL getTrayIconUrl(String url) {
-        try {
-            if (url == null || url.equals("")) {
-                return new URL(DEFAULT_TRAY_ICON_IMAGE_URL);
-            } else {
-                return new URL(url);
-            }
-        } catch (MalformedURLException e) {
-            Log.error(e, "Failed to url={}", url);
-            throw new RuntimeException(e);
-        }
+        notification.getLinkable().ifPresent(linkable -> {
+            VarysTrayIcon.addTemporaryClickableMenu(
+                    linkable.getLabel(),
+                    () -> {
+                        try {
+                            Desktop.getDesktop().browse(new URI(linkable.getUrl()));
+                        } catch (IOException | URISyntaxException e) {
+                            Log.error(e, "Failed to start browser");
+                        }
+                    });
+        });
     }
 }

@@ -9,7 +9,9 @@ import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
 import org.varys.common.service.NotifierModule;
 import org.varys.common.service.NotifierModuleFactory;
+import org.varys.common.service.VarysTrayIcon;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -23,6 +25,10 @@ public class App {
 
         final LoggingConfig loggingConfig = ConfigFactory.createLoggingConfig(configFile);
         Log.init(loggingConfig);
+
+        VarysTrayIcon.addPermanentClickableMenu("Varys - Stop", App::stop);
+        VarysTrayIcon.addPermanentClickableMenu("Varys - Open application folder", () -> openAppFolder(configFile));
+        VarysTrayIcon.addPermanentClickableMenu("Varys - Edit configuration", () -> editConfiguration(configFile));
 
         final int threadPoolSize = ConfigFactory.getThreadPoolSize(configFile);
 
@@ -44,5 +50,37 @@ public class App {
 
         final int input = System.in.read();
         Log.info("Varys is shutting down (input: {})...", input);
+    }
+
+    private static void stop() {
+        Log.info("Stopping Varys (user request)...");
+        System.exit(0);
+    }
+
+    private static void openAppFolder(File configFile) {
+        Log.info("Opening application folder (user request)...");
+
+        final File[] binFolders = configFile.getParentFile().getParentFile().listFiles((dir, name) -> name.equals("bin"));
+
+        try {
+            if (binFolders != null) {
+                final File binFolder = binFolders[0];
+                Desktop.getDesktop().open(binFolder);
+            } else {
+                throw new IOException("Could not find application folder");
+            }
+        } catch (IOException e) {
+            Log.error(e, "Failed to open application folder");
+        }
+    }
+
+    private static void editConfiguration(File configFile) {
+        Log.info("Opening configuration file (user request)...");
+
+        try {
+            Desktop.getDesktop().open(configFile);
+        } catch (IOException e) {
+            Log.error(e, "Failed to open configuration file");
+        }
     }
 }

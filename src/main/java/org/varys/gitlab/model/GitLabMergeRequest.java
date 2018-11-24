@@ -1,5 +1,7 @@
 package org.varys.gitlab.model;
 
+import org.varys.common.model.Linkable;
+
 import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class GitLabMergeRequest implements MergeRequest {
+public class GitLabMergeRequest implements MergeRequest, Linkable {
 
     private final long id;
     private final long iid;
@@ -54,7 +56,7 @@ public class GitLabMergeRequest implements MergeRequest {
         this.assignee = mergeRequestListItem.getAssignee();
         this.notes = Collections.unmodifiableList(notes);
         this.commits = Collections.unmodifiableList(commits);
-        this.url = null;
+        this.url = mergeRequestListItem.getUrl();
     }
 
     @Override
@@ -153,6 +155,12 @@ public class GitLabMergeRequest implements MergeRequest {
 
     public String getUrl() {
         return url;
+    }
+
+    @Transient
+    @Override
+    public String getLabel() {
+        return "GitLab - " + this.getProject().getPathWithNamespace() + " - " + this.title;
     }
 
     @Transient

@@ -17,7 +17,6 @@
         },
         "notifications": {
           "period": 30,
-          "tray_icon_url": "https://wiki.jenkins.io/download/attachments/2916393/headshot.png",
           "filters": {
             "local_branches_only": true,
             "successful_builds": false
@@ -36,7 +35,6 @@
         },
         "notifications": {
           "period": 30,
-          "tray_icon_url": "https://gitlab.com/gitlab-com/gitlab-artwork/raw/master/logo/logo.png",
           "filters": {
             "assigned_to_me_only": true
           }
