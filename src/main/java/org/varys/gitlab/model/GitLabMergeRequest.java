@@ -16,6 +16,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
     private final GitLabProject project;
     private final String title;
     private final GitLabMergeRequestState state;
+    private final boolean wip;
     private final Date updatedAt;
     private final String targetBranch;
     private final String sourceBranch;
@@ -32,6 +33,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
         this.project = null;
         this.title = null;
         this.state = null;
+        this.wip = false;
         this.updatedAt = null;
         this.targetBranch = null;
         this.sourceBranch = null;
@@ -49,6 +51,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
             GitLabProject project,
             String title,
             GitLabMergeRequestState state,
+            boolean wip,
             Date updatedAt,
             String targetBranch,
             String sourceBranch,
@@ -64,6 +67,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
         this.project = project;
         this.title = title;
         this.state = state;
+        this.wip = wip;
         this.updatedAt = updatedAt;
         this.targetBranch = targetBranch;
         this.sourceBranch = sourceBranch;
@@ -86,6 +90,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
                 project,
                 mergeRequestListItem.getTitle(),
                 mergeRequestListItem.getState(),
+                mergeRequestListItem.isWip(),
                 mergeRequestListItem.getUpdatedAt(),
                 mergeRequestListItem.getTargetBranch(),
                 mergeRequestListItem.getSourceBranch(),
@@ -117,6 +122,10 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
 
     public GitLabMergeRequestState getState() {
         return state;
+    }
+
+    public boolean isWip() {
+        return wip;
     }
 
     public Date getUpdatedAt() {
@@ -210,6 +219,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
                 this.project,
                 this.title,
                 this.state,
+                this.wip,
                 this.updatedAt,
                 this.targetBranch,
                 this.sourceBranch,
@@ -241,6 +251,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
                 ", project=" + project +
                 ", title='" + title + '\'' +
                 ", state=" + state +
+                ", wip=" + wip +
                 ", targetBranch='" + targetBranch + '\'' +
                 ", sourceBranch='" + sourceBranch + '\'' +
                 ", author=" + author +

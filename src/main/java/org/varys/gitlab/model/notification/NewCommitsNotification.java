@@ -11,7 +11,8 @@ class NewCommitsNotification extends MergeRequestUpdateNotification {
 
     @Override
     public boolean shouldNotify() {
-        return this.getMergeRequest().addedCommitsCount(this.getPreviousVersion()) > 0;
+        return !this.getMergeRequest().isWip()
+                && this.getMergeRequest().addedCommitsCount(this.getPreviousVersion()) > 0;
     }
 
     @Override

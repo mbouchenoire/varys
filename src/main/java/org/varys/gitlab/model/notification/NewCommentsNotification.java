@@ -11,7 +11,8 @@ class NewCommentsNotification extends MergeRequestUpdateNotification {
 
     @Override
     public boolean shouldNotify() {
-        return this.getMergeRequest().addedUserNotesCount(this.getPreviousVersion()) > 0;
+        return !this.getMergeRequest().isWip()
+                && this.getMergeRequest().addedUserNotesCount(this.getPreviousVersion()) > 0;
     }
 
     @Override

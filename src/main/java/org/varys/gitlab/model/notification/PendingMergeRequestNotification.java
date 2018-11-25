@@ -29,7 +29,7 @@ public class PendingMergeRequestNotification extends MergeRequestUpdateNotificat
     public boolean shouldNotify() {
         final Date now = Date.from(Instant.now());
         final long hoursSinceLastNotification = hoursDiff(this.getPreviousVersion().getLastNotificationDate(), now);
-        return hoursSinceLastNotification >= this.hoursBeforeReminder;
+        return !this.getMergeRequest().isWip() && hoursSinceLastNotification >= this.hoursBeforeReminder;
     }
 
     @Override

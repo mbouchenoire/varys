@@ -22,6 +22,8 @@ public class GitLabMergeRequestListItem implements MergeRequest {
     private final String sourceBranch;
     private final GitLabUser author;
     private final GitLabUser assignee;
+    @JsonProperty("work_in_progress")
+    private final boolean wip;
     @JsonProperty("user_notes_count")
     private final long userNotesCount;
     @JsonProperty("web_url")
@@ -33,6 +35,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
         this.projectId = -1;
         this.title = null;
         this.state = null;
+        this.wip = false;
         this.updatedAt = null;
         this.targetBranch = null;
         this.sourceBranch = null;
@@ -48,6 +51,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
             long projectId,
             String title,
             GitLabMergeRequestState state,
+            boolean wip,
             Date updatedAt,
             String targetBranch,
             String sourceBranch,
@@ -61,6 +65,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
         this.projectId = projectId;
         this.title = title;
         this.state = state;
+        this.wip = wip;
         this.updatedAt = updatedAt;
         this.targetBranch = targetBranch;
         this.sourceBranch = sourceBranch;
@@ -90,6 +95,10 @@ public class GitLabMergeRequestListItem implements MergeRequest {
 
     public GitLabMergeRequestState getState() {
         return state;
+    }
+
+    public boolean isWip() {
+        return wip;
     }
 
     public Date getUpdatedAt() {
@@ -124,6 +133,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
                 ", projectId=" + projectId +
                 ", title='" + title + '\'' +
                 ", state=" + state +
+                ", wip=" + wip +
                 ", targetBranch='" + targetBranch + '\'' +
                 ", sourceBranch='" + sourceBranch + '\'' +
                 ", author=" + author +

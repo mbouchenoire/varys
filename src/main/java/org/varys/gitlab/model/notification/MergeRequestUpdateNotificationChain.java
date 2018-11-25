@@ -22,6 +22,7 @@ public class MergeRequestUpdateNotificationChain extends MergeRequestUpdateNotif
                 new ClosedNotification(this.getMergeRequest(), previousVersion),
                 new StatusChangedNotification(this.getMergeRequest(), previousVersion),
                 new ChangedAssigneeNotification(this.getMergeRequest(), previousVersion),
+                new WipNotification(this.getMergeRequest(), previousVersion),
                 new NewCommitsNotification(this.getMergeRequest(), previousVersion),
                 new NewCommentsNotification(this.getMergeRequest(), previousVersion),
                 new PendingMergeRequestNotification(this.getMergeRequest(), previousVersion, hoursBeforeReminder)

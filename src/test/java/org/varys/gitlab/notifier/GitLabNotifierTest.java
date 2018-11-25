@@ -36,6 +36,7 @@ public class GitLabNotifierTest {
                         project.getId(),
                         "mr1",
                         state,
+                        false,
                         new Date(),
                         "target",
                         "source",
