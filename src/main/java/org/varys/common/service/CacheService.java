@@ -7,7 +7,11 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Optional;
 
 public class CacheService {
@@ -17,7 +21,7 @@ public class CacheService {
 
     private final File tempDirectoryModuleRoot;
 
-    CacheService(String moduleName) {
+    public CacheService(String moduleName) {
         final File tempDirectoryAppRoot = new File(TEMP_DIR_SYSTEM_ROOT, TEMP_DIR_APP_ROOT_NAME);
         this.tempDirectoryModuleRoot = new File(tempDirectoryAppRoot, moduleName);
         final boolean created = this.tempDirectoryModuleRoot.mkdirs();
@@ -33,6 +37,28 @@ public class CacheService {
 
     public File getRootDirectory() {
         return tempDirectoryModuleRoot;
+    }
+
+    public void clear() {
+        Log.warn("Clearing cache for module root '{}'...", this.tempDirectoryModuleRoot);
+
+        try {
+            Files.walkFileTree(this.tempDirectoryModuleRoot.toPath(), new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.delete(file);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    Files.delete(dir);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            Log.error(e, "Failed to clear module cache");
+        }
     }
 
     public void delete(String path) {

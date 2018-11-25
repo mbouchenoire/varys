@@ -24,6 +24,10 @@ public class GitLabNote {
         return id;
     }
 
+    public String getBody() {
+        return body;
+    }
+
     @Transient
     boolean isAutomaticComment() {
         if (body == null) {

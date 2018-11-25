@@ -5,10 +5,11 @@ import org.varys.common.model.GitConfig;
 import org.varys.git.GitService;
 import org.varys.gitlab.api.GitLabApiFactory;
 import org.varys.gitlab.model.GitLabApiConfig;
-import org.varys.gitlab.model.GitLabMergeRequestNotificationsFilter;
-import org.varys.gitlab.model.GitLabMergeRequestNotifierConfig;
-import org.varys.gitlab.model.GitLabMergeRequestNotifierNotificationsConfig;
-import org.varys.gitlab.notifier.GitLabMergeRequestNotifier;
+import org.varys.gitlab.model.GitLabNotificationsFilter;
+import org.varys.gitlab.model.GitLabNotifierConfig;
+import org.varys.gitlab.model.GitLabNotifierNotificationsConfig;
+import org.varys.gitlab.notifier.GitLabNotifier;
+import org.varys.jenkins.api.JenkinsApi;
 import org.varys.jenkins.model.JenkinsApiConfig;
 import org.varys.jenkins.model.JenkinsBuildNotifierConfig;
 import org.varys.jenkins.model.JenkinsBuildNotifierNotificationsConfig;
@@ -95,17 +96,19 @@ public class NotifierModuleFactory {
         final JenkinsBuildNotifierNotificationsConfig notifierNotificationsConfig =
                 new JenkinsBuildNotifierNotificationsConfig(periodSeconds, filtersConfig);
 
-        final JenkinsBuildNotifierConfig notifierConfig =
-                new JenkinsBuildNotifierConfig(apiConfig, notifierNotificationsConfig);
+        final JenkinsBuildNotifierConfig notifierConfig = new JenkinsBuildNotifierConfig(notifierNotificationsConfig);
+
+        final JenkinsApi jenkinsApi = new JenkinsApi(apiConfig);
 
         return new JenkinsBuildStatusNotifier(
+                jenkinsApi,
                 notifierConfig,
                 new GitService(gitConfig),
                 new CacheService(moduleName),
                 new NotificationService(moduleName));
     }
 
-    private static GitLabMergeRequestNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) {
+    private static GitLabNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) {
         Log.trace("Unused git config for GitLab module: {}", gitConfig);
 
         final String moduleName = moduleNode.get("name").asText();
@@ -123,16 +126,15 @@ public class NotifierModuleFactory {
 
         final JsonNode filtersNode = notificationsNode.get("filters");
         final boolean assignedToMeOnly = filtersNode.get("assigned_to_me_only").asBoolean(true);
-        final GitLabMergeRequestNotificationsFilter notificationsFilter =
-                new GitLabMergeRequestNotificationsFilter(assignedToMeOnly);
+        final GitLabNotificationsFilter notificationsFilter =
+                new GitLabNotificationsFilter(assignedToMeOnly);
 
-        final GitLabMergeRequestNotifierNotificationsConfig notificationsConfig =
-                new GitLabMergeRequestNotifierNotificationsConfig(periodSeconds, notificationsFilter);
+        final GitLabNotifierNotificationsConfig notificationsConfig =
+                new GitLabNotifierNotificationsConfig(periodSeconds, notificationsFilter);
 
-        final GitLabMergeRequestNotifierConfig notifierConfig =
-                new GitLabMergeRequestNotifierConfig(apiConfig, notificationsConfig);
+        final GitLabNotifierConfig notifierConfig = new GitLabNotifierConfig(notificationsConfig);
 
-        return new GitLabMergeRequestNotifier(
+        return new GitLabNotifier(
                 notifierConfig,
                 GitLabApiFactory.create(apiConfig),
                 new CacheService(moduleName),

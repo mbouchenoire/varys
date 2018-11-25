@@ -10,6 +10,7 @@ import java.beans.Transient;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -38,6 +39,24 @@ public class JenkinsBuild implements JenkinsBuildNumber, Notification, Linkable 
         this.url = null;
     }
 
+    public JenkinsBuild(
+            List<JsonNode> actions,
+            String fullDisplayName,
+            long duration,
+            String id,
+            long number,
+            JenkinsBuildResult result,
+            String url) {
+
+        this.actions = Collections.unmodifiableList(actions);
+        this.fullDisplayName = fullDisplayName;
+        this.duration = duration;
+        this.id = id;
+        this.number = number;
+        this.result = result.getCode();
+        this.url = url;
+    }
+
     public List<JsonNode> getActions() {
         return Collections.unmodifiableList(actions);
     }
@@ -60,7 +79,7 @@ public class JenkinsBuild implements JenkinsBuildNumber, Notification, Linkable 
     }
 
     public JenkinsBuildResult getResult() {
-        return JenkinsBuildResult.of(this.result);
+        return JenkinsBuildResult.ofCode(this.result);
     }
 
     @Transient
@@ -174,5 +193,18 @@ public class JenkinsBuild implements JenkinsBuildNumber, Notification, Linkable 
                 ", result='" + result + '\'' +
                 ", url='" + url + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JenkinsBuild that = (JenkinsBuild) o;
+        return Objects.equals(fullDisplayName, that.fullDisplayName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fullDisplayName);
     }
 }

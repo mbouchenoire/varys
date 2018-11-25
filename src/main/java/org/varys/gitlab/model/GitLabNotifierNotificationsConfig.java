@@ -1,12 +1,12 @@
 package org.varys.gitlab.model;
 
-public class GitLabMergeRequestNotifierNotificationsConfig {
+public class GitLabNotifierNotificationsConfig {
 
     private final long periodSeconds;
-    private final GitLabMergeRequestNotificationsFilter notificationsFilter;
+    private final GitLabNotificationsFilter notificationsFilter;
 
-    public GitLabMergeRequestNotifierNotificationsConfig(
-            long periodSeconds, GitLabMergeRequestNotificationsFilter notificationsFilter) {
+    public GitLabNotifierNotificationsConfig(
+            long periodSeconds, GitLabNotificationsFilter notificationsFilter) {
 
         this.periodSeconds = periodSeconds;
         this.notificationsFilter = notificationsFilter;
@@ -16,13 +16,13 @@ public class GitLabMergeRequestNotifierNotificationsConfig {
         return periodSeconds;
     }
 
-    public GitLabMergeRequestNotificationsFilter getNotificationsFilter() {
+    public GitLabNotificationsFilter getNotificationsFilter() {
         return notificationsFilter;
     }
 
     @Override
     public String toString() {
-        return "GitLabMergeRequestNotifierNotificationsConfig{" +
+        return "GitLabNotifierNotificationsConfig{" +
                 "periodSeconds=" + periodSeconds +
                 ", notificationsFilter=" + notificationsFilter +
                 '}';

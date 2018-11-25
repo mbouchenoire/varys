@@ -1,10 +1,10 @@
 package org.varys.gitlab.model;
 
-public class GitLabMergeRequestNotificationsFilter {
+public class GitLabNotificationsFilter {
 
     private final boolean assignedToMeOnly;
 
-    public GitLabMergeRequestNotificationsFilter(boolean assignedToMeOnly) {
+    public GitLabNotificationsFilter(boolean assignedToMeOnly) {
         this.assignedToMeOnly = assignedToMeOnly;
     }
 
@@ -14,7 +14,7 @@ public class GitLabMergeRequestNotificationsFilter {
 
     @Override
     public String toString() {
-        return "GitLabMergeRequestNotificationsFilter{" +
+        return "GitLabNotificationsFilter{" +
                 "assignedToMeOnly=" + assignedToMeOnly +
                 '}';
     }

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public final class NotificationService {
+public class NotificationService {
 
     private final String moduleName;
 

@@ -28,9 +28,7 @@ public final class OkHttpClientFactory {
     }
 
     public static OkHttpClient create() {
-
         try {
-
             return new OkHttpClient().newBuilder()
                     .sslSocketFactory(SSLUtils.createUnsecuredSocketFactory(), SSLUtils.TRUST_ALL_CERTS)
                     .hostnameVerifier((s, sslSession) -> true)

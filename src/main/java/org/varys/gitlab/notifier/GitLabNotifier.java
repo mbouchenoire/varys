@@ -7,8 +7,8 @@ import org.varys.common.service.NotifierModule;
 import org.varys.common.service.RestApiService;
 import org.varys.gitlab.api.GitLabApi;
 import org.varys.gitlab.model.GitLabMergeRequest;
-import org.varys.gitlab.model.GitLabMergeRequestNotifierConfig;
 import org.varys.gitlab.model.GitLabMergeRequestState;
+import org.varys.gitlab.model.GitLabNotifierConfig;
 import org.varys.gitlab.model.GitLabUser;
 import org.varys.gitlab.model.notification.MergeRequestUpdateNotificationChain;
 import org.varys.gitlab.model.notification.NewMergeRequestNotification;
@@ -21,16 +21,16 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class GitLabMergeRequestNotifier implements NotifierModule {
+public final class GitLabNotifier implements NotifierModule {
 
-    private GitLabMergeRequestNotifierConfig config;
+    private GitLabNotifierConfig config;
     private final GitLabApi gitLabApi;
     private final RestApiService restApiService;
     private final CacheService cacheService;
     private final NotificationService notificationService;
 
-    public GitLabMergeRequestNotifier(
-            GitLabMergeRequestNotifierConfig config,
+    public GitLabNotifier(
+            GitLabNotifierConfig config,
             GitLabApi gitLabApi,
             CacheService cacheService,
             NotificationService notificationService) {
@@ -181,7 +181,7 @@ public class GitLabMergeRequestNotifier implements NotifierModule {
 
     @Override
     public String toString() {
-        return "GitLabMergeRequestNotifier{" +
+        return "GitLabNotifier{" +
                 "gitLabApiV4=" + gitLabApi +
                 '}';
     }

@@ -23,7 +23,11 @@ public enum JenkinsBuildResult {
         this.notificationType = notificationType;
     }
 
-    static JenkinsBuildResult of(String code) {
+    public String getCode() {
+        return code;
+    }
+
+    static JenkinsBuildResult ofCode(String code) {
         return Arrays.stream(values())
                 .filter(result -> Objects.equals(result.code, code))
                 .findAny()

@@ -3,9 +3,9 @@ package org.varys.gitlab.model.notification;
 import org.varys.common.model.NotificationType;
 import org.varys.gitlab.model.GitLabMergeRequest;
 
-class MergedNotification extends MergeRequestUpdateNotification {
+public class MergedNotification extends MergeRequestUpdateNotification {
 
-    MergedNotification(GitLabMergeRequest mergeRequest, GitLabMergeRequest previousVersion) {
+    public MergedNotification(GitLabMergeRequest mergeRequest, GitLabMergeRequest previousVersion) {
         super(mergeRequest, previousVersion);
     }
 

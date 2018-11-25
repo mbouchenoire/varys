@@ -4,6 +4,7 @@ import org.varys.common.model.Linkable;
 import org.varys.common.model.Notification;
 import org.varys.gitlab.model.GitLabMergeRequest;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public abstract class MergeRequestNotification implements Notification {
@@ -45,5 +46,18 @@ public abstract class MergeRequestNotification implements Notification {
                 mergeRequest.getIdentifier(),
                 mergeRequest.getSourceBranch(), mergeRequest.getTargetBranch()
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MergeRequestNotification that = (MergeRequestNotification) o;
+        return Objects.equals(mergeRequest, that.mergeRequest);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mergeRequest);
     }
 }

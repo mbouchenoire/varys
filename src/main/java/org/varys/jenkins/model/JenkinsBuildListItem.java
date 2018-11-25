@@ -17,6 +17,11 @@ public class JenkinsBuildListItem implements JenkinsBuildNumber {
         this.url = null;
     }
 
+    public JenkinsBuildListItem(long number, String url) {
+        this.number = number;
+        this.url = url;
+    }
+
     @Override
     public long getNumber() {
         return number;

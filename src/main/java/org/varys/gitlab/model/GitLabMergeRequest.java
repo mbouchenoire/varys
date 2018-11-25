@@ -185,4 +185,17 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
                 ", url='" + url + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GitLabMergeRequest that = (GitLabMergeRequest) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

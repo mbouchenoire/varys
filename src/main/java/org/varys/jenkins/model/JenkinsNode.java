@@ -22,6 +22,18 @@ public class JenkinsNode {
         this.builds = Collections.emptyList();
     }
 
+    public JenkinsNode(
+            String name,
+            String displayName,
+            List<JenkinsNodeListItem> children,
+            List<JenkinsBuildListItem> builds) {
+
+        this.name = name;
+        this.displayName = displayName;
+        this.children = Collections.unmodifiableList(children);
+        this.builds = Collections.unmodifiableList(builds);
+    }
+
     public String getName() {
         return name;
     }

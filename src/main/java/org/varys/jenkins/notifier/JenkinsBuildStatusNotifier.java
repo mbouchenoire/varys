@@ -33,13 +33,14 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
     private final NotificationService notificationService;
 
     public JenkinsBuildStatusNotifier(
-            JenkinsBuildNotifierConfig config,
+            JenkinsApi jenkinsApi,
+            JenkinsBuildNotifierConfig notifierConfig,
             GitService gitService,
             CacheService cacheService,
             NotificationService notificationService) {
 
-        this.jenkinsApi = new JenkinsApi(config.getJenkinsApiConfig());
-        this.config = config;
+        this.jenkinsApi = jenkinsApi;
+        this.config = notifierConfig;
         this.restApiService = new RestApiService(cacheService, notificationService);
         this.gitService = gitService;
         this.cacheService = cacheService;

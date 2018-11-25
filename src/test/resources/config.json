@@ -1,0 +1,45 @@
+{
+  "logging": {
+    "level": "INFO",
+    "directory": "varys.log"
+  },
+  "git": {
+    "parent_directory": "/home/git"
+  },
+  "modules": [
+    {
+      "name": "jenkins",
+      "enabled": true,
+      "config": {
+        "jenkins_api": {
+          "base_url": "https://jenkins.mono-project.com",
+          "api_token": "<your_api_token>"
+        },
+        "notifications": {
+          "period": 30,
+          "filters": {
+            "local_branches_only": true,
+            "successful_builds": false
+          }
+        }
+      }
+    },
+    {
+      "name": "gitlab",
+      "enabled": true,
+      "config": {
+        "gitlab_api": {
+          "version": 3,
+          "base_url": "https://gitlab.com",
+          "private_token": "<your_private_token>"
+        },
+        "notifications": {
+          "period": 30,
+          "filters": {
+            "assigned_to_me_only": true
+          }
+        }
+      }
+    }
+  ]
+}
