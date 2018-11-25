@@ -117,10 +117,9 @@ public class NotifierModuleFactory {
         final JsonNode configNode = moduleNode.get("config");
 
         final JsonNode apiConfigNode = configNode.get("gitlab_api");
-        final int apiVersion = apiConfigNode.get("version").intValue();
         final String apiBaseUrl = apiConfigNode.get("base_url").asText();
         final String apiPrivateToken = apiConfigNode.get("private_token").asText();
-        final GitLabApiConfig apiConfig = new GitLabApiConfig(apiVersion, apiBaseUrl, apiPrivateToken);
+        final GitLabApiConfig apiConfig = new GitLabApiConfig(apiBaseUrl, apiPrivateToken);
 
         final JsonNode notificationsNode = configNode.get("notifications");
 

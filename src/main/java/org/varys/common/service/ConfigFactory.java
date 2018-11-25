@@ -2,9 +2,6 @@ package org.varys.common.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.varys.common.model.GitConfig;
 import org.varys.common.model.LoggingConfig;
 
@@ -17,10 +14,7 @@ import java.util.List;
 
 public final class ConfigFactory {
 
-    private static final ObjectMapper OBECT_MAPPER = new ObjectMapper()
-            .registerModule(new ParameterNamesModule())
-            .registerModule(new Jdk8Module())
-            .registerModule(new JavaTimeModule());
+    private static final ObjectMapper OBECT_MAPPER = new ObjectMapper();
 
     private ConfigFactory() {
         super();

@@ -4,9 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,10 +31,7 @@ public class CacheService {
             Log.debug("Created module temp directory: " + this.tempDirectoryModuleRoot.getAbsolutePath());
         }
 
-        this.objectMapper = new ObjectMapper()
-                .registerModule(new ParameterNamesModule())
-                .registerModule(new Jdk8Module())
-                .registerModule(new JavaTimeModule());
+        this.objectMapper = new ObjectMapper();
     }
 
     private File buildCacheFile(String path) {

@@ -29,7 +29,6 @@
       "enabled": true,
       "config": {
         "gitlab_api": {
-          "version": 3,
           "base_url": "https://gitlab.com",
           "private_token": "<your_private_token>"
         },
