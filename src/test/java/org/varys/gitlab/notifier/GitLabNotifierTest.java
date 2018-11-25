@@ -9,7 +9,7 @@ import org.varys.gitlab.model.GitLabMergeRequest;
 import org.varys.gitlab.model.GitLabMergeRequestListItem;
 import org.varys.gitlab.model.GitLabMergeRequestState;
 import org.varys.gitlab.model.GitLabNote;
-import org.varys.gitlab.model.GitLabNotificationsFilter;
+import org.varys.gitlab.model.GitLabNotificationsFilters;
 import org.varys.gitlab.model.GitLabNotifierConfig;
 import org.varys.gitlab.model.GitLabNotifierNotificationsConfig;
 import org.varys.gitlab.model.GitLabProject;
@@ -19,6 +19,7 @@ import org.varys.gitlab.model.notification.NewMergeRequestNotification;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -35,6 +36,7 @@ public class GitLabNotifierTest {
                         project.getId(),
                         "mr1",
                         state,
+                        new Date(),
                         "target",
                         "source",
                         author,
@@ -84,13 +86,17 @@ public class GitLabNotifierTest {
 
         final NotificationService notificationService = mock(NotificationService.class);
 
-        final GitLabNotifier notifier = new GitLabNotifier(
-                new GitLabNotifierConfig(new GitLabNotifierNotificationsConfig(
-                        10, new GitLabNotificationsFilter(true))),
-                gitLabApi,
-                cacheService,
-                notificationService
-        );
+        final GitLabNotifier notifier =
+                new GitLabNotifier(
+                        new GitLabNotifierConfig(
+                                new GitLabNotifierNotificationsConfig(
+                                        10,
+                                        new GitLabNotificationsFilters(true, 24))
+                        ),
+                        gitLabApi,
+                        cacheService,
+                        notificationService
+                );
 
         notifier.iterate();
 
@@ -113,7 +119,7 @@ public class GitLabNotifierTest {
                 .thenReturn(Optional.of(assignedToMaximeMerged));
 
         notifier.iterate();
-        verify(notificationService, times(1))
-                .send(new MergeRequestUpdateNotificationChain(assignedToMaximeMerged, assignedToMaxime));
+        verify(notificationService, times(1)).send(
+                new MergeRequestUpdateNotificationChain(assignedToMaximeMerged, assignedToMaxime, 24));
     }
 }

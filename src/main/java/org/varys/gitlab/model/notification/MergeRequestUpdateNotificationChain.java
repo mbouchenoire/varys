@@ -12,7 +12,9 @@ public class MergeRequestUpdateNotificationChain extends MergeRequestUpdateNotif
     private final String title;
     private final NotificationType notificationType;
 
-    public MergeRequestUpdateNotificationChain(GitLabMergeRequest mergeRequest, GitLabMergeRequest previousVersion) {
+    public MergeRequestUpdateNotificationChain(
+            GitLabMergeRequest mergeRequest, GitLabMergeRequest previousVersion, long hoursBeforeReminder) {
+
         super(mergeRequest, previousVersion);
 
         final Optional<MergeRequestUpdateNotification> optionalNotification = Stream.of(
@@ -21,7 +23,8 @@ public class MergeRequestUpdateNotificationChain extends MergeRequestUpdateNotif
                 new StatusChangedNotification(this.getMergeRequest(), previousVersion),
                 new ChangedAssigneeNotification(this.getMergeRequest(), previousVersion),
                 new NewCommitsNotification(this.getMergeRequest(), previousVersion),
-                new NewCommentsNotification(this.getMergeRequest(), previousVersion)
+                new NewCommentsNotification(this.getMergeRequest(), previousVersion),
+                new PendingMergeRequestNotification(this.getMergeRequest(), previousVersion, hoursBeforeReminder)
         )
         .filter(MergeRequestUpdateNotification::shouldNotify)
         .findFirst();

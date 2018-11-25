@@ -87,10 +87,7 @@ public final class GitLabNotifier implements NotifierModule {
                             notOpenedAnymoreCachedMergeRequest.getProject().getId(),
                             notOpenedAnymoreCachedMergeRequest.getId(),
                             notOpenedAnymoreCachedMergeRequest.getIid()
-                    ).map(latestVersion -> {
-                        this.notififyUpdate(latestVersion, notOpenedAnymoreCachedMergeRequest);
-                        return latestVersion;
-                    });
+                    ).map(latestVersion -> this.notififyUpdate(latestVersion, notOpenedAnymoreCachedMergeRequest));
                 })
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -104,21 +101,18 @@ public final class GitLabNotifier implements NotifierModule {
 
     private void notifyUserLiveMergeRequest(GitLabMergeRequest liveMergeRequest) {
         final GitLabMergeRequest mergeRequest = this.getCache(liveMergeRequest)
-                .map(cachedMergeRequest -> {
-                    this.notififyUpdate(liveMergeRequest, cachedMergeRequest);
-                    return liveMergeRequest;
-                })
+                .map(cachedMergeRequest -> this.notififyUpdate(liveMergeRequest, cachedMergeRequest))
                 .orElseGet(() -> {
                     Log.debug("Could not find a cached version of merge request: {}", liveMergeRequest);
                     this.notificationService.send(new NewMergeRequestNotification(liveMergeRequest));
-                    return liveMergeRequest;
+                    return liveMergeRequest.notified();
                 });
 
         this.cache(mergeRequest);
     }
 
     private boolean userFilter(GitLabMergeRequest mergeRequest) {
-        final boolean assignedToMeOnly = config.getNotificationsConfig().getNotificationsFilter().isAssignedToMeOnly();
+        final boolean assignedToMeOnly = config.getNotificationsConfig().getFilters().isAssignedToMeOnly();
 
         if (!assignedToMeOnly) {
             return true;
@@ -145,17 +139,22 @@ public final class GitLabNotifier implements NotifierModule {
         return Arrays.stream(array != null ? array : new File[0]);
     }
 
-    private void notififyUpdate(
+    private GitLabMergeRequest notififyUpdate(
             GitLabMergeRequest latestVersion,
             GitLabMergeRequest previousVersion) {
 
         Log.debug("Notifying differences for merge request: {}...", latestVersion.getIdentifier());
 
-        final MergeRequestUpdateNotificationChain updateNotification =
-                new MergeRequestUpdateNotificationChain(latestVersion, previousVersion);
+        final MergeRequestUpdateNotificationChain updateNotification = new MergeRequestUpdateNotificationChain(
+                latestVersion,
+                previousVersion,
+                this.config.getNotificationsConfig().getFilters().getHoursBeforeReminder());
 
         if (updateNotification.shouldNotify()) {
             this.notificationService.send(updateNotification);
+            return latestVersion.notified();
+        } else {
+            return latestVersion;
         }
     }
 

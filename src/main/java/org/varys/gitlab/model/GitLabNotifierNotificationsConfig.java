@@ -3,10 +3,10 @@ package org.varys.gitlab.model;
 public class GitLabNotifierNotificationsConfig {
 
     private final long periodSeconds;
-    private final GitLabNotificationsFilter notificationsFilter;
+    private final GitLabNotificationsFilters notificationsFilter;
 
     public GitLabNotifierNotificationsConfig(
-            long periodSeconds, GitLabNotificationsFilter notificationsFilter) {
+            long periodSeconds, GitLabNotificationsFilters notificationsFilter) {
 
         this.periodSeconds = periodSeconds;
         this.notificationsFilter = notificationsFilter;
@@ -16,7 +16,7 @@ public class GitLabNotifierNotificationsConfig {
         return periodSeconds;
     }
 
-    public GitLabNotificationsFilter getNotificationsFilter() {
+    public GitLabNotificationsFilters getFilters() {
         return notificationsFilter;
     }
 

@@ -1,7 +1,7 @@
 # Varys
 [![Build Status](https://travis-ci.org/mbouchenoire/varys.svg?branch=master)](https://travis-ci.org/mbouchenoire/varys)&nbsp;
 [![Mainainability](https://sonarcloud.io/api/project_badges/measure?project=mbouchenoire_varys&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=mbouchenoire_varys)&nbsp;
-[![Coverage Status](https://coveralls.io/repos/github/mbouchenoire/varys/badge.svg?branch=master)](https://coveralls.io/github/mbouchenoire/varys?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/mbouchenoire/varys/badge.svg)](https://coveralls.io/github/mbouchenoire/varys)
 
 **Varys** is a local process that crawls trough your dev environment (GitLab, Jenkins...) giving you instant feedback
 (via desktop notifications) on things that you care about. This (currently) includes:
@@ -11,7 +11,8 @@
   - assignee change,
   - new comments,
   - new commits.
-- remote build statuses of your local Git branches (configurable),
+- pending merge requests,
+- remote build statuses (of your local git branches),
 - services downtimes.
 
 ## Build & Run from sources

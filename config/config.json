@@ -36,7 +36,8 @@
         "notifications": {
           "period": 30,
           "filters": {
-            "assigned_to_me_only": true
+            "assigned_to_me_only": true,
+            "hours_before_reminder": 24
           }
         }
       }

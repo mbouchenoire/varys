@@ -5,7 +5,7 @@ import org.varys.common.model.GitConfig;
 import org.varys.git.GitService;
 import org.varys.gitlab.api.GitLabApiFactory;
 import org.varys.gitlab.model.GitLabApiConfig;
-import org.varys.gitlab.model.GitLabNotificationsFilter;
+import org.varys.gitlab.model.GitLabNotificationsFilters;
 import org.varys.gitlab.model.GitLabNotifierConfig;
 import org.varys.gitlab.model.GitLabNotifierNotificationsConfig;
 import org.varys.gitlab.notifier.GitLabNotifier;
@@ -24,6 +24,8 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class NotifierModuleFactory {
+
+    private static final int DEFAULT_HOURS_BEFORE_REMINDER = 24;
 
     private final GitConfig gitConfig;
     private final Map<String, BiFunction<JsonNode, GitConfig, NotifierModule>> moduleFactories;
@@ -126,8 +128,9 @@ public class NotifierModuleFactory {
 
         final JsonNode filtersNode = notificationsNode.get("filters");
         final boolean assignedToMeOnly = filtersNode.get("assigned_to_me_only").asBoolean(true);
-        final GitLabNotificationsFilter notificationsFilter =
-                new GitLabNotificationsFilter(assignedToMeOnly);
+        final long hoursBeforeReminder = filtersNode.get("hours_before_reminder").asLong(DEFAULT_HOURS_BEFORE_REMINDER);
+        final GitLabNotificationsFilters notificationsFilter =
+                new GitLabNotificationsFilters(assignedToMeOnly, hoursBeforeReminder);
 
         final GitLabNotifierNotificationsConfig notificationsConfig =
                 new GitLabNotifierNotificationsConfig(periodSeconds, notificationsFilter);

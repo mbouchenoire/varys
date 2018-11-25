@@ -12,6 +12,7 @@ import org.varys.gitlab.model.GitLabUser;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 
 import static org.junit.Assert.*;
 
@@ -34,6 +35,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.OPENED,
+                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -53,6 +55,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.OPENED,
+                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -74,6 +77,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.OPENED,
+                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -95,6 +99,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.OPENED,
+                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -114,6 +119,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.MERGED,
+                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -133,6 +139,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.CLOSED,
+                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -152,6 +159,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     "title",
                     GitLabMergeRequestState.MERGED,
+                    new Date(),
                     "targetBranch",
                     "sourceBranch",
                     GIT_LAB_USER_A,
@@ -168,62 +176,62 @@ public class MergeRequestUpdateNotificationTest {
 
     @Test
     public void shouldNotNotifyNoChange() {
-        assertFalse(new MergeRequestUpdateNotificationChain(MERGE_REQUEST, MERGE_REQUEST).shouldNotify());
+        assertFalse(new MergeRequestUpdateNotificationChain(MERGE_REQUEST, MERGE_REQUEST, 24).shouldNotify());
     }
 
     @Test
     public void shouldNotifyAddedCommit() {
-        assertTrue(new MergeRequestUpdateNotificationChain(ADDED_COMMIT, MERGE_REQUEST).shouldNotify());
+        assertTrue(new MergeRequestUpdateNotificationChain(ADDED_COMMIT, MERGE_REQUEST, 24).shouldNotify());
     }
 
     @Test
     public void shouldNotifyAddedComment() {
-        assertTrue(new MergeRequestUpdateNotificationChain(ADDED_COMMENT, MERGE_REQUEST).shouldNotify());
+        assertTrue(new MergeRequestUpdateNotificationChain(ADDED_COMMENT, MERGE_REQUEST, 24).shouldNotify());
     }
 
     @Test
     public void shouldNotifyChangedAssignee() {
-        assertTrue(new MergeRequestUpdateNotificationChain(OTHER_ASSIGNEE, MERGE_REQUEST).shouldNotify());
+        assertTrue(new MergeRequestUpdateNotificationChain(OTHER_ASSIGNEE, MERGE_REQUEST, 24).shouldNotify());
     }
 
     @Test
     public void shouldNotifyMerged() {
-        assertTrue(new MergeRequestUpdateNotificationChain(MERGED, MERGE_REQUEST).shouldNotify());
+        assertTrue(new MergeRequestUpdateNotificationChain(MERGED, MERGE_REQUEST, 24).shouldNotify());
     }
 
     @Test
     public void shouldNotifyClosed() {
-        assertTrue(new MergeRequestUpdateNotificationChain(CLOSED, MERGE_REQUEST).shouldNotify());
+        assertTrue(new MergeRequestUpdateNotificationChain(CLOSED, MERGE_REQUEST, 24).shouldNotify());
     }
 
     @Test
     public void getNotificationTitleMerged() {
-        assertTrue(new MergeRequestUpdateNotificationChain(MERGED, MERGE_REQUEST).getTitle().contains("merged"));
+        assertTrue(new MergeRequestUpdateNotificationChain(MERGED, MERGE_REQUEST, 24).getTitle().contains("merged"));
     }
 
     @Test
     public void getNotificationTitleClosed() {
-        assertTrue(new MergeRequestUpdateNotificationChain(CLOSED, MERGE_REQUEST).getTitle().contains("closed"));
+        assertTrue(new MergeRequestUpdateNotificationChain(CLOSED, MERGE_REQUEST, 24).getTitle().contains("closed"));
     }
 
     @Test
     public void getNotificationTypeMerged() {
         assertEquals(
                 NotificationType.INFO,
-                new MergeRequestUpdateNotificationChain(MERGED, MERGE_REQUEST).getType());
+                new MergeRequestUpdateNotificationChain(MERGED, MERGE_REQUEST, 24).getType());
     }
 
     @Test
     public void getNotificationTypeClosed() {
         assertEquals(
                 NotificationType.WARNING,
-                new MergeRequestUpdateNotificationChain(CLOSED, MERGE_REQUEST).getType());
+                new MergeRequestUpdateNotificationChain(CLOSED, MERGE_REQUEST, 24).getType());
     }
 
     @Test
     public void notifyMergedBeforeAddedComment() {
         assertTrue(
                 new MergeRequestUpdateNotificationChain(
-                        MERGED_WITH_COMMENT, MERGE_REQUEST).getTitle().contains("merged"));
+                        MERGED_WITH_COMMENT, MERGE_REQUEST, 24).getTitle().contains("merged"));
     }
 }

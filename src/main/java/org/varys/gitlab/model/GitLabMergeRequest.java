@@ -4,7 +4,7 @@ import org.varys.common.model.Linkable;
 
 import java.beans.Transient;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -16,6 +16,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
     private final GitLabProject project;
     private final String title;
     private final GitLabMergeRequestState state;
+    private final Date updatedAt;
     private final String targetBranch;
     private final String sourceBranch;
     private final GitLabUser author;
@@ -23,6 +24,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
     private final List<GitLabNote> notes;
     private final List<GitLabCommit> commits;
     private final String url;
+    private final Date lastNotificationDate;
 
     GitLabMergeRequest() {
         this.id = -1;
@@ -30,6 +32,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
         this.project = null;
         this.title = null;
         this.state = null;
+        this.updatedAt = null;
         this.targetBranch = null;
         this.sourceBranch = null;
         this.author = null;
@@ -37,6 +40,39 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
         this.notes = new ArrayList<>();
         this.commits = new ArrayList<>();
         this.url = null;
+        this.lastNotificationDate = null;
+    }
+
+    private GitLabMergeRequest(
+            long id,
+            long iid,
+            GitLabProject project,
+            String title,
+            GitLabMergeRequestState state,
+            Date updatedAt,
+            String targetBranch,
+            String sourceBranch,
+            GitLabUser author,
+            GitLabUser assignee,
+            List<GitLabNote> notes,
+            List<GitLabCommit> commits,
+            String url,
+            Date lastNotificationDate) {
+
+        this.id = id;
+        this.iid = iid;
+        this.project = project;
+        this.title = title;
+        this.state = state;
+        this.updatedAt = updatedAt;
+        this.targetBranch = targetBranch;
+        this.sourceBranch = sourceBranch;
+        this.author = author;
+        this.assignee = assignee;
+        this.notes = notes;
+        this.commits = commits;
+        this.url = url;
+        this.lastNotificationDate = lastNotificationDate;
     }
 
     public GitLabMergeRequest(
@@ -45,18 +81,20 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
             List<GitLabNote> notes,
             List<GitLabCommit> commits) {
 
-        this.id = mergeRequestListItem.getId();
-        this.iid = mergeRequestListItem.getIid();
-        this.project = project;
-        this.title = mergeRequestListItem.getTitle();
-        this.state = mergeRequestListItem.getState();
-        this.targetBranch = mergeRequestListItem.getTargetBranch();
-        this.sourceBranch = mergeRequestListItem.getSourceBranch();
-        this.author = mergeRequestListItem.getAuthor();
-        this.assignee = mergeRequestListItem.getAssignee();
-        this.notes = Collections.unmodifiableList(notes);
-        this.commits = Collections.unmodifiableList(commits);
-        this.url = mergeRequestListItem.getUrl();
+        this(mergeRequestListItem.getIid(),
+                mergeRequestListItem.getIid(),
+                project,
+                mergeRequestListItem.getTitle(),
+                mergeRequestListItem.getState(),
+                mergeRequestListItem.getUpdatedAt(),
+                mergeRequestListItem.getTargetBranch(),
+                mergeRequestListItem.getSourceBranch(),
+                mergeRequestListItem.getAuthor(),
+                mergeRequestListItem.getAssignee(),
+                notes,
+                commits,
+                mergeRequestListItem.getUrl(),
+                null);
     }
 
     @Override
@@ -79,6 +117,10 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
 
     public GitLabMergeRequestState getState() {
         return state;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
     @Transient
@@ -155,6 +197,29 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
 
     public String getUrl() {
         return url;
+    }
+
+    public Date getLastNotificationDate() {
+        return lastNotificationDate;
+    }
+
+    public GitLabMergeRequest notified() {
+        return new GitLabMergeRequest(
+                this.id,
+                this.iid,
+                this.project,
+                this.title,
+                this.state,
+                this.updatedAt,
+                this.targetBranch,
+                this.sourceBranch,
+                this.author,
+                this.assignee,
+                this.notes,
+                this.commits,
+                this.url,
+                new Date()
+        );
     }
 
     @Transient

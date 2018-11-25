@@ -3,6 +3,8 @@ package org.varys.gitlab.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GitLabMergeRequestListItem implements MergeRequest {
 
@@ -12,6 +14,8 @@ public class GitLabMergeRequestListItem implements MergeRequest {
     private final long projectId;
     private final String title;
     private final GitLabMergeRequestState state;
+    @JsonProperty("updated_at")
+    private final Date updatedAt;
     @JsonProperty("target_branch")
     private final String targetBranch;
     @JsonProperty("source_branch")
@@ -29,6 +33,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
         this.projectId = -1;
         this.title = null;
         this.state = null;
+        this.updatedAt = null;
         this.targetBranch = null;
         this.sourceBranch = null;
         this.author = null;
@@ -43,6 +48,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
             long projectId,
             String title,
             GitLabMergeRequestState state,
+            Date updatedAt,
             String targetBranch,
             String sourceBranch,
             GitLabUser author,
@@ -55,6 +61,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
         this.projectId = projectId;
         this.title = title;
         this.state = state;
+        this.updatedAt = updatedAt;
         this.targetBranch = targetBranch;
         this.sourceBranch = sourceBranch;
         this.author = author;
@@ -83,6 +90,10 @@ public class GitLabMergeRequestListItem implements MergeRequest {
 
     public GitLabMergeRequestState getState() {
         return state;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
     public String getTargetBranch() {

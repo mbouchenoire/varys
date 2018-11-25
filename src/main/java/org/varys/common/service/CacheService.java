@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +23,7 @@ public class CacheService {
     private static final String TEMP_DIR_APP_ROOT_NAME = "varys";
 
     private final File tempDirectoryModuleRoot;
+    private final ObjectMapper objectMapper;
 
     public CacheService(String moduleName) {
         final File tempDirectoryAppRoot = new File(TEMP_DIR_SYSTEM_ROOT, TEMP_DIR_APP_ROOT_NAME);
@@ -29,6 +33,11 @@ public class CacheService {
         if (created) {
             Log.debug("Created module temp directory: " + this.tempDirectoryModuleRoot.getAbsolutePath());
         }
+
+        this.objectMapper = new ObjectMapper()
+                .registerModule(new ParameterNamesModule())
+                .registerModule(new Jdk8Module())
+                .registerModule(new JavaTimeModule());
     }
 
     private File buildCacheFile(String path) {
@@ -99,8 +108,7 @@ public class CacheService {
                         cachedObjectFile.getAbsolutePath());
             }
 
-            final ObjectMapper mapper = new ObjectMapper();
-            final ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+            final ObjectWriter writer = this.objectMapper.writer(new DefaultPrettyPrinter());
             writer.writeValue(cachedObjectFile, object);
 
             Log.debug(
@@ -122,7 +130,7 @@ public class CacheService {
         Log.debug("Retreiving cached {} from file={}", cacheClass.getSimpleName(), file);
 
         try {
-            final T value = new ObjectMapper().readValue(file, cacheClass);
+            final T value = this.objectMapper.readValue(file, cacheClass);
             return Optional.ofNullable(value);
         } catch (IOException e) {
             Log.error(e, "Failed to retreive cached object (file: {})", file);
