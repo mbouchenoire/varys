@@ -3,7 +3,9 @@ package org.varys.common.service;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
 final class SSLUtils {
@@ -32,8 +34,9 @@ final class SSLUtils {
 
             };
 
-    static SSLSocketFactory createUnsecuredSocketFactory() throws NoSuchAlgorithmException {
-        final SSLContext sslContext = SSLContext.getDefault();
+    static SSLSocketFactory createUnsecuredSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
+        final SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, new X509TrustManager[]{SSLUtils.TRUST_ALL_CERTS}, new SecureRandom());
         return sslContext.getSocketFactory();
     }
 }

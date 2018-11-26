@@ -6,6 +6,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 public final class OkHttpClientFactory {
@@ -34,7 +35,7 @@ public final class OkHttpClientFactory {
                     .hostnameVerifier((s, sslSession) -> true)
                     .addInterceptor(OkHttpClientFactory::loggingInterceptor)
                     .build();
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
             Log.error(e, "Failed to create unsecured HTTP client, using default one instead");
 
             return new OkHttpClient().newBuilder()
