@@ -21,7 +21,7 @@ public class GitLabApiConfig {
     @Override
     public String toString() {
         return "GitLabApiConfig{" +
-                ", baseUrl='" + baseUrl + '\'' +
+                "baseUrl='" + baseUrl + '\'' +
                 ", privateToken='" + "<hidden>" + '\'' +
                 '}';
     }

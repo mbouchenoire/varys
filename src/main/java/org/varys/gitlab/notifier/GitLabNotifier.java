@@ -66,9 +66,12 @@ public final class GitLabNotifier implements NotifierModule {
 
         Log.debug("Processing {} (fetched) GitLab merge request(s) (opened)", liveMergeRequests.size());
 
+        final GitLabUser myself = this.gitLabApi.getUser();
+
         liveMergeRequests.parallelStream()
-                .filter(this::userFilter)
-                .forEach(this::notifyUserLiveMergeRequest);
+                .filter(mr -> this.userFilter(mr, myself))
+                .map(mr -> this.notifyUser(mr, myself))
+                .forEach(this::cache);
 
         final List<GitLabMergeRequest> cachedMergeRequests = this.getCachedMergeRequests();
 
@@ -87,7 +90,9 @@ public final class GitLabNotifier implements NotifierModule {
                             notOpenedAnymoreCachedMergeRequest.getProject().getId(),
                             notOpenedAnymoreCachedMergeRequest.getId(),
                             notOpenedAnymoreCachedMergeRequest.getIid()
-                    ).map(latestVersion -> this.notififyUpdate(latestVersion, notOpenedAnymoreCachedMergeRequest));
+                    ).map(latestVersion ->
+                            this.notififyPotentialUpdate(latestVersion, notOpenedAnymoreCachedMergeRequest, myself));
+
                 })
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -99,26 +104,33 @@ public final class GitLabNotifier implements NotifierModule {
         this.cacheService.delete(cachePath(mergeRequest));
     }
 
-    private void notifyUserLiveMergeRequest(GitLabMergeRequest liveMergeRequest) {
-        final GitLabMergeRequest mergeRequest = this.getCache(liveMergeRequest)
-                .map(cachedMergeRequest -> this.notififyUpdate(liveMergeRequest, cachedMergeRequest))
+    private GitLabMergeRequest notifyUser(GitLabMergeRequest liveMergeRequest, GitLabUser myself) {
+        return this.getCache(liveMergeRequest)
+                .map(cachedMergeRequest -> this.notififyPotentialUpdate(liveMergeRequest, cachedMergeRequest, myself))
                 .orElseGet(() -> {
                     Log.debug("Could not find a cached version of merge request: {}", liveMergeRequest);
-                    this.notificationService.send(new NewMergeRequestNotification(liveMergeRequest));
-                    return liveMergeRequest.notified();
-                });
 
-        this.cache(mergeRequest);
+                    if (liveMergeRequest.isWip()) {
+                        return liveMergeRequest; // We don't notify new WIP merge requests
+                    }
+
+                    if (liveMergeRequest.getAssignee().equals(myself)) {
+                        this.notificationService.send(new NewMergeRequestNotification(liveMergeRequest));
+                        return liveMergeRequest.notified();
+                    }
+
+                    return liveMergeRequest;
+                });
     }
 
-    private boolean userFilter(GitLabMergeRequest mergeRequest) {
-        final boolean assignedToMeOnly = config.getNotificationsConfig().getFilters().isAssignedToMeOnly();
+    private boolean userFilter(GitLabMergeRequest mergeRequest, GitLabUser myself) {
+        final boolean assignedToMeOnly = config.getNotificationsConfig().getFilters().isInvolvingMyselfOnly();
 
         if (!assignedToMeOnly) {
             return true;
         }
 
-        return mergeRequest.getAssignee().getId() == this.gitLabApi.getUser().map(GitLabUser::getId).orElse(-1L);
+        return mergeRequest.isRelevantUser(myself);
     }
 
     private List<GitLabMergeRequest> getCachedMergeRequests() {
@@ -139,15 +151,17 @@ public final class GitLabNotifier implements NotifierModule {
         return Arrays.stream(array != null ? array : new File[0]);
     }
 
-    private GitLabMergeRequest notififyUpdate(
+    private GitLabMergeRequest notififyPotentialUpdate(
             GitLabMergeRequest latestVersion,
-            GitLabMergeRequest previousVersion) {
+            GitLabMergeRequest previousVersion,
+            GitLabUser myself) {
 
         Log.debug("Notifying differences for merge request: {}...", latestVersion.getIdentifier());
 
         final MergeRequestUpdateNotificationChain updateNotification = new MergeRequestUpdateNotificationChain(
                 latestVersion,
                 previousVersion,
+                myself,
                 this.config.getNotificationsConfig().getFilters().getHoursBeforeReminder());
 
         if (updateNotification.shouldNotify()) {
@@ -181,7 +195,7 @@ public final class GitLabNotifier implements NotifierModule {
     @Override
     public String toString() {
         return "GitLabNotifier{" +
-                "gitLabApiV4=" + gitLabApi +
+                "gitLabApi=" + gitLabApi +
                 '}';
     }
 }

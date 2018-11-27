@@ -2,16 +2,23 @@ package org.varys.gitlab.model.notification;
 
 import org.varys.common.model.NotificationType;
 import org.varys.gitlab.model.GitLabMergeRequest;
+import org.varys.gitlab.model.GitLabUser;
 
 public class WipNotification extends MergeRequestUpdateNotification {
 
-    public WipNotification(GitLabMergeRequest mergeRequest, GitLabMergeRequest previousVersion) {
+    private final GitLabUser myself;
+
+    WipNotification(GitLabMergeRequest mergeRequest, GitLabMergeRequest previousVersion, GitLabUser myself) {
         super(mergeRequest, previousVersion);
+        this.myself = myself;
     }
 
     @Override
     public boolean shouldNotify() {
-        return this.getMergeRequest().isWip() != getPreviousVersion().isWip();
+        final GitLabMergeRequest mr = this.getMergeRequest();
+        final GitLabMergeRequest previousVersion = getPreviousVersion();
+
+        return mr.getAssignee().equals(myself) && mr.isWip() != previousVersion.isWip();
     }
 
     @Override

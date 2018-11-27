@@ -16,6 +16,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
     private final GitLabProject project;
     private final String title;
     private final GitLabMergeRequestState state;
+    private final GitLabMergeStatus mergeStatus;
     private final boolean wip;
     private final Date updatedAt;
     private final String targetBranch;
@@ -33,6 +34,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
         this.project = null;
         this.title = null;
         this.state = null;
+        this.mergeStatus = null;
         this.wip = false;
         this.updatedAt = null;
         this.targetBranch = null;
@@ -51,6 +53,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
             GitLabProject project,
             String title,
             GitLabMergeRequestState state,
+            GitLabMergeStatus mergeStatus,
             boolean wip,
             Date updatedAt,
             String targetBranch,
@@ -67,6 +70,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
         this.project = project;
         this.title = title;
         this.state = state;
+        this.mergeStatus = mergeStatus;
         this.wip = wip;
         this.updatedAt = updatedAt;
         this.targetBranch = targetBranch;
@@ -90,6 +94,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
                 project,
                 mergeRequestListItem.getTitle(),
                 mergeRequestListItem.getState(),
+                mergeRequestListItem.getMergeStatus(),
                 mergeRequestListItem.isWip(),
                 mergeRequestListItem.getUpdatedAt(),
                 mergeRequestListItem.getTargetBranch(),
@@ -122,6 +127,15 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
 
     public GitLabMergeRequestState getState() {
         return state;
+    }
+
+    public GitLabMergeStatus getMergeStatus() {
+        return mergeStatus;
+    }
+
+    @Transient
+    public boolean hasConflict() {
+        return mergeStatus != null && mergeStatus.equals(GitLabMergeStatus.CANNOT_BE_MERGED);
     }
 
     public boolean isWip() {
@@ -161,6 +175,11 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
 
     public GitLabUser getAssignee() {
         return assignee;
+    }
+
+    @Transient
+    public boolean isRelevantUser(GitLabUser user) {
+        return this.getAssignee().equals(user) || this.getAuthor().equals(user);
     }
 
     public boolean sameAssignee(GitLabMergeRequest mergeRequest) {
@@ -219,6 +238,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
                 this.project,
                 this.title,
                 this.state,
+                this.mergeStatus,
                 this.wip,
                 this.updatedAt,
                 this.targetBranch,
@@ -251,13 +271,14 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
                 ", project=" + project +
                 ", title='" + title + '\'' +
                 ", state=" + state +
+                ", mergeStatus=" + mergeStatus +
                 ", wip=" + wip +
                 ", targetBranch='" + targetBranch + '\'' +
                 ", sourceBranch='" + sourceBranch + '\'' +
                 ", author=" + author +
                 ", assignee=" + assignee +
-                ", notes=" + notes +
-                ", commits=" + commits +
+                ", notes=" + notes.size() +
+                ", commits=" + commits.size()+
                 ", url='" + url + '\'' +
                 '}';
     }

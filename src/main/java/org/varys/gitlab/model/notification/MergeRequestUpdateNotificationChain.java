@@ -2,6 +2,7 @@ package org.varys.gitlab.model.notification;
 
 import org.varys.common.model.NotificationType;
 import org.varys.gitlab.model.GitLabMergeRequest;
+import org.varys.gitlab.model.GitLabUser;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -13,19 +14,23 @@ public class MergeRequestUpdateNotificationChain extends MergeRequestUpdateNotif
     private final NotificationType notificationType;
 
     public MergeRequestUpdateNotificationChain(
-            GitLabMergeRequest mergeRequest, GitLabMergeRequest previousVersion, long hoursBeforeReminder) {
+            GitLabMergeRequest mergeRequest,
+            GitLabMergeRequest previousVersion,
+            GitLabUser myself,
+            long hoursBeforeReminder) {
 
         super(mergeRequest, previousVersion);
 
         final Optional<MergeRequestUpdateNotification> optionalNotification = Stream.of(
-                new MergedNotification(this.getMergeRequest(), previousVersion),
-                new ClosedNotification(this.getMergeRequest(), previousVersion),
-                new StatusChangedNotification(this.getMergeRequest(), previousVersion),
-                new ChangedAssigneeNotification(this.getMergeRequest(), previousVersion),
-                new WipNotification(this.getMergeRequest(), previousVersion),
-                new NewCommitsNotification(this.getMergeRequest(), previousVersion),
-                new NewCommentsNotification(this.getMergeRequest(), previousVersion),
-                new PendingMergeRequestNotification(this.getMergeRequest(), previousVersion, hoursBeforeReminder)
+                new MergedNotification(mergeRequest, previousVersion, myself),
+                new ClosedNotification(mergeRequest, previousVersion),
+                new StatusChangedNotification(mergeRequest, previousVersion),
+                new ChangedAssigneeNotification(mergeRequest, previousVersion),
+                new WipNotification(mergeRequest, previousVersion, myself),
+                new ConflictedMergeRequestNotification(mergeRequest, previousVersion, myself),
+                new NewCommitsNotification(mergeRequest, previousVersion, myself),
+                new NewCommentsNotification(mergeRequest, previousVersion, myself),
+                new PendingMergeRequestNotification(mergeRequest, previousVersion, hoursBeforeReminder)
         )
         .filter(MergeRequestUpdateNotification::shouldNotify)
         .findFirst();

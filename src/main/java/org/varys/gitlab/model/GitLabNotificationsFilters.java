@@ -2,16 +2,16 @@ package org.varys.gitlab.model;
 
 public class GitLabNotificationsFilters {
 
-    private final boolean assignedToMeOnly;
+    private final boolean involvingMyselfOnly;
     private final long hoursBeforeReminder;
 
-    public GitLabNotificationsFilters(boolean assignedToMeOnly, long hoursBeforeReminder) {
-        this.assignedToMeOnly = assignedToMeOnly;
+    public GitLabNotificationsFilters(boolean involvingMyselfOnly, long hoursBeforeReminder) {
+        this.involvingMyselfOnly = involvingMyselfOnly;
         this.hoursBeforeReminder = hoursBeforeReminder;
     }
 
-    public boolean isAssignedToMeOnly() {
-        return assignedToMeOnly;
+    public boolean isInvolvingMyselfOnly() {
+        return involvingMyselfOnly;
     }
 
     public long getHoursBeforeReminder() {
@@ -21,7 +21,7 @@ public class GitLabNotificationsFilters {
     @Override
     public String toString() {
         return "GitLabNotificationsFilters{" +
-                "assignedToMeOnly=" + assignedToMeOnly +
+                "involvingMyselfOnly=" + involvingMyselfOnly +
                 ", hoursBeforeReminder=" + hoursBeforeReminder +
                 '}';
     }

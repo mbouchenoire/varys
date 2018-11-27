@@ -27,7 +27,7 @@ public interface NotifierModule extends Callable<Void> {
                     this.getName(), between.getSeconds());
         }, 0, this.getPeriodSeconds(), TimeUnit.SECONDS);
 
-        Log.info("Successfuly started Jenkins module");
+        Log.info("Successfuly started {} module", this.getName());
 
     return null;
     }

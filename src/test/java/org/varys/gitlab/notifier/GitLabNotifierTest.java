@@ -8,6 +8,7 @@ import org.varys.gitlab.model.GitLabCommit;
 import org.varys.gitlab.model.GitLabMergeRequest;
 import org.varys.gitlab.model.GitLabMergeRequestListItem;
 import org.varys.gitlab.model.GitLabMergeRequestState;
+import org.varys.gitlab.model.GitLabMergeStatus;
 import org.varys.gitlab.model.GitLabNote;
 import org.varys.gitlab.model.GitLabNotificationsFilters;
 import org.varys.gitlab.model.GitLabNotifierConfig;
@@ -36,6 +37,7 @@ public class GitLabNotifierTest {
                         project.getId(),
                         "mr1",
                         state,
+                        GitLabMergeStatus.CAN_BE_MERGED,
                         false,
                         new Date(),
                         "target",
@@ -63,7 +65,7 @@ public class GitLabNotifierTest {
 
         final GitLabApi gitLabApi = mock(GitLabApi.class);
         when(gitLabApi.isOnline()).thenReturn(true);
-        when(gitLabApi.getUser()).thenReturn(Optional.of(userMaxime));
+        when(gitLabApi.getUser()).thenReturn(userMaxime);
 
         final GitLabProject project = new GitLabProject(1, "pro1", "pro/pro1");
 
@@ -121,6 +123,6 @@ public class GitLabNotifierTest {
 
         notifier.iterate();
         verify(notificationService, times(1)).send(
-                new MergeRequestUpdateNotificationChain(assignedToMaximeMerged, assignedToMaxime, 24));
+                new MergeRequestUpdateNotificationChain(assignedToMaximeMerged, assignedToMaxime, userMaxime, 24));
     }
 }

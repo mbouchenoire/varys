@@ -2,17 +2,23 @@ package org.varys.gitlab.model.notification;
 
 import org.varys.common.model.NotificationType;
 import org.varys.gitlab.model.GitLabMergeRequest;
+import org.varys.gitlab.model.GitLabUser;
 
 class NewCommitsNotification extends MergeRequestUpdateNotification {
 
-    NewCommitsNotification(GitLabMergeRequest mergeRequest, GitLabMergeRequest previousVersion) {
+    private final GitLabUser myself;
+
+    NewCommitsNotification(GitLabMergeRequest mergeRequest, GitLabMergeRequest previousVersion, GitLabUser myself) {
         super(mergeRequest, previousVersion);
+        this.myself = myself;
     }
 
     @Override
     public boolean shouldNotify() {
-        return !this.getMergeRequest().isWip()
-                && this.getMergeRequest().addedCommitsCount(this.getPreviousVersion()) > 0;
+        final GitLabMergeRequest mr = this.getMergeRequest();
+        final GitLabMergeRequest previousVersion = this.getPreviousVersion();
+
+        return mr.getAssignee().equals(myself) && !mr.isWip() && mr.addedCommitsCount(previousVersion) > 0;
     }
 
     @Override
