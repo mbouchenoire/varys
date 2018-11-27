@@ -10,6 +10,7 @@ import org.varys.gitlab.model.GitLabMergeRequestState;
 import org.varys.gitlab.model.GitLabNote;
 import org.varys.gitlab.model.GitLabProject;
 import org.varys.gitlab.model.GitLabUser;
+import org.varys.gitlab.model.GitLabVersion;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -34,6 +35,30 @@ public class GitLabApiV4 implements GitLabApi {
 
         this.gitLabApiV4Retrofit = retrofit.create(GitLabApiV4Retrofit.class);
         this.apiConfig = apiConfig;
+    }
+
+    @Override
+    public boolean isCompatible() {
+        try {
+            final Response<GitLabVersion> response =
+                    this.gitLabApiV4Retrofit.getVersion(this.apiConfig.getPrivateToken()).execute();
+
+            if (!response.isSuccessful()) {
+                return false;
+            }
+
+            final GitLabVersion version = response.body();
+
+            assert version != null;
+
+            if (version.getMajor() == 9) {
+                return version.getMinor() >= 5;
+            } else {
+                return version.getMajor() >= 10;
+            }
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     @Override
