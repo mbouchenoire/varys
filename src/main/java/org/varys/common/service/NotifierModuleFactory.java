@@ -28,13 +28,15 @@ public class NotifierModuleFactory {
     private static final int DEFAULT_HOURS_BEFORE_REMINDER = 24;
 
     private final GitConfig gitConfig;
+    private final GitLabApiFactory gitLabApiFactory;
     private final Map<String, BiFunction<JsonNode, GitConfig, NotifierModule>> moduleFactories;
 
-    public NotifierModuleFactory(GitConfig gitConfig) {
+    public NotifierModuleFactory(GitConfig gitConfig, GitLabApiFactory gitLabApiFactory) {
         this.gitConfig = gitConfig;
+        this.gitLabApiFactory = gitLabApiFactory;
         this.moduleFactories = new HashMap<>();
-        this.moduleFactories.put("jenkins", NotifierModuleFactory::createJenkins);
-        this.moduleFactories.put("gitlab", NotifierModuleFactory::createGitLab);
+        this.moduleFactories.put("jenkins", this::createJenkins);
+        this.moduleFactories.put("gitlab", this::createGitLab);
     }
 
     private boolean isEnabled(JsonNode moduleNode) {
@@ -76,7 +78,7 @@ public class NotifierModuleFactory {
         return Optional.of(module);
     }
 
-    private static JenkinsBuildStatusNotifier createJenkins(JsonNode moduleNode, GitConfig gitConfig) {
+    private JenkinsBuildStatusNotifier createJenkins(JsonNode moduleNode, GitConfig gitConfig) {
         final String moduleName = moduleNode.get("name").asText();
         final JsonNode configNode = moduleNode.get("config");
 
@@ -110,7 +112,7 @@ public class NotifierModuleFactory {
                 new NotificationService(moduleName));
     }
 
-    private static GitLabNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) {
+    private GitLabNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) {
         Log.trace("Unused git config for GitLab module: {}", gitConfig);
 
         final String moduleName = moduleNode.get("name").asText();
@@ -138,7 +140,7 @@ public class NotifierModuleFactory {
 
         return new GitLabNotifier(
                 notifierConfig,
-                GitLabApiFactory.create(apiConfig),
+                this.gitLabApiFactory.create(apiConfig),
                 new CacheService(moduleName),
                 new NotificationService(moduleName));
     }

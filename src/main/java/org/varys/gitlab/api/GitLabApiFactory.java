@@ -3,13 +3,9 @@ package org.varys.gitlab.api;
 import org.varys.common.service.Log;
 import org.varys.gitlab.model.GitLabApiConfig;
 
-public final class GitLabApiFactory {
+public class GitLabApiFactory {
 
-    private GitLabApiFactory() {
-        super();
-    }
-
-    public static GitLabApi create(GitLabApiConfig apiConfig) {
+    public GitLabApi create(GitLabApiConfig apiConfig) {
         final GitLabApi apiv3 = new GitLabApiV3(apiConfig);
         final GitLabApi apiv4 = new GitLabApiV4(apiConfig);
 

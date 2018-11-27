@@ -10,6 +10,7 @@ import org.varys.common.service.NotificationService;
 import org.varys.common.service.NotifierModule;
 import org.varys.common.service.NotifierModuleFactory;
 import org.varys.common.service.VarysTrayIcon;
+import org.varys.gitlab.api.GitLabApiFactory;
 
 import java.awt.*;
 import java.io.File;
@@ -33,7 +34,8 @@ public class App {
         final int threadPoolSize = ConfigFactory.getThreadPoolSize(configFile);
 
         final GitConfig gitConfig = ConfigFactory.createGitConfig(configFile);
-        final NotifierModuleFactory notifierModuleFactory = new NotifierModuleFactory(gitConfig);
+        final GitLabApiFactory gitLabApiFactory = new GitLabApiFactory();
+        final NotifierModuleFactory notifierModuleFactory = new NotifierModuleFactory(gitConfig, gitLabApiFactory);
         final Collection<JsonNode> moduleNodes = ConfigFactory.findModuleNodes(configFile);
         final Collection<NotifierModule> notifierModules = notifierModuleFactory.createAll(moduleNodes);
 

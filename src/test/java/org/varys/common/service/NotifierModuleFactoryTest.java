@@ -3,6 +3,7 @@ package org.varys.common.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.varys.common.model.GitConfig;
+import org.varys.gitlab.api.GitLabApiFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,9 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class NotifierModuleFactoryTest {
 
@@ -26,7 +30,10 @@ public class NotifierModuleFactoryTest {
         final GitConfig gitConfig = ConfigFactory.createGitConfig(this.configFile);
         final Collection<JsonNode> moduleNodes = ConfigFactory.findModuleNodes(configFile);
 
-        final Collection<NotifierModule> modules = new NotifierModuleFactory(gitConfig).createAll(moduleNodes);
+        final GitLabApiFactory gitLabApiFactory = mock(GitLabApiFactory.class);
+        when(gitLabApiFactory.create(any())).thenReturn(any());
+
+        final Collection<NotifierModule> modules = new NotifierModuleFactory(gitConfig, gitLabApiFactory).createAll(moduleNodes);
         assertEquals(2, modules.size());
 
         assertTrue(modules.stream()
