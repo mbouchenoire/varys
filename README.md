@@ -37,15 +37,6 @@ Varys will search for `.git` directories as deep as 3 levels below.
 #### Jenkins module (`modules[name=jenkins].config`)
 - `jenkins_api.api_token`: You can obtain your Jenkins API token using
  [this procedure](https://stackoverflow.com/questions/45466090/how-to-get-the-api-token-for-jenkins) ;
-- `notifications.period`: The time (in seconds) between each notification process ;
-- `notifications.filters.local_branches_only`: `true` if you want to receive notifications only
- for builds regarding your local Git branches ;
-- `notifications.filters.sucessful_builds`: `false` if you don't want to receive notifications
-for successful builds.
 
 #### GitLab module (`modules[name=gitlab].config`)
-- `gitlab_api.version`: `4` since GitLab version 9.0, `3` before that ;
 - `gitlab_api.private_token`: You can obtain your GitLab personal access token using [this procedure](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) ;
-- `notifications.period`: The time (in seconds) between each notification process ;
-- `notifications.filters.assigned_to_me_only`: `true` if you want to receive notifications only
- for merge requests assigned to yourself.

@@ -9,7 +9,7 @@ public class LoggingConfig {
 
     public LoggingConfig(String loggingDirectory, String level) {
         this.loggingDirectory = loggingDirectory;
-        this.loggingLevel = Level.valueOf(level);
+        this.loggingLevel = Level.valueOf(level.toUpperCase());
     }
 
     public String getLoggingDirectory() {

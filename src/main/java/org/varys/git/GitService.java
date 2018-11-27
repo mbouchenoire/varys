@@ -6,10 +6,10 @@ import org.varys.common.model.GitConfig;
 import org.varys.common.service.Log;
 import org.varys.git.model.GitRepository;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,12 +42,12 @@ public class GitService {
     }
 
     private Collection<GitRepository> findLocalRepositories() {
-        final String rootDirectoryPath = this.config.getParentDirectory();
+        final File rootDirectory = this.config.getParentDirectory();
 
         final BiPredicate<Path, BasicFileAttributes> isGitDirectory =
                 (filePath, fileAttr) -> filePath.endsWith(".git");
 
-        try (Stream<Path> pathStream = Files.find(Paths.get(rootDirectoryPath), MAX_DEPTH, isGitDirectory)) {
+        try (Stream<Path> pathStream = Files.find(rootDirectory.toPath(), MAX_DEPTH, isGitDirectory)) {
             return pathStream
                     .map(GitService::toRepository)
                     .filter(Optional::isPresent)

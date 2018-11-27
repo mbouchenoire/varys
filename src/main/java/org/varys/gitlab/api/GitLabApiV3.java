@@ -1,5 +1,6 @@
 package org.varys.gitlab.api;
 
+import org.apache.http.HttpStatus;
 import org.varys.common.service.Log;
 import org.varys.common.service.OkHttpClientFactory;
 import org.varys.gitlab.model.GitLabApiConfig;
@@ -39,12 +40,25 @@ public class GitLabApiV3 implements GitLabApi {
     }
 
     @Override
+    public boolean isAuthorized() {
+        try {
+            final Response<GitLabVersion> response =
+                    this.gitLabApiV3Retrofit.getVersion(this.apiConfig.getPrivateToken()).execute();
+
+            return response.code() != HttpStatus.SC_GONE && response.code() != HttpStatus.SC_UNAUTHORIZED;
+        } catch (IOException e) {
+            Log.error(e, "Authentication query agains't GitLab v3 API failed");
+            return false;
+        }
+    }
+
+    @Override
     public boolean isCompatible() {
         try {
             final Response<GitLabVersion> response =
                     this.gitLabApiV3Retrofit.getVersion(this.apiConfig.getPrivateToken()).execute();
 
-            return response.isSuccessful();
+            return response.code() != HttpStatus.SC_GONE;
         } catch (IOException e) {
             return false;
         }

@@ -6,8 +6,12 @@ import org.varys.gitlab.model.GitLabApiConfig;
 public class GitLabApiFactory {
 
     public GitLabApi create(GitLabApiConfig apiConfig) {
-        final GitLabApi apiv3 = new GitLabApiV3(apiConfig);
-        final GitLabApi apiv4 = new GitLabApiV4(apiConfig);
+        final GitLabApiV3 apiv3 = new GitLabApiV3(apiConfig);
+        final GitLabApiV4 apiv4 = new GitLabApiV4(apiConfig);
+
+        if (!apiv3.isAuthorized() && !apiv4.isAuthorized()) {
+            throw new IllegalArgumentException("Failed to authenticate agains't GitLab API (verify your private token)");
+        }
 
         if (apiv3.isCompatible()) {
             Log.info("Using compatible GitLab API v3");
@@ -16,8 +20,7 @@ public class GitLabApiFactory {
             Log.info("GitLab API v3 is not compatible, using compatible API v4");
             return apiv4;
         } else {
-            Log.error("Cannot find compatible GitLab API version");
-            throw new UnsupportedOperationException("Non-compatible GitLab API version");
+            throw new UnsupportedOperationException("Cannot find compatible GitLab API version");
         }
     }
 }

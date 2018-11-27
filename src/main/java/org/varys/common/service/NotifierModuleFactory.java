@@ -23,9 +23,19 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import static org.varys.common.service.ConfigFactory.*;
+
 public class NotifierModuleFactory {
 
+    private static final String EMPTY_STRING = "<empty>";
+
+    private static final int DEFAULT_NOTIFICATION_PERIOD = 30;
+
+    private static final boolean DEFAULT_LOCAL_BRANCH_ONLY_FILTER = true;
     private static final int DEFAULT_HOURS_BEFORE_REMINDER = 24;
+
+    private static final boolean DEFAULT_SUCCESSFUL_BUILD_FILTER = false;
+    private static final boolean DEFAULT_ASSIGNED_TO_ME_ONLY_FILTER = true;
 
     private final GitConfig gitConfig;
     private final GitLabApiFactory gitLabApiFactory;
@@ -79,21 +89,20 @@ public class NotifierModuleFactory {
     }
 
     private JenkinsBuildStatusNotifier createJenkins(JsonNode moduleNode, GitConfig gitConfig) {
-        final String moduleName = moduleNode.get("name").asText();
-        final JsonNode configNode = moduleNode.get("config");
+        final String moduleName = getString(moduleNode, "name", "jenkins");
 
-        final JsonNode jenkinsApiConfigNode = configNode.get("jenkins_api");
-        final String apiBaseUrl = jenkinsApiConfigNode.get("base_url").asText();
-        final String apiToken = jenkinsApiConfigNode.get("api_token").asText();
+        final String apiBaseUrl = getString(moduleNode, "config.jenkins_api.base_url", EMPTY_STRING);
+        final String apiToken = getString(moduleNode, "config.jenkins_api.api_token", EMPTY_STRING);
         final JenkinsApiConfig apiConfig = new JenkinsApiConfig(apiBaseUrl, apiToken);
 
-        final JsonNode notificationsConfigNode = configNode.get("notifications");
+        final long periodSeconds = getLong(moduleNode, "config.notifications.period", DEFAULT_NOTIFICATION_PERIOD);
 
-        final long periodSeconds = notificationsConfigNode.get("period").asLong();
+        final boolean localBranchesOnly = getBoolean(
+                moduleNode,"config.notifications.filters.local_branches_only", DEFAULT_LOCAL_BRANCH_ONLY_FILTER);
 
-        final JsonNode notificationsFiltersConfigNode = notificationsConfigNode.get("filters");
-        final boolean localBranchesOnly = notificationsFiltersConfigNode.get("local_branches_only").asBoolean();
-        final boolean successfulBuilds = notificationsFiltersConfigNode.get("successful_builds").asBoolean();
+        final boolean successfulBuilds = getBoolean(
+                moduleNode, "config.notifications.filters.successful_builds", DEFAULT_SUCCESSFUL_BUILD_FILTER);
+
         final JenkinsBuildNotifierNotificationsFiltersConfig filtersConfig =
                 new JenkinsBuildNotifierNotificationsFiltersConfig(localBranchesOnly, successfulBuilds);
 
@@ -115,23 +124,21 @@ public class NotifierModuleFactory {
     private GitLabNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) {
         Log.trace("Unused git config for GitLab module: {}", gitConfig);
 
-        final String moduleName = moduleNode.get("name").asText();
-        final JsonNode configNode = moduleNode.get("config");
+        final String moduleName = getString(moduleNode, "name", "gitlab");
 
-        final JsonNode apiConfigNode = configNode.get("gitlab_api");
-        final String apiBaseUrl = apiConfigNode.get("base_url").asText();
-        final String apiPrivateToken = apiConfigNode.get("private_token").asText();
+        final String apiBaseUrl = getString(moduleNode, "config.gitlab_api.base_url", EMPTY_STRING);
+        final String apiPrivateToken = getString(moduleNode, "config.gitlab_api.private_token", EMPTY_STRING);
         final GitLabApiConfig apiConfig = new GitLabApiConfig(apiBaseUrl, apiPrivateToken);
 
-        final JsonNode notificationsNode = configNode.get("notifications");
+        final long periodSeconds = getLong(moduleNode, "config.notifications.period", DEFAULT_NOTIFICATION_PERIOD);
 
-        final long periodSeconds = notificationsNode.get("period").asLong();
+        final boolean assignedToMeOnly = getBoolean(
+                moduleNode, "config.notifications.filters.assigned_to_me_only", DEFAULT_ASSIGNED_TO_ME_ONLY_FILTER);
 
-        final JsonNode filtersNode = notificationsNode.get("filters");
-        final boolean assignedToMeOnly = filtersNode.get("assigned_to_me_only").asBoolean(true);
-        final long hoursBeforeReminder = filtersNode.get("hours_before_reminder").asLong(DEFAULT_HOURS_BEFORE_REMINDER);
-        final GitLabNotificationsFilters notificationsFilter =
-                new GitLabNotificationsFilters(assignedToMeOnly, hoursBeforeReminder);
+        final long hoursBeforeReminder = getLong(
+                moduleNode, "config.notifications.filters.hours_before_reminder", DEFAULT_HOURS_BEFORE_REMINDER);
+
+        final GitLabNotificationsFilters notificationsFilter = new GitLabNotificationsFilters(assignedToMeOnly, hoursBeforeReminder);
 
         final GitLabNotifierNotificationsConfig notificationsConfig =
                 new GitLabNotifierNotificationsConfig(periodSeconds, notificationsFilter);

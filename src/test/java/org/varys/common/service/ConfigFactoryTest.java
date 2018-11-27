@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ConfigFactoryTest {
 
@@ -35,7 +36,8 @@ public class ConfigFactoryTest {
     @Test
     public void createGitConfig() throws IOException {
         final GitConfig gitConfig = ConfigFactory.createGitConfig(this.configFile);
-        assertEquals("/home/git", gitConfig.getParentDirectory());
+        final String configuredGitRepositoryPath = File.separator + "home" + File.separator + "git";
+        assertTrue(gitConfig.getParentDirectory().getAbsolutePath().endsWith(configuredGitRepositoryPath));
     }
 
     @Test

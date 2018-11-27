@@ -1,19 +1,21 @@
 package org.varys.common.model;
 
+import java.io.File;
+
 public class GitConfig {
 
-    private final String parentDirectory;
+    private final File parentDirectory;
 
     public GitConfig() {
         super();
         this.parentDirectory = null;
     }
 
-    public GitConfig(String parentDirectory) {
+    public GitConfig(File parentDirectory) {
         this.parentDirectory = parentDirectory;
     }
 
-    public String getParentDirectory() {
+    public File getParentDirectory() {
         return parentDirectory;
     }
 }

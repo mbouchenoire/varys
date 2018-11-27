@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 public final class ConfigFactory {
 
@@ -20,34 +21,61 @@ public final class ConfigFactory {
         super();
     }
 
-    public static int getThreadPoolSize(File configFile) throws IOException {
-        Log.debug("Retreiving thread pool size from config file: {}...", configFile);
-        final JsonNode configRootNode = OBECT_MAPPER.readValue(configFile, JsonNode.class);
-        final JsonNode threadPoolSizeNode = configRootNode.get("thread_pool_size");
+    private static JsonNode findChild(JsonNode node, String path) {
+        final String[] pathSegments = path.split("\\.");
 
-        if (threadPoolSizeNode != null) {
-            return threadPoolSizeNode.asInt();
+        JsonNode currentNode = node;
+
+        for (String segment: pathSegments) {
+            if (currentNode != null) {
+                currentNode = currentNode.get(segment);
+            }
+        }
+
+        return currentNode;
+    }
+
+    private static <T> T getValue(JsonNode root, String path, Function<JsonNode, T> extractor, T defaultValue) {
+        final JsonNode configValueNode = findChild(root, path);
+
+        if (configValueNode != null) {
+            return extractor.apply(configValueNode);
         } else {
-            final int defaultValue = Runtime.getRuntime().availableProcessors();
-            Log.info("Undefined configuration key 'thread_pool_size', using default value: {}", defaultValue);
+            Log.info("Undefined configuration value '{}', using default value: '{}'", path, defaultValue);
             return defaultValue;
         }
+    }
+
+    static String getString(JsonNode root, String path, String defaultValue) {
+        return getValue(root, path, JsonNode::asText, defaultValue);
+    }
+
+    static boolean getBoolean(JsonNode root, String path, boolean defaultValue) {
+        return getValue(root, path, JsonNode::asBoolean, defaultValue);
+    }
+
+    static long getLong(JsonNode root, String path, long defaultValue) {
+        return getValue(root, path, JsonNode::asLong, defaultValue);
+    }
+
+    public static int getThreadPoolSize(File configFile) throws IOException {
+        final JsonNode configRootNode = OBECT_MAPPER.readValue(configFile, JsonNode.class);
+        return (int) getLong(configRootNode,"thread_pool_size", Runtime.getRuntime().availableProcessors());
     }
 
     public static LoggingConfig createLoggingConfig(File configFile) throws IOException {
         Log.debug("Retreiving logging config from file: {}...", configFile);
         final JsonNode configRootNode = OBECT_MAPPER.readValue(configFile, JsonNode.class);
-        final JsonNode loggingNode = configRootNode.get("logging");
-        final String loggingFilePath = loggingNode.get("directory").asText();
-        final String loggingLevel = loggingNode.get("level").asText();
+        final String loggingFilePath = getString(configRootNode, "logging.file", "varys.log");
+        final String loggingLevel = getString(configRootNode, "logging.level", "INFO");
         return new LoggingConfig(loggingFilePath, loggingLevel);
     }
 
     public static GitConfig createGitConfig(File configFile) throws IOException {
         Log.debug("Retreiving git config from file: {}...", configFile);
         final JsonNode configRootNode = OBECT_MAPPER.readValue(configFile, JsonNode.class);
-        final JsonNode gitNode = configRootNode.get("git");
-        final String rootDirectory = gitNode.get("parent_directory").asText();
+        final String rootDirectoryString = getString(configRootNode, "git.parent_directory", "");
+        final File rootDirectory = new File(rootDirectoryString);
         return new GitConfig(rootDirectory);
     }
 
