@@ -39,7 +39,7 @@ public class App {
         final Collection<JsonNode> moduleNodes = ConfigFactory.findModuleNodes(configFile);
         final Collection<NotifierModule> notifierModules = notifierModuleFactory.createAll(moduleNodes);
 
-        new NotificationService("varys").send(new StartupNotification());
+        new NotificationService("varys").send(new StartupNotification(notifierModules));
 
         final ForkJoinPool forkJoinPool = new ForkJoinPool(
                 threadPoolSize,
