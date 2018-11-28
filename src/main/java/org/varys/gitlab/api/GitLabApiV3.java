@@ -129,7 +129,8 @@ public class GitLabApiV3 implements GitLabApi {
             return this.gitLabApiV3Retrofit.getMergeRequests(
                     this.apiConfig.getPrivateToken(),
                     Long.parseLong(projectId),
-                    state.getCode()
+                    state.getCode(),
+                    null
             ).execute().body();
         } catch (IOException e) {
             Log.error(e, "Failed to fetch GitLab merge requests of project with id=" + projectId);
@@ -140,20 +141,28 @@ public class GitLabApiV3 implements GitLabApi {
     @Override
     public Optional<GitLabMergeRequest> getMergeRequest(long projectId, long mergeRequestId, long mergeRequestIid) {
         try {
-            final Response<GitLabMergeRequestListItem> response = this.gitLabApiV3Retrofit.getMergeRequest(
-                    this.apiConfig.getPrivateToken(), projectId, mergeRequestId).execute();
+            final Response<List<GitLabMergeRequestListItem>> response = this.gitLabApiV3Retrofit.getMergeRequests(
+                    this.apiConfig.getPrivateToken(),
+                    projectId,
+                    null,
+                    String.valueOf(mergeRequestIid)
+            ).execute();
 
             if (response.isSuccessful()) {
-                final GitLabMergeRequestListItem mergeRequestListItem = response.body();
-                assert mergeRequestListItem != null;
+                assert response.body() != null;
+
+                final GitLabMergeRequestListItem mergeRequestListItem = response.body().stream()
+                        .findFirst()
+                        .orElseThrow(IOException::new);
+
                 return this.fetchDetails(mergeRequestListItem);
             } else {
                 throw new IOException(response.message());
             }
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab merge request with project_id={} and iid={}",
+            Log.error(e, "Failed to fetch GitLab merge request with project_id={} and id={}",
                     projectId,
-                    mergeRequestIid);
+                    mergeRequestId);
 
             return Optional.empty();
         }

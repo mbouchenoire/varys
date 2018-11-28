@@ -38,13 +38,8 @@ interface GitLabApiV3Retrofit {
     Call<List<GitLabMergeRequestListItem>> getMergeRequests(
             @Header("Private-Token") String privateToken,
             @Path("project_id") long projectId,
-            @Query("state") String state);
-
-    @GET("api/v3/projects/{project_id}/merge_requests/{merge_request_id}")
-    Call<GitLabMergeRequestListItem> getMergeRequest(
-            @Header("Private-Token") String privateToken,
-            @Path("project_id") long projectId,
-            @Path("merge_request_id") long mergeRequestId);
+            @Query("state") String state,
+            @Query("iid") String iid);
 
     @GET("api/v3/projects/{project_id}/merge_requests/{merge_request_id}/notes")
     Call<List<GitLabNote>> getNotes(
