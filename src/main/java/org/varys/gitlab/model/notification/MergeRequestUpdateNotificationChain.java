@@ -24,7 +24,6 @@ public class MergeRequestUpdateNotificationChain extends MergeRequestUpdateNotif
         final Optional<MergeRequestUpdateNotification> optionalNotification = Stream.of(
                 new MergedNotification(mergeRequest, previousVersion, myself),
                 new ClosedNotification(mergeRequest, previousVersion),
-                new StatusChangedNotification(mergeRequest, previousVersion),
                 new ChangedAssigneeNotification(mergeRequest, previousVersion),
                 new WipNotification(mergeRequest, previousVersion, myself),
                 new ConflictedMergeRequestNotification(mergeRequest, previousVersion, myself),

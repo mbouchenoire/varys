@@ -103,7 +103,6 @@ public class GitLabNotifierTest {
 
         notifier.iterate();
 
-        verify(notificationService, times(1)).send(any());
         verify(notificationService, times(1))
                 .send(new NewMergeRequestNotification(assignedToMaxime));
 
@@ -121,8 +120,10 @@ public class GitLabNotifierTest {
                 assignedToMaxime.getProject().getId(), assignedToMaxime.getId(), assignedToMaxime.getIid()))
                 .thenReturn(Optional.of(assignedToMaximeMerged));
 
+        when(gitLabApi.getUser()).thenReturn(userFoo);
+
         notifier.iterate();
         verify(notificationService, times(1)).send(
-                new MergeRequestUpdateNotificationChain(assignedToMaximeMerged, assignedToMaxime, userMaxime, 24));
+                new MergeRequestUpdateNotificationChain(assignedToMaximeMerged, assignedToMaxime, userFoo, 24));
     }
 }
