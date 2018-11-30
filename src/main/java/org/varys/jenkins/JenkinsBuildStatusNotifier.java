@@ -1,11 +1,11 @@
-package org.varys.jenkins.notifier;
+package org.varys.jenkins;
 
 import org.varys.common.service.CacheService;
 import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
 import org.varys.common.service.NotifierModule;
 import org.varys.common.service.RestApiService;
-import org.varys.git.GitService;
+import org.varys.git.service.GitService;
 import org.varys.jenkins.api.JenkinsApi;
 import org.varys.jenkins.model.JenkinsBuild;
 import org.varys.jenkins.model.JenkinsBuildListItem;

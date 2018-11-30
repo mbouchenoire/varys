@@ -1,4 +1,4 @@
-package org.varys.gitlab.notifier;
+package org.varys.gitlab;
 
 import org.junit.Test;
 import org.varys.common.service.CacheService;

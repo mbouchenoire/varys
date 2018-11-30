@@ -2,19 +2,19 @@ package org.varys.common.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.varys.common.model.GitConfig;
-import org.varys.git.GitService;
+import org.varys.git.service.GitService;
+import org.varys.gitlab.GitLabNotifier;
 import org.varys.gitlab.api.GitLabApiFactory;
 import org.varys.gitlab.model.GitLabApiConfig;
 import org.varys.gitlab.model.GitLabNotificationsFilters;
 import org.varys.gitlab.model.GitLabNotifierConfig;
 import org.varys.gitlab.model.GitLabNotifierNotificationsConfig;
-import org.varys.gitlab.notifier.GitLabNotifier;
+import org.varys.jenkins.JenkinsBuildStatusNotifier;
 import org.varys.jenkins.api.JenkinsApi;
 import org.varys.jenkins.model.JenkinsApiConfig;
 import org.varys.jenkins.model.JenkinsBuildNotifierConfig;
 import org.varys.jenkins.model.JenkinsBuildNotifierNotificationsConfig;
 import org.varys.jenkins.model.JenkinsBuildNotifierNotificationsFiltersConfig;
-import org.varys.jenkins.notifier.JenkinsBuildStatusNotifier;
 
 import java.util.Collection;
 import java.util.HashMap;
