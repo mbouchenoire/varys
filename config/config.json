@@ -12,7 +12,8 @@
       "config": {
         "jenkins_api": {
           "base_url": "https://jenkins.mono-project.com",
-          "api_token": "<your_api_token>"
+          "api_token": "<your_api_token>",
+          "ssl_verify": true
         }
       }
     },
@@ -22,7 +23,8 @@
       "config": {
         "gitlab_api": {
           "base_url": "https://gitlab.com",
-          "private_token": "<your_private_token>"
+          "private_token": "<your_api_token>",
+          "ssl_verify": true
         }
       }
     }

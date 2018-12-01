@@ -8,12 +8,12 @@ import org.varys.git.service.GitService;
 import org.varys.jenkins.api.JenkinsApi;
 import org.varys.jenkins.model.JenkinsBuild;
 import org.varys.jenkins.model.JenkinsBuildListItem;
-import org.varys.jenkins.model.JenkinsBuildNotifierConfig;
-import org.varys.jenkins.model.JenkinsBuildNotifierNotificationsConfig;
 import org.varys.jenkins.model.JenkinsBuildNotifierNotificationsFiltersConfig;
 import org.varys.jenkins.model.JenkinsBuildResult;
 import org.varys.jenkins.model.JenkinsNode;
 import org.varys.jenkins.model.JenkinsNodeListItem;
+import org.varys.jenkins.model.JenkinsNotifierConfig;
+import org.varys.jenkins.model.JenkinsNotifierNotificationsConfig;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,12 +23,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class JenkinsBuildStatusNotifierTest {
+public class JenkinsNotifierTest {
 
     private final CacheService cacheService;
 
-    public JenkinsBuildStatusNotifierTest() {
-        this.cacheService = new CacheService("JenkinsBuildStatusNotifierTest");
+    public JenkinsNotifierTest() {
+        this.cacheService = new CacheService("JenkinsNotifierTest");
     }
 
     @Before
@@ -133,9 +133,9 @@ public class JenkinsBuildStatusNotifierTest {
 
         final NotificationService notificationService = mock(NotificationService.class);
 
-        final JenkinsBuildStatusNotifier notifier = new JenkinsBuildStatusNotifier(
+        final JenkinsNotifier notifier = new JenkinsNotifier(
                 jenkinsApi,
-                new JenkinsBuildNotifierConfig(new JenkinsBuildNotifierNotificationsConfig(
+                new JenkinsNotifierConfig(new JenkinsNotifierNotificationsConfig(
                         30, new JenkinsBuildNotifierNotificationsFiltersConfig(false, false)
                 )),
                 gitService,

@@ -1,11 +1,11 @@
 package org.varys.jenkins.model;
 
-public class JenkinsBuildNotifierNotificationsConfig {
+public class JenkinsNotifierNotificationsConfig {
 
     private final long periodSeconds;
     private final JenkinsBuildNotifierNotificationsFiltersConfig filters;
 
-    public JenkinsBuildNotifierNotificationsConfig(
+    public JenkinsNotifierNotificationsConfig(
             long periodSeconds,
             JenkinsBuildNotifierNotificationsFiltersConfig filters) {
 
@@ -23,7 +23,7 @@ public class JenkinsBuildNotifierNotificationsConfig {
 
     @Override
     public String toString() {
-        return "JenkinsBuildNotifierNotificationsConfig{" +
+        return "JenkinsNotifierNotificationsConfig{" +
                 "periodSeconds=" + periodSeconds +
                 ", filters=" + filters +
                 '}';

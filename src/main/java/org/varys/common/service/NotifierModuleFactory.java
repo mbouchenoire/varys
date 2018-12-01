@@ -9,12 +9,12 @@ import org.varys.gitlab.model.GitLabApiConfig;
 import org.varys.gitlab.model.GitLabNotificationsFilters;
 import org.varys.gitlab.model.GitLabNotifierConfig;
 import org.varys.gitlab.model.GitLabNotifierNotificationsConfig;
-import org.varys.jenkins.JenkinsBuildStatusNotifier;
+import org.varys.jenkins.JenkinsNotifier;
 import org.varys.jenkins.api.JenkinsApi;
 import org.varys.jenkins.model.JenkinsApiConfig;
-import org.varys.jenkins.model.JenkinsBuildNotifierConfig;
-import org.varys.jenkins.model.JenkinsBuildNotifierNotificationsConfig;
 import org.varys.jenkins.model.JenkinsBuildNotifierNotificationsFiltersConfig;
+import org.varys.jenkins.model.JenkinsNotifierConfig;
+import org.varys.jenkins.model.JenkinsNotifierNotificationsConfig;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,6 +29,7 @@ public class NotifierModuleFactory {
 
     private static final String EMPTY_STRING = "<empty>";
 
+    private static final boolean DEFAULT_SSL_VERIFY = true;
     private static final int DEFAULT_NOTIFICATION_PERIOD = 30;
 
     private static final boolean DEFAULT_LOCAL_BRANCH_ONLY_FILTER = true;
@@ -88,12 +89,13 @@ public class NotifierModuleFactory {
         return Optional.of(module);
     }
 
-    private JenkinsBuildStatusNotifier createJenkins(JsonNode moduleNode, GitConfig gitConfig) {
+    private JenkinsNotifier createJenkins(JsonNode moduleNode, GitConfig gitConfig) {
         final String moduleName = getString(moduleNode, "name", "jenkins");
 
         final String apiBaseUrl = getString(moduleNode, "config.jenkins_api.base_url", EMPTY_STRING);
         final String apiToken = getString(moduleNode, "config.jenkins_api.api_token", EMPTY_STRING);
-        final JenkinsApiConfig apiConfig = new JenkinsApiConfig(apiBaseUrl, apiToken);
+        final boolean sslVerify = getBoolean(moduleNode, "config.jenkins_api.ssl_verify", DEFAULT_SSL_VERIFY);
+        final JenkinsApiConfig apiConfig = new JenkinsApiConfig(apiBaseUrl, apiToken, sslVerify);
 
         final long periodSeconds = getLong(moduleNode, "config.notifications.period", DEFAULT_NOTIFICATION_PERIOD);
 
@@ -106,14 +108,14 @@ public class NotifierModuleFactory {
         final JenkinsBuildNotifierNotificationsFiltersConfig filtersConfig =
                 new JenkinsBuildNotifierNotificationsFiltersConfig(localBranchesOnly, successfulBuilds);
 
-        final JenkinsBuildNotifierNotificationsConfig notifierNotificationsConfig =
-                new JenkinsBuildNotifierNotificationsConfig(periodSeconds, filtersConfig);
+        final JenkinsNotifierNotificationsConfig notifierNotificationsConfig =
+                new JenkinsNotifierNotificationsConfig(periodSeconds, filtersConfig);
 
-        final JenkinsBuildNotifierConfig notifierConfig = new JenkinsBuildNotifierConfig(notifierNotificationsConfig);
+        final JenkinsNotifierConfig notifierConfig = new JenkinsNotifierConfig(notifierNotificationsConfig);
 
         final JenkinsApi jenkinsApi = new JenkinsApi(apiConfig);
 
-        return new JenkinsBuildStatusNotifier(
+        return new JenkinsNotifier(
                 jenkinsApi,
                 notifierConfig,
                 new GitService(gitConfig),
@@ -128,7 +130,8 @@ public class NotifierModuleFactory {
 
         final String apiBaseUrl = getString(moduleNode, "config.gitlab_api.base_url", EMPTY_STRING);
         final String apiPrivateToken = getString(moduleNode, "config.gitlab_api.private_token", EMPTY_STRING);
-        final GitLabApiConfig apiConfig = new GitLabApiConfig(apiBaseUrl, apiPrivateToken);
+        final boolean sslVerify = getBoolean(moduleNode, "config.gitlab_api.ssl_verify", DEFAULT_SSL_VERIFY);
+        final GitLabApiConfig apiConfig = new GitLabApiConfig(apiBaseUrl, apiPrivateToken, sslVerify);
 
         final long periodSeconds = getLong(moduleNode, "config.notifications.period", DEFAULT_NOTIFICATION_PERIOD);
 

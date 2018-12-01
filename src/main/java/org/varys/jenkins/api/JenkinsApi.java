@@ -24,7 +24,7 @@ public class JenkinsApi implements RestApi {
 
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(apiConfig.getBaseUrl())
-                .client(OkHttpClientFactory.create())
+                .client(OkHttpClientFactory.create(apiConfig.isSslVerify()))
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
 

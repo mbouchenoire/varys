@@ -30,7 +30,7 @@ public class GitLabApiV4 implements GitLabApi {
     GitLabApiV4(GitLabApiConfig apiConfig) {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(apiConfig.getBaseUrl())
-                .client(OkHttpClientFactory.create())
+                .client(OkHttpClientFactory.create(apiConfig.isSslVerify()))
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
 

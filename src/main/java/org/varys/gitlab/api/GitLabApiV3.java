@@ -31,7 +31,7 @@ public class GitLabApiV3 implements GitLabApi {
     GitLabApiV3(GitLabApiConfig apiConfig) {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(apiConfig.getBaseUrl())
-                .client(OkHttpClientFactory.create())
+                .client(OkHttpClientFactory.create(apiConfig.isSslVerify()))
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
 

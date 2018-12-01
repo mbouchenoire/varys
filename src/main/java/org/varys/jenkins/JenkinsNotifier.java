@@ -9,9 +9,9 @@ import org.varys.git.service.GitService;
 import org.varys.jenkins.api.JenkinsApi;
 import org.varys.jenkins.model.JenkinsBuild;
 import org.varys.jenkins.model.JenkinsBuildListItem;
-import org.varys.jenkins.model.JenkinsBuildNotifierConfig;
 import org.varys.jenkins.model.JenkinsBuildNumber;
 import org.varys.jenkins.model.JenkinsNode;
+import org.varys.jenkins.model.JenkinsNotifierConfig;
 
 import java.io.File;
 import java.util.Arrays;
@@ -20,21 +20,21 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class JenkinsBuildStatusNotifier implements NotifierModule {
+public class JenkinsNotifier implements NotifierModule {
 
     private static final Comparator<JenkinsBuildNumber> LATEST_BUILD_FIRST_COMPARATOR =
             (build1, build2) -> Long.compare(build2.getNumber(), build1.getNumber());
 
     private final JenkinsApi jenkinsApi;
-    private final JenkinsBuildNotifierConfig config;
+    private final JenkinsNotifierConfig config;
     private final RestApiService restApiService;
     private final GitService gitService;
     private final CacheService cacheService;
     private final NotificationService notificationService;
 
-    public JenkinsBuildStatusNotifier(
+    public JenkinsNotifier(
             JenkinsApi jenkinsApi,
-            JenkinsBuildNotifierConfig notifierConfig,
+            JenkinsNotifierConfig notifierConfig,
             GitService gitService,
             CacheService cacheService,
             NotificationService notificationService) {
@@ -165,7 +165,7 @@ public class JenkinsBuildStatusNotifier implements NotifierModule {
 
     @Override
     public String toString() {
-        return "JenkinsBuildStatusNotifier{" +
+        return "JenkinsNotifier{" +
                 "jenkinsApi=" + jenkinsApi +
                 '}';
     }

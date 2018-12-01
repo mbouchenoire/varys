@@ -28,13 +28,18 @@ public final class OkHttpClientFactory {
         return response;
     }
 
-    public static OkHttpClient create() {
+    public static OkHttpClient create(boolean sslVerify) {
         try {
-            return new OkHttpClient().newBuilder()
-                    .sslSocketFactory(SSLUtils.createUnsecuredSocketFactory(), SSLUtils.TRUST_ALL_CERTS)
-                    .hostnameVerifier((s, sslSession) -> true)
-                    .addInterceptor(OkHttpClientFactory::loggingInterceptor)
-                    .build();
+            final OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
+                    .addInterceptor(OkHttpClientFactory::loggingInterceptor);
+
+            if (!sslVerify) {
+                okHttpClientBuilder
+                        .sslSocketFactory(SSLUtils.createUnsecuredSocketFactory(), SSLUtils.TRUST_ALL_CERTS)
+                        .hostnameVerifier((s, sslSession) -> true);
+            }
+
+            return okHttpClientBuilder.build();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             Log.error(e, "Failed to create unsecured HTTP client, using default one instead");
 
