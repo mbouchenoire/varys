@@ -50,30 +50,27 @@ public class NotifierModuleFactory {
         this.moduleFactories.put("gitlab", this::createGitLab);
     }
 
-    private boolean isEnabled(JsonNode moduleNode) {
-        final boolean enabled = moduleNode.get("enabled").asBoolean();
-
-        if (!enabled) {
-            final String name = moduleNode.get("name").asText();
-            Log.warn("{} module is not enabled", name);
-        }
-
-        return enabled;
-    }
-
     public Collection<NotifierModule> createAll(Collection<JsonNode> moduleNodes) {
         return moduleNodes.stream()
-                .filter(this::isEnabled)
                 .map(this::create)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
     }
 
-    private Optional<NotifierModule> create(JsonNode moduleNode) {
-        final String moduleName = moduleNode.get("name").asText();
+    private Optional<NotifierModule> create(JsonNode moduleRootNode) {
+        final String moduleName = moduleRootNode.fieldNames().next();
 
-        Log.debug("Initializing module with name '{}'...", moduleName);
+        Log.debug("Found module with name '{}'...", moduleName);
+
+        final JsonNode moduleNode = moduleRootNode.get(moduleName);
+
+        final boolean enabled = moduleNode.get("enabled").asBoolean(true);
+
+        if (!enabled) {
+            Log.warn("{} module is not enabled", moduleName);
+            return Optional.empty();
+        }
 
         final BiFunction<JsonNode, GitConfig, NotifierModule> moduleFactory = this.moduleFactories.get(moduleName);
 

@@ -2,6 +2,7 @@ package org.varys.common.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.varys.common.model.GitConfig;
 import org.varys.common.model.LoggingConfig;
 
@@ -15,7 +16,7 @@ import java.util.function.Function;
 
 public final class ConfigFactory {
 
-    private static final ObjectMapper OBECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBECT_MAPPER = new ObjectMapper(new YAMLFactory());
 
     private ConfigFactory() {
         super();
@@ -46,6 +47,14 @@ public final class ConfigFactory {
         }
     }
 
+    private static JsonNode getConfigRootNode(File configFile) throws IOException {
+        if (!configFile.getAbsolutePath().endsWith(".yml")) {
+            throw new IllegalArgumentException("Configuration file must be in YAML format");
+        }
+
+        return OBECT_MAPPER.readValue(configFile, JsonNode.class);
+    }
+
     static String getString(JsonNode root, String path, String defaultValue) {
         return getValue(root, path, JsonNode::asText, defaultValue);
     }
@@ -59,13 +68,13 @@ public final class ConfigFactory {
     }
 
     public static int getThreadPoolSize(File configFile) throws IOException {
-        final JsonNode configRootNode = OBECT_MAPPER.readValue(configFile, JsonNode.class);
+        final JsonNode configRootNode = getConfigRootNode(configFile);
         return (int) getLong(configRootNode,"thread_pool_size", Runtime.getRuntime().availableProcessors());
     }
 
     public static LoggingConfig createLoggingConfig(File configFile) throws IOException {
         Log.debug("Retreiving logging config from file: {}...", configFile);
-        final JsonNode configRootNode = OBECT_MAPPER.readValue(configFile, JsonNode.class);
+        final JsonNode configRootNode = getConfigRootNode(configFile);
         final String loggingFilePath = getString(configRootNode, "logging.file", "varys.log");
         final String loggingLevel = getString(configRootNode, "logging.level", "INFO");
         return new LoggingConfig(loggingFilePath, loggingLevel);
@@ -73,15 +82,15 @@ public final class ConfigFactory {
 
     public static GitConfig createGitConfig(File configFile) throws IOException {
         Log.debug("Retreiving git config from file: {}...", configFile);
-        final JsonNode configRootNode = OBECT_MAPPER.readValue(configFile, JsonNode.class);
-        final String rootDirectoryString = getString(configRootNode, "git.parent_directory", "");
+        final JsonNode configRootNode = getConfigRootNode(configFile);
+        final String rootDirectoryString = getString(configRootNode, "git_projects_directory", "");
         final File rootDirectory = new File(rootDirectoryString);
         return new GitConfig(rootDirectory);
     }
 
     public static Collection<JsonNode> findModuleNodes(File configFile) throws IOException {
         Log.debug("Retreiving modules from config file: {}...", configFile);
-        final JsonNode configRootNode = OBECT_MAPPER.readValue(configFile, JsonNode.class);
+        final JsonNode configRootNode = getConfigRootNode(configFile);
         final Iterator<JsonNode> moduleConfigNodesIterator = configRootNode.get("modules").elements();
         final List<JsonNode> moduleConfigNodesList = new ArrayList<>();
         moduleConfigNodesIterator.forEachRemaining(moduleConfigNodesList::add);

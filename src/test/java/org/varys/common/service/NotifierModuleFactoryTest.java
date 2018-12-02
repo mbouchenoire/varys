@@ -22,7 +22,7 @@ public class NotifierModuleFactoryTest {
     public NotifierModuleFactoryTest() {
         super();
         final ClassLoader classLoader = getClass().getClassLoader();
-        this.configFile = new File(classLoader.getResource("config.json").getFile());
+        this.configFile = new File(classLoader.getResource("config.yml").getFile());
     }
 
     @Test

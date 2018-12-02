@@ -1,0 +1,31 @@
+git_projects_directory: "/home/git"
+
+modules:
+  - jenkins:
+      enabled: true
+      config:
+        jenkins_api:
+          base_url: "https://jenkins.mono-project.com"
+          api_token: YOUR_API_TOKEN
+          ssl_verify: true
+        notifications:
+          period: 30
+          filters:
+            local_branches_only: true
+            successful_builds: false
+  - gitlab:
+      enabled: true
+      config:
+        gitlab_api:
+          base_url: "https://gitlab.com"
+          private_token: YOUR_PRIVATE_TOKEN
+          ssl_verify: true
+        notifications:
+          period: 30
+          filters:
+            assigned_to_me_only: true
+            hours_before_reminder: 24
+
+logging:
+  level: INFO
+  directory: varys.log

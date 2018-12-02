@@ -1,0 +1,23 @@
+# The directory in which you put all your git repositories.
+# Varys will search for `.git` directories as deep as 3 levels below.
+git_projects_directory: "/home/git"
+
+# You can remove useless modules, or duplicate one with a different configuration
+# if you use multiple GitLab / Jenkins instances.
+modules:
+  - jenkins:
+      enabled: true
+      config:
+        jenkins_api:
+          base_url: "https://jenkins.mono-project.com"
+          api_token: YOUR_API_TOKEN # How to get your api token: https://bit.ly/2PcGBJN
+          ssl_verify: true # Whether to verify the SSL certificate when fetching over HTTPS
+  - gitlab:
+      enabled: true
+      config:
+        gitlab_api:
+          base_url: "https://gitlab.com"
+          private_token: YOUR_PRIVATE_TOKEN # How to get your private token: https://bit.ly/2K0FXNt
+          ssl_verify: true # Whether to verify the SSL certificate when fetching over HTTPS
+
+logging.level: INFO
