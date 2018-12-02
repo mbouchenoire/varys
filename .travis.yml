@@ -7,5 +7,16 @@ install:
 - mvn -N io.takari:maven:wrapper
 - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
+addons:
+  sonarcloud:
+    organization: "mbouchenoire-github"
+script:
+  - sonar-scanner
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.sonar/cache'
+
 after_success:
 - mvn clean test -Pcoverage jacoco:report coveralls:report
