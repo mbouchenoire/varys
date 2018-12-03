@@ -14,7 +14,7 @@ final class SSLUtils {
         super();
     }
 
-    static X509TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
+    static final X509TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
                 @Override
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                     // if the queried APIs certificates are not up to date, we don't check them
@@ -35,7 +35,7 @@ final class SSLUtils {
             };
 
     static SSLSocketFactory createUnsecuredSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
-        final SSLContext sslContext = SSLContext.getInstance("SSL");
+        final SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
         sslContext.init(null, new X509TrustManager[]{SSLUtils.TRUST_ALL_CERTS}, new SecureRandom());
         return sslContext.getSocketFactory();
     }

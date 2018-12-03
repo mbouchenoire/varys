@@ -89,10 +89,11 @@ public class CacheService {
                         cachedObjectFile.getParentFile().getAbsolutePath());
             }
 
-            final boolean isDeleted = cachedObjectFile.delete();
-
-            if (isDeleted) {
+            try {
+                Files.delete(cachedObjectFile.toPath());
                 Log.debug("Cache file already existed and has been deleted: {}", cachedObjectFile);
+            } catch (IOException e) {
+                Log.debug(e, "Cache file did not already exist and will be created: {}", cachedObjectFile);
             }
 
             final boolean newFile = cachedObjectFile.createNewFile();
@@ -134,10 +135,11 @@ public class CacheService {
     }
 
     private static void deleteFile(File file) {
-        if (file.delete()) {
+        try {
+            Files.delete(file.toPath());
             Log.debug("Successfully deleted cache file (file: {})", file);
-        } else {
-            Log.error("Failed to delete cache file ({})", file);
+        } catch (IOException e) {
+            Log.error(e,"Failed to delete cache file ({})", file);
         }
     }
 

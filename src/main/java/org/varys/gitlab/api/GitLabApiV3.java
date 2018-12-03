@@ -83,20 +83,7 @@ public class GitLabApiV3 implements GitLabApi {
 
     @Override
     public GitLabUser getUser() {
-        try {
-            final Response<GitLabUser> response =
-                    this.gitLabApiV3Retrofit.getUser(this.apiConfig.getPrivateToken()).execute();
-
-            if (response.isSuccessful()) {
-                return response.body();
-            } else {
-                throw new IOException(response.message());
-            }
-        } catch (IOException e) {
-            final String msg = "Failed to fetch GitLab user";
-            Log.error(e, msg);
-            throw new IllegalStateException(msg);
-        }
+        return this.getUser(this.gitLabApiV3Retrofit, this.apiConfig);
     }
 
     @Override

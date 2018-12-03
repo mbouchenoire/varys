@@ -47,6 +47,10 @@ public final class Log {
         Logger.debug(message, argumengs);
     }
 
+    public static void debug(Throwable t, String message, Object ... arguments) {
+        Logger.debug(t, message, arguments);
+    }
+
     public static void info(String message) {
         Logger.info(message);
     }

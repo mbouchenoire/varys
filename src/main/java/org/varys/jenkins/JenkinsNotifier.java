@@ -103,45 +103,40 @@ public class JenkinsNotifier implements NotifierModule {
     }
 
     private Runnable notifyLastNewFailedBuild(JenkinsNode jenkinsNode) {
-        try {
-            final Predicate<JenkinsBuildListItem> notCached = build -> {
-                final boolean cached = this.isCached(jenkinsNode, build);
-                Log.trace("Jenkins build '{}' is already cached: {}", build.getApiUrl(), cached);
-                return !cached;
-            };
+        final Predicate<JenkinsBuildListItem> notCached = build -> {
+            final boolean cached = this.isCached(jenkinsNode, build);
+            Log.trace("Jenkins build '{}' is already cached: {}", build.getApiUrl(), cached);
+            return !cached;
+        };
 
-            final Function<JenkinsBuild, JenkinsBuild> cache = build -> {
-                Log.trace("Caching jenkins build '{}'", build.getFullDisplayName());
-                return this.cache(jenkinsNode, build);
-            };
+        final Function<JenkinsBuild, JenkinsBuild> cache = build -> {
+            Log.trace("Caching jenkins build '{}'", build.getFullDisplayName());
+            return this.cache(jenkinsNode, build);
+        };
 
-            final long buildCount = jenkinsNode.getBuilds().size();
+        final long buildCount = jenkinsNode.getBuilds().size();
 
-            if (buildCount > 0) {
-                Log.debug("Processing {} builds of Jenkins node '{}'",
-                        buildCount, jenkinsNode.getDisplayName());
-            } else {
-                Log.trace("Jenkins node '{}' has no build to process", jenkinsNode.getDisplayName());
-            }
-
-            return () -> jenkinsNode.getBuilds().parallelStream()
-                    .filter(notCached)
-                    .map(this::fetchBuildDetails)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .filter(JenkinsBuild::hasResult)
-                    .map(cache)
-                    .min(LATEST_BUILD_FIRST_COMPARATOR)
-                    .filter(this::branchFilter)
-                    .filter(this::buildStatusFilter)
-                    .map(jenkinsBuild -> {
-                        this.notificationService.send(jenkinsBuild);
-                        return jenkinsBuild;
-                    });
-        } catch (Throwable t) {
-            Log.error(t, "??");
-            return null;
+        if (buildCount > 0) {
+            Log.debug("Processing {} builds of Jenkins node '{}'",
+                    buildCount, jenkinsNode.getDisplayName());
+        } else {
+            Log.trace("Jenkins node '{}' has no build to process", jenkinsNode.getDisplayName());
         }
+
+        return () -> jenkinsNode.getBuilds().parallelStream()
+                .filter(notCached)
+                .map(this::fetchBuildDetails)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(JenkinsBuild::hasResult)
+                .map(cache)
+                .min(LATEST_BUILD_FIRST_COMPARATOR)
+                .filter(this::branchFilter)
+                .filter(this::buildStatusFilter)
+                .map(jenkinsBuild -> {
+                    this.notificationService.send(jenkinsBuild);
+                    return jenkinsBuild;
+                });
     }
 
     private Optional<JenkinsBuild> fetchBuildDetails(JenkinsBuildListItem buildListItem) {

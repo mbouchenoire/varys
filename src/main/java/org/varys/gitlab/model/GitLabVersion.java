@@ -37,6 +37,7 @@ public class GitLabVersion {
     public int getMinor() {
         if (this.version == null) {
             LOGGER.warn("Cannot parse GitLab minor version (null version)");
+            return -1;
         }
 
         final String majorString = version.split("\\.")[1];
