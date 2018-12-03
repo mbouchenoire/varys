@@ -13,6 +13,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
     @JsonProperty("project_id")
     private final long projectId;
     private final String title;
+    private final String description;
     private final GitLabMergeRequestState state;
     @JsonProperty("merge_status")
     private final GitLabMergeStatus mergeStatus;
@@ -36,6 +37,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
         this.iid = -1;
         this.projectId = -1;
         this.title = null;
+        this.description = null;
         this.state = null;
         this.mergeStatus = null;
         this.wip = false;
@@ -53,6 +55,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
             long iid,
             long projectId,
             String title,
+            String description,
             GitLabMergeRequestState state,
             GitLabMergeStatus mergeStatus,
             boolean wip,
@@ -68,6 +71,7 @@ public class GitLabMergeRequestListItem implements MergeRequest {
         this.iid = iid;
         this.projectId = projectId;
         this.title = title;
+        this.description = description;
         this.state = state;
         this.mergeStatus = mergeStatus;
         this.wip = wip;
@@ -96,6 +100,10 @@ public class GitLabMergeRequestListItem implements MergeRequest {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public GitLabMergeRequestState getState() {

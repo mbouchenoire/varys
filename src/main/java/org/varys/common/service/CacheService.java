@@ -89,12 +89,7 @@ public class CacheService {
                         cachedObjectFile.getParentFile().getAbsolutePath());
             }
 
-            try {
-                Files.delete(cachedObjectFile.toPath());
-                Log.debug("Cache file already existed and has been deleted: {}", cachedObjectFile);
-            } catch (IOException e) {
-                Log.debug(e, "Cache file did not already exist and will be created: {}", cachedObjectFile);
-            }
+            deleteIfExists(cachedObjectFile);
 
             final boolean newFile = cachedObjectFile.createNewFile();
 
@@ -114,6 +109,15 @@ public class CacheService {
             Log.error(e,"Failed to serialize object to cache: {}", object);
         } catch (IOException e) {
             Log.error(e, "Failed to create cache file: {}", path);
+        }
+    }
+
+    private static void deleteIfExists(File cachedObjectFile) {
+        try {
+            Files.delete(cachedObjectFile.toPath());
+            Log.debug("Cache file already existed and has been deleted: {}", cachedObjectFile);
+        } catch (IOException e) {
+            Log.debug(e, "Cache file did not already exist and will be created: {}", cachedObjectFile);
         }
     }
 

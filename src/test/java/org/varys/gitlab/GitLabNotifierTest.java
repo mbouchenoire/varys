@@ -36,6 +36,7 @@ public class GitLabNotifierTest {
                         assigned.getId(),
                         project.getId(),
                         "mr1",
+                        "mr1",
                         state,
                         GitLabMergeStatus.CAN_BE_MERGED,
                         false,
@@ -49,8 +50,8 @@ public class GitLabNotifierTest {
                 ),
                 project,
                 Arrays.asList(
-                        new GitLabNote(1, "note1"),
-                        new GitLabNote(2, "note2")
+                        new GitLabNote(1, "note1", new Date(), author),
+                        new GitLabNote(2, "note2", new Date(), assigned)
                 ),
                 Collections.singletonList(
                         new GitLabCommit("1")

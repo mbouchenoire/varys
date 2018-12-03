@@ -35,6 +35,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     1,
                     "title",
+                    "- [ ] task 1",
                     GitLabMergeRequestState.OPENED,
                     GitLabMergeStatus.CAN_BE_MERGED,
                     false,
@@ -47,7 +48,30 @@ public class MergeRequestUpdateNotificationTest {
                     "url.com"
             ),
             GIT_LAB_PROJECT,
-            Collections.singletonList(new GitLabNote(1, "body")),
+            Collections.singletonList(new GitLabNote(1, "body", new Date(), GIT_LAB_USER_A)),
+            Collections.singletonList(new GitLabCommit("1"))
+    );
+
+    private static final GitLabMergeRequest COMPLETED_TASK = new GitLabMergeRequest(
+            new GitLabMergeRequestListItem(
+                    1,
+                    1,
+                    1,
+                    "title",
+                    "- [x] task 1",
+                    GitLabMergeRequestState.OPENED,
+                    GitLabMergeStatus.CAN_BE_MERGED,
+                    false,
+                    new Date(),
+                    "targetBranch",
+                    "sourceBranch",
+                    GIT_LAB_USER_A,
+                    GIT_LAB_USER_B,
+                    2,
+                    "url.com"
+            ),
+            GIT_LAB_PROJECT,
+            Collections.singletonList(new GitLabNote(1, "marked the task **task 1** as completed", new Date(), GIT_LAB_USER_A)),
             Collections.singletonList(new GitLabCommit("1"))
     );
 
@@ -57,6 +81,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     1,
                     "title",
+                    "desc",
                     GitLabMergeRequestState.OPENED,
                     GitLabMergeStatus.CAN_BE_MERGED,
                     false,
@@ -69,7 +94,7 @@ public class MergeRequestUpdateNotificationTest {
                     "url.com"
             ),
             GIT_LAB_PROJECT,
-            Collections.singletonList(new GitLabNote(1, "body")),
+            Collections.singletonList(new GitLabNote(1, "body", new Date(), GIT_LAB_USER_A)),
             Arrays.asList(
                     new GitLabCommit("1"),
                     new GitLabCommit("2"))
@@ -81,6 +106,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     1,
                     "title",
+                    "desc",
                     GitLabMergeRequestState.OPENED,
                     GitLabMergeStatus.CAN_BE_MERGED,
                     false,
@@ -94,8 +120,8 @@ public class MergeRequestUpdateNotificationTest {
             ),
             GIT_LAB_PROJECT,
             Arrays.asList(
-                    new GitLabNote(1, "body"),
-                    new GitLabNote(2, "body2")),
+                    new GitLabNote(1, "body", new Date(), GIT_LAB_USER_A),
+                    new GitLabNote(2, "body2", new Date(), GIT_LAB_USER_B)),
             Collections.singletonList(new GitLabCommit("1"))
     );
 
@@ -105,6 +131,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     1,
                     "title",
+                    "desc",
                     GitLabMergeRequestState.OPENED,
                     GitLabMergeStatus.CAN_BE_MERGED,
                     false,
@@ -117,7 +144,7 @@ public class MergeRequestUpdateNotificationTest {
                     "url.com"
             ),
             GIT_LAB_PROJECT,
-            Collections.singletonList(new GitLabNote(1, "body")),
+            Collections.singletonList(new GitLabNote(1, "body", new Date(), GIT_LAB_USER_A)),
             Collections.singletonList(new GitLabCommit("1"))
     );
 
@@ -127,6 +154,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     1,
                     "title",
+                    "desc",
                     GitLabMergeRequestState.MERGED,
                     GitLabMergeStatus.CAN_BE_MERGED,
                     false,
@@ -139,7 +167,7 @@ public class MergeRequestUpdateNotificationTest {
                     "url.com"
             ),
             GIT_LAB_PROJECT,
-            Collections.singletonList(new GitLabNote(1, "body")),
+            Collections.singletonList(new GitLabNote(1, "body", new Date(), GIT_LAB_USER_A)),
             Collections.singletonList(new GitLabCommit("1"))
     );
 
@@ -149,6 +177,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     1,
                     "title",
+                    "desc",
                     GitLabMergeRequestState.CLOSED,
                     GitLabMergeStatus.CAN_BE_MERGED,
                     false,
@@ -161,7 +190,7 @@ public class MergeRequestUpdateNotificationTest {
                     "url.com"
             ),
             GIT_LAB_PROJECT,
-            Collections.singletonList(new GitLabNote(1, "body")),
+            Collections.singletonList(new GitLabNote(1, "body", new Date(), GIT_LAB_USER_A)),
             Collections.singletonList(new GitLabCommit("1"))
     );
 
@@ -171,6 +200,7 @@ public class MergeRequestUpdateNotificationTest {
                     1,
                     1,
                     "title",
+                    "desc",
                     GitLabMergeRequestState.MERGED,
                     GitLabMergeStatus.CAN_BE_MERGED,
                     false,
@@ -184,8 +214,8 @@ public class MergeRequestUpdateNotificationTest {
             ),
             GIT_LAB_PROJECT,
             Arrays.asList(
-                    new GitLabNote(1, "body"),
-                    new GitLabNote(2, "body2")),
+                    new GitLabNote(1, "body", new Date(), GIT_LAB_USER_A),
+                    new GitLabNote(2, "body2", new Date(), GIT_LAB_USER_B)),
             Collections.singletonList(new GitLabCommit("1"))
     );
 
@@ -205,6 +235,15 @@ public class MergeRequestUpdateNotificationTest {
     public void shouldNotifyAddedComment() {
         assertTrue(new MergeRequestUpdateNotificationChain(
                 ADDED_COMMENT, MERGE_REQUEST, GIT_LAB_USER_A,24).shouldNotify());
+    }
+
+    @Test
+    public void shouldNotifyCompletedTask() {
+        assertTrue(new MergeRequestUpdateNotificationChain(
+                COMPLETED_TASK, MERGE_REQUEST, GIT_LAB_USER_B,24).shouldNotify());
+
+        assertFalse(new MergeRequestUpdateNotificationChain(
+                COMPLETED_TASK, MERGE_REQUEST, GIT_LAB_USER_A,24).shouldNotify());
     }
 
     @Test

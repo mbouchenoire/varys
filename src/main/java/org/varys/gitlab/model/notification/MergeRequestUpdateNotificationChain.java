@@ -29,6 +29,7 @@ public class MergeRequestUpdateNotificationChain extends MergeRequestUpdateNotif
                 new ConflictedMergeRequestNotification(mergeRequest, previousVersion, myself),
                 new NewCommitsNotification(mergeRequest, previousVersion, myself),
                 new NewCommentsNotification(mergeRequest, previousVersion, myself),
+                new CompletedTaskNotification(mergeRequest, previousVersion, myself),
                 new PendingMergeRequestNotification(mergeRequest, previousVersion, hoursBeforeReminder)
         )
         .filter(MergeRequestUpdateNotification::shouldNotify)

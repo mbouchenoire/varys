@@ -4,6 +4,8 @@ import org.varys.common.model.Linkable;
 
 import java.beans.Transient;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +17,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
     private final long iid;
     private final GitLabProject project;
     private final String title;
+    private final String description;
     private final GitLabMergeRequestState state;
     private final GitLabMergeStatus mergeStatus;
     private final boolean wip;
@@ -33,6 +36,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
         this.iid = -1;
         this.project = null;
         this.title = null;
+        this.description = null;
         this.state = null;
         this.mergeStatus = null;
         this.wip = false;
@@ -52,6 +56,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
             long iid,
             GitLabProject project,
             String title,
+            String description,
             GitLabMergeRequestState state,
             GitLabMergeStatus mergeStatus,
             boolean wip,
@@ -69,6 +74,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
         this.iid = iid;
         this.project = project;
         this.title = title;
+        this.description = description;
         this.state = state;
         this.mergeStatus = mergeStatus;
         this.wip = wip;
@@ -93,6 +99,7 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
                 mergeRequestListItem.getIid(),
                 project,
                 mergeRequestListItem.getTitle(),
+                mergeRequestListItem.getDescription(),
                 mergeRequestListItem.getState(),
                 mergeRequestListItem.getMergeStatus(),
                 mergeRequestListItem.isWip(),
@@ -231,12 +238,39 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
         return lastNotificationDate;
     }
 
+    @Transient
+    public List<GitLabMergeRequestTask> getTasks() {
+        if (this.description == null) {
+            return Collections.emptyList();
+        }
+
+        // note: this algorithm does not take into account badly formated descriptions
+        return Arrays.stream(this.description.split("(- \\[)|(\\\\r\\\\n)"))
+                .filter(segment -> segment.startsWith("x] ") || segment.startsWith(" ] "))
+                .map(segment -> {
+                    final String description = segment
+                            .replaceAll("x] ", "")
+                            .replaceAll(" ] ", "");
+
+                    final boolean completed = segment.startsWith("x] ");
+
+                    return this.notes.stream()
+                            .filter(note -> note.getBody().startsWith("marked the task **" + description))
+                            .min((n1, n2) -> n2.getCreatedAt().compareTo(n1.getCreatedAt()))
+                            .map(GitLabNote::getAuthor)
+                            .map(completor -> new GitLabMergeRequestTask(description, completed, completor))
+                            .orElse(new GitLabMergeRequestTask(description, completed));
+                })
+                .collect(Collectors.toList());
+    }
+
     public GitLabMergeRequest notified() {
         return new GitLabMergeRequest(
                 this.id,
                 this.iid,
                 this.project,
                 this.title,
+                this.description,
                 this.state,
                 this.mergeStatus,
                 this.wip,
