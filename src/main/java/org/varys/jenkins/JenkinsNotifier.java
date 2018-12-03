@@ -59,6 +59,11 @@ public class JenkinsNotifier implements NotifierModule {
 
     @Override
     public void iterate() {
+        if (this.restApiService.isOffline()) {
+            Log.warn("No internet access, aborting Jenkins notification iteration");
+            return;
+        }
+
         final boolean apiIsOnline = this.restApiService.notifyApiStatus(this.jenkinsApi);
 
         if (apiIsOnline) {

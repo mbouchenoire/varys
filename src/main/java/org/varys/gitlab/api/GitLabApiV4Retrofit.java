@@ -14,7 +14,7 @@ import retrofit2.http.Query;
 
 import java.util.List;
 
-interface GitLabApiV4Retrofit extends GitLabApiRetrofit {
+interface GitLabApiV4Retrofit {
 
     @GET("api/v4/version")
     Call<GitLabVersion> getVersion(

@@ -54,6 +54,11 @@ public final class GitLabNotifier implements NotifierModule {
 
     @Override
     public void iterate() {
+        if (this.restApiService.isOffline()) {
+            Log.warn("No internet access, aborting GitLab notification iteration");
+            return;
+        }
+
         final boolean apiIsOnline = this.restApiService.notifyApiStatus(this.gitLabApi);
 
         if (!apiIsOnline) {

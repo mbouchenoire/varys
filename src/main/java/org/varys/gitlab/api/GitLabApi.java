@@ -2,15 +2,16 @@ package org.varys.gitlab.api;
 
 import org.varys.common.RestApi;
 import org.varys.common.service.Log;
-import org.varys.gitlab.model.GitLabApiConfig;
 import org.varys.gitlab.model.GitLabMergeRequest;
 import org.varys.gitlab.model.GitLabMergeRequestState;
 import org.varys.gitlab.model.GitLabUser;
+import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public interface GitLabApi extends RestApi {
 
@@ -25,10 +26,9 @@ public interface GitLabApi extends RestApi {
     List<GitLabMergeRequest> getMergeRequests(GitLabMergeRequestState state);
     Optional<GitLabMergeRequest> getMergeRequest(long projectId, long mergeRequestId, long mergeRequestIid);
 
-    default GitLabUser getUser(GitLabApiRetrofit gitLabApiRetrofit, GitLabApiConfig apiConfig) {
+    default GitLabUser getUser(Supplier<Call<GitLabUser>> gitLabUserSupplier) {
         try {
-            final Response<GitLabUser> response =
-                    gitLabApiRetrofit.getUser(apiConfig.getPrivateToken()).execute();
+            final Response<GitLabUser> response = gitLabUserSupplier.get().execute();
 
             if (response.isSuccessful()) {
                 return response.body();

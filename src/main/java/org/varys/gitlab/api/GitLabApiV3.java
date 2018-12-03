@@ -83,7 +83,7 @@ public class GitLabApiV3 implements GitLabApi {
 
     @Override
     public GitLabUser getUser() {
-        return this.getUser(this.gitLabApiV3Retrofit, this.apiConfig);
+        return this.getUser(() -> this.gitLabApiV3Retrofit.getUser(this.apiConfig.getPrivateToken()));
     }
 
     @Override

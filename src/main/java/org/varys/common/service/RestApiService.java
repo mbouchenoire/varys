@@ -5,6 +5,10 @@ import org.varys.common.model.ApiBackOnlineNotification;
 import org.varys.common.model.ApiDownNotification;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
 public final class RestApiService {
 
@@ -14,6 +18,20 @@ public final class RestApiService {
     public RestApiService(CacheService cacheService, NotificationService notificationService) {
         this.cacheService = cacheService;
         this.notificationService = notificationService;
+    }
+
+    public boolean isOffline() {
+        try {
+            final URL url = new URL("http://google.com");
+            final URLConnection conn = url.openConnection();
+            conn.connect();
+            conn.getInputStream().close();
+            return false;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            return true;
+        }
     }
 
     public boolean notifyApiStatus(RestApi api) {
