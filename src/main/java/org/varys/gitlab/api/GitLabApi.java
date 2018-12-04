@@ -20,6 +20,7 @@ public interface GitLabApi extends RestApi {
         return "GitLab";
     }
 
+    int getVersion();
     boolean isAuthorized();
     boolean isCompatible();
     GitLabUser getUser();

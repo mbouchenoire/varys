@@ -28,7 +28,7 @@ public class GitLabApiV3 implements GitLabApi {
     private final GitLabApiConfig apiConfig;
     private final GitLabApiV3Retrofit gitLabApiV3Retrofit;
 
-    GitLabApiV3(GitLabApiConfig apiConfig) {
+    public GitLabApiV3(GitLabApiConfig apiConfig) {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(apiConfig.getBaseUrl())
                 .client(OkHttpClientFactory.create(apiConfig.isSslVerify()))
@@ -37,6 +37,11 @@ public class GitLabApiV3 implements GitLabApi {
 
         this.gitLabApiV3Retrofit = retrofit.create(GitLabApiV3Retrofit.class);
         this.apiConfig = apiConfig;
+    }
+
+    @Override
+    public int getVersion() {
+        return 3;
     }
 
     @Override

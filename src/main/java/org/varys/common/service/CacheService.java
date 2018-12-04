@@ -94,7 +94,7 @@ public class CacheService {
             final boolean newFile = cachedObjectFile.createNewFile();
 
             if (!newFile) {
-                Log.error("Failed to create empty cache file: {}",
+                Log.error("Failed to findUsable empty cache file: {}",
                         cachedObjectFile.getAbsolutePath());
             }
 
@@ -108,7 +108,7 @@ public class CacheService {
         } catch (JsonProcessingException e) {
             Log.error(e,"Failed to serialize object to cache: {}", object);
         } catch (IOException e) {
-            Log.error(e, "Failed to create cache file: {}", path);
+            Log.error(e, "Failed to findUsable cache file: {}", path);
         }
     }
 

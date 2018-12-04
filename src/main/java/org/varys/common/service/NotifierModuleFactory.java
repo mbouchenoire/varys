@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.varys.common.model.GitConfig;
 import org.varys.git.service.GitService;
 import org.varys.gitlab.GitLabNotifier;
-import org.varys.gitlab.api.GitLabApiFactory;
+import org.varys.gitlab.api.GitLabApiLocator;
+import org.varys.gitlab.api.GitLabApiV3;
+import org.varys.gitlab.api.GitLabApiV4;
 import org.varys.gitlab.model.GitLabApiConfig;
 import org.varys.gitlab.model.GitLabNotificationsFilters;
 import org.varys.gitlab.model.GitLabNotifierConfig;
@@ -39,12 +41,12 @@ public class NotifierModuleFactory {
     private static final boolean DEFAULT_ASSIGNED_TO_ME_ONLY_FILTER = true;
 
     private final GitConfig gitConfig;
-    private final GitLabApiFactory gitLabApiFactory;
+    private final GitLabApiLocator gitLabApiLocator;
     private final Map<String, BiFunction<JsonNode, GitConfig, NotifierModule>> moduleFactories;
 
-    public NotifierModuleFactory(GitConfig gitConfig, GitLabApiFactory gitLabApiFactory) {
+    public NotifierModuleFactory(GitConfig gitConfig, GitLabApiLocator gitLabApiLocator) {
         this.gitConfig = gitConfig;
-        this.gitLabApiFactory = gitLabApiFactory;
+        this.gitLabApiLocator = gitLabApiLocator;
         this.moduleFactories = new HashMap<>();
         this.moduleFactories.put("jenkins", this::createJenkins);
         this.moduleFactories.put("gitlab", this::createGitLab);
@@ -145,9 +147,12 @@ public class NotifierModuleFactory {
 
         final GitLabNotifierConfig notifierConfig = new GitLabNotifierConfig(notificationsConfig);
 
+        final GitLabApiV3 gitLabApiV3 = new GitLabApiV3(apiConfig);
+        final GitLabApiV4 gitLabApiV4 = new GitLabApiV4(apiConfig);
+
         return new GitLabNotifier(
                 notifierConfig,
-                this.gitLabApiFactory.create(apiConfig),
+                this.gitLabApiLocator.findUsable(gitLabApiV3, gitLabApiV4),
                 new CacheService(moduleName),
                 new NotificationService(moduleName));
     }

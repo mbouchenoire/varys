@@ -41,7 +41,7 @@ public final class OkHttpClientFactory {
 
             return okHttpClientBuilder.build();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error(e, "Failed to create unsecured HTTP client, using default one instead");
+            Log.error(e, "Failed to findUsable unsecured HTTP client, using default one instead");
 
             return new OkHttpClient().newBuilder()
                     .addInterceptor(OkHttpClientFactory::loggingInterceptor)
