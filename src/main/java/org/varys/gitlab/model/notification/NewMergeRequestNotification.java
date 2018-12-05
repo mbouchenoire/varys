@@ -13,8 +13,12 @@ public class NewMergeRequestNotification extends MergeRequestNotification {
     }
 
     @Override
-    public String getHeader() {
-        return "New merge request on " + this.mergeRequest.getProject().getName();
+    public String getTitle() {
+        final String authorName = mergeRequest.getAuthor().getName().split(" ")[0];
+        final String assigneeName = mergeRequest.getAssignee().getName().split(" ")[0];
+
+        return "New merge request on " + this.mergeRequest.getProject().getName() + "\n"
+                + "By " + authorName + " for " + assigneeName;
     }
 
     @Override

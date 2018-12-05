@@ -22,8 +22,11 @@ public class MergedNotification extends MergeRequestUpdateNotification {
     }
 
     @Override
-    public String getHeader() {
-        return "Merge request has been merged";
+    public String getTitle() {
+        final String assigneeName = this.getMergeRequest().getAssignee().getName().split(" ")[0];
+
+        return String.format("Merge request on %s has been merged by %s",
+                this.getMergeRequest().getProject().getName(), assigneeName);
     }
 
     @Override

@@ -33,8 +33,8 @@ public class PendingMergeRequestNotification extends MergeRequestUpdateNotificat
     }
 
     @Override
-    protected String getHeader() {
-        return "Merge request is pending";
+    public String getTitle() {
+        return "Merge request is pending\n" + this.getMergeRequest().getIdentifier();
     }
 
     @Override

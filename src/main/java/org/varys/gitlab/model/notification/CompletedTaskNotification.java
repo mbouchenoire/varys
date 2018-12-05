@@ -32,10 +32,11 @@ class CompletedTaskNotification extends MergeRequestUpdateNotification {
     }
 
     @Override
-    public String getHeader() {
-        final long addedUserNotesCount = this.getMergeRequest().addedUserNotesCount(this.getPreviousVersion());
-        final String s = addedUserNotesCount > 1 ? "s" : "";
-        return String.format("%d new comment%s on merge request", addedUserNotesCount, s);
+    public String getTitle() {
+        final GitLabMergeRequest mr = this.getMergeRequest();
+        final long completedTasksCount = mr.completedTasksSince(this.getPreviousVersion());
+        final String s = completedTasksCount > 1 ? "s" : "";
+        return String.format("%d completed task%s on merge request\n%s", completedTasksCount, s, mr.getIdentifier());
     }
 
     @Override

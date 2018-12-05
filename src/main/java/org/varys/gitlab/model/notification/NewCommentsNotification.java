@@ -22,10 +22,11 @@ class NewCommentsNotification extends MergeRequestUpdateNotification {
     }
 
     @Override
-    public String getHeader() {
-        final long addedUserNotesCount = this.getMergeRequest().addedUserNotesCount(this.getPreviousVersion());
+    public String getTitle() {
+        final GitLabMergeRequest mr = this.getMergeRequest();
+        final long addedUserNotesCount = mr.addedUserNotesCount(this.getPreviousVersion());
         final String s = addedUserNotesCount > 1 ? "s" : "";
-        return String.format("%d new comment%s on merge request", addedUserNotesCount, s);
+        return String.format("%d new comment%s on merge request\n%s", addedUserNotesCount, s, mr.getIdentifier());
     }
 
     @Override

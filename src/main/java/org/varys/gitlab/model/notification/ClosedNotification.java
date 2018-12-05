@@ -15,8 +15,9 @@ class ClosedNotification extends MergeRequestUpdateNotification {
     }
 
     @Override
-    public String getHeader() {
-        return "Merge request has been closed";
+    public String getTitle() {
+        return "Merge request has been closed\n"
+                + this.getMergeRequest().getIdentifier();
     }
 
     @Override

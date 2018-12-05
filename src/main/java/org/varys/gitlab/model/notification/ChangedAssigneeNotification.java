@@ -15,8 +15,12 @@ class ChangedAssigneeNotification extends MergeRequestUpdateNotification {
     }
 
     @Override
-    public String getHeader() {
-        return "Merge request changed assignee";
+    public String getTitle() {
+        final String previousAssignee = this.getPreviousVersion().getAssignee().getName().split(" ")[0];
+        final String newAssignee = this.getMergeRequest().getAssignee().getName().split(" ")[0];
+
+        return "Merge request changed assignee\n"
+                + previousAssignee + " -> " + newAssignee;
     }
 
     @Override

@@ -32,12 +32,14 @@ public class ConflictedMergeRequestNotification extends MergeRequestUpdateNotifi
     }
 
     @Override
-    public String getHeader() {
+    public String getTitle() {
         final GitLabMergeRequest mr = this.getMergeRequest();
 
-        return mr.hasConflict()
+        final String firstLine = mr.hasConflict()
                 ? "Conflicted merge request on " + mr.getProject().getName()
                 : "Merge request no longer conflicted";
+
+        return firstLine + "\n" + this.getMergeRequest().getIdentifier();
     }
 
     @Override

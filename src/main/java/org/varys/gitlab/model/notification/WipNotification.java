@@ -22,10 +22,12 @@ public class WipNotification extends MergeRequestUpdateNotification {
     }
 
     @Override
-    public String getHeader() {
-        return this.getMergeRequest().isWip()
+    public String getTitle() {
+        final String firstLine = this.getMergeRequest().isWip()
                 ? "Merge request is now WIP"
                 : "Merge request is no longer WIP";
+
+        return firstLine + "\n" + this.getMergeRequest().getIdentifier();
     }
 
     @Override

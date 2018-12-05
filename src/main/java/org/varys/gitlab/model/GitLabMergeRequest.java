@@ -213,6 +213,12 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
                 .count();
     }
 
+    public long completedTasksSince(GitLabMergeRequest other) {
+        final long freshCompletedCount = this.getTasks().stream().filter(GitLabMergeRequestTask::isCompleted).count();
+        final long previousCompletedCount = other.getTasks().stream().filter(GitLabMergeRequestTask::isCompleted).count();
+        return freshCompletedCount - previousCompletedCount;
+    }
+
     private boolean containsUserNote(GitLabNote note) {
         return this.getUserNotes().stream()
                 .anyMatch(userNote -> userNote.getId() == note.getId());
