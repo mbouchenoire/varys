@@ -186,7 +186,10 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
 
     @Transient
     public boolean isRelevantUser(GitLabUser user) {
-        return this.getAssignee().equals(user) || this.getAuthor().equals(user);
+        final GitLabUser assignee = this.getAssignee();
+        final GitLabUser author = this.getAuthor();
+
+        return (assignee != null && assignee.equals(user)) || author.equals(user);
     }
 
     public boolean sameAssignee(GitLabMergeRequest mergeRequest) {
