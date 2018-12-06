@@ -34,7 +34,9 @@ public class StartupNotification implements Notification {
 
     @Override
     public String getTitle() {
-        return "Varys is up and running!";
+        final String version = getClass().getPackage().getImplementationVersion();
+        final String displayedVersop = version == null ? "" : " v" + version;
+        return String.format("Varys%s is running!", displayedVersop);
     }
 
     @Override
