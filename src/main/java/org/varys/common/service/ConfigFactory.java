@@ -20,6 +20,7 @@ package org.varys.common.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.pmw.tinylog.Logger;
 import org.varys.common.model.GitConfig;
 import org.varys.common.model.LoggingConfig;
 
@@ -59,7 +60,7 @@ public final class ConfigFactory {
         if (configValueNode != null) {
             return extractor.apply(configValueNode);
         } else {
-            Log.info("Undefined configuration value '{}', using default value: '{}'", path, defaultValue);
+            Logger.info("Undefined configuration value '{}', using default value: '{}'", path, defaultValue);
             return defaultValue;
         }
     }
@@ -90,7 +91,7 @@ public final class ConfigFactory {
     }
 
     public static LoggingConfig createLoggingConfig(File configFile) throws IOException {
-        Log.debug("Retreiving logging config from file: {}...", configFile);
+        Logger.debug("Retreiving logging config from file: {}...", configFile);
         final JsonNode configRootNode = getConfigRootNode(configFile);
         final String loggingFilePath = getString(configRootNode, "logging.file", "varys.log");
         final String loggingLevel = getString(configRootNode, "logging.level", "INFO");
@@ -98,7 +99,7 @@ public final class ConfigFactory {
     }
 
     public static GitConfig createGitConfig(File configFile) throws IOException {
-        Log.debug("Retreiving git config from file: {}...", configFile);
+        Logger.debug("Retreiving git config from file: {}...", configFile);
         final JsonNode configRootNode = getConfigRootNode(configFile);
         final String rootDirectoryString = getString(configRootNode, "git_projects_directory", "");
         final File rootDirectory = new File(rootDirectoryString);
@@ -106,12 +107,12 @@ public final class ConfigFactory {
     }
 
     public static Collection<JsonNode> findModuleNodes(File configFile) throws IOException {
-        Log.debug("Retreiving modules from config file: {}...", configFile);
+        Logger.debug("Retreiving modules from config file: {}...", configFile);
         final JsonNode configRootNode = getConfigRootNode(configFile);
         final Iterator<JsonNode> moduleConfigNodesIterator = configRootNode.get("modules").elements();
         final List<JsonNode> moduleConfigNodesList = new ArrayList<>();
         moduleConfigNodesIterator.forEachRemaining(moduleConfigNodesList::add);
-        Log.debug("Retreived {} modules from config file", moduleConfigNodesList.size());
+        Logger.debug("Retreived {} modules from config file", moduleConfigNodesList.size());
         return moduleConfigNodesList;
     }
 }

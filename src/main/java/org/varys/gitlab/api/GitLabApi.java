@@ -17,8 +17,8 @@
 
 package org.varys.gitlab.api;
 
+import org.pmw.tinylog.Logger;
 import org.varys.common.RestApi;
-import org.varys.common.service.Log;
 import org.varys.gitlab.model.GitLabMergeRequest;
 import org.varys.gitlab.model.GitLabMergeRequestState;
 import org.varys.gitlab.model.GitLabUser;
@@ -55,7 +55,7 @@ public interface GitLabApi extends RestApi {
             }
         } catch (IOException e) {
             final String msg = "Failed to fetch GitLab user";
-            Log.error(e, msg);
+            Logger.error(e, msg);
             throw new IllegalStateException(msg);
         }
     }

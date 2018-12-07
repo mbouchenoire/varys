@@ -18,7 +18,7 @@
 package org.varys.gitlab.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.varys.common.service.Log;
+import org.pmw.tinylog.Logger;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GitLabVersion {
@@ -40,7 +40,7 @@ public class GitLabVersion {
 
     public int getMajor() {
         if (this.version == null) {
-            Log.warn("Cannot parse GitLab major version (null version)");
+            Logger.warn("Cannot parse GitLab major version (null version)");
             return -1;
         }
 
@@ -50,7 +50,7 @@ public class GitLabVersion {
 
     public int getMinor() {
         if (this.version == null) {
-            Log.warn("Cannot parse GitLab minor version (null version)");
+            Logger.warn("Cannot parse GitLab minor version (null version)");
             return -1;
         }
 

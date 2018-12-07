@@ -18,6 +18,7 @@
 package org.varys.common.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.pmw.tinylog.Logger;
 import org.varys.common.model.GitConfig;
 import org.varys.git.service.GitService;
 import org.varys.gitlab.GitLabNotifier;
@@ -80,27 +81,27 @@ public class NotifierModuleFactory {
     private Optional<NotifierModule> create(JsonNode moduleRootNode) {
         final String moduleName = moduleRootNode.fieldNames().next();
 
-        Log.debug("Found module with name '{}'...", moduleName);
+        Logger.debug("Found module with name '{}'...", moduleName);
 
         final JsonNode moduleNode = moduleRootNode.get(moduleName);
 
         final boolean enabled = moduleNode.get("enabled").asBoolean(true);
 
         if (!enabled) {
-            Log.warn("{} module is not enabled", moduleName);
+            Logger.warn("{} module is not enabled", moduleName);
             return Optional.empty();
         }
 
         final BiFunction<JsonNode, GitConfig, NotifierModule> moduleFactory = this.moduleFactories.get(moduleName);
 
         if (moduleFactory == null) {
-            Log.error("Cannot find module with name '{}'", moduleName);
+            Logger.error("Cannot find module with name '{}'", moduleName);
             return Optional.empty();
         }
 
         final NotifierModule module = moduleFactory.apply(moduleNode, this.gitConfig);
 
-        Log.info("Initialized module: {}", module);
+        Logger.info("Initialized module: {}", module);
 
         return Optional.of(module);
     }
@@ -140,7 +141,7 @@ public class NotifierModuleFactory {
     }
 
     private GitLabNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) {
-        Log.trace("Unused git config for GitLab module: {}", gitConfig);
+        Logger.trace("Unused git config for GitLab module: {}", gitConfig);
 
         final String moduleName = getString(moduleNode, "name", "gitlab");
 

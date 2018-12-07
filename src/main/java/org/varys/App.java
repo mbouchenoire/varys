@@ -18,11 +18,15 @@
 package org.varys;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.pmw.tinylog.Configurator;
+import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.policies.DailyPolicy;
+import org.pmw.tinylog.policies.SizePolicy;
+import org.pmw.tinylog.writers.RollingFileWriter;
 import org.varys.common.model.GitConfig;
 import org.varys.common.model.LoggingConfig;
 import org.varys.common.model.StartupNotification;
 import org.varys.common.service.ConfigFactory;
-import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
 import org.varys.common.service.NotifierModule;
 import org.varys.common.service.NotifierModuleFactory;
@@ -42,7 +46,7 @@ public class App {
         final File configFile = new File(configFilePath);
 
         final LoggingConfig loggingConfig = ConfigFactory.createLoggingConfig(configFile);
-        Log.init(loggingConfig);
+        initLogConfig(loggingConfig);
 
         VarysTrayIcon.addPermanentClickableMenu("Varys - Stop", App::stop);
         VarysTrayIcon.addPermanentClickableMenu("Varys - Open application folder", () -> openAppFolder(configFile));
@@ -61,23 +65,23 @@ public class App {
         final ForkJoinPool forkJoinPool = new ForkJoinPool(
                 threadPoolSize,
                 ForkJoinPool.defaultForkJoinWorkerThreadFactory,
-                (t, e) -> Log.error(e, "Uncaught exception"),
+                (t, e) -> Logger.error(e, "Uncaught exception"),
                 false);
 
-        Log.info("Starting {} module(s)...", notifierModules.size());
+        Logger.info("Starting {} module(s)...", notifierModules.size());
         forkJoinPool.invokeAll(notifierModules);
 
         final int input = System.in.read();
-        Log.info("Varys is shutting down (input: {})...", input);
+        Logger.info("Varys is shutting down (input: {})...", input);
     }
 
     private static void stop() {
-        Log.info("Stopping Varys (user request)...");
+        Logger.info("Stopping Varys (user request)...");
         System.exit(0);
     }
 
     private static void openAppFolder(File configFile) {
-        Log.info("Opening application folder (user request)...");
+        Logger.info("Opening application folder (user request)...");
 
         final File[] binFolders = configFile.getParentFile().getParentFile().listFiles((dir, name) -> name.equals("bin"));
 
@@ -89,17 +93,31 @@ public class App {
                 throw new IOException("Could not find application folder");
             }
         } catch (IOException e) {
-            Log.error(e, "Failed to open application folder");
+            Logger.error(e, "Failed to open application folder");
         }
     }
 
     private static void editConfiguration(File configFile) {
-        Log.info("Opening configuration file (user request)...");
+        Logger.info("Opening configuration file (user request)...");
 
         try {
             Desktop.getDesktop().open(configFile);
         } catch (IOException e) {
-            Log.error(e, "Failed to open configuration file");
+            Logger.error(e, "Failed to open configuration file");
         }
+    }
+
+    private static void initLogConfig(LoggingConfig loggingConfig) {
+        final RollingFileWriter fileWriter = new RollingFileWriter(
+                loggingConfig.getLoggingDirectory(),
+                5,
+                new SizePolicy(5 * 1024 * 1024),
+                new DailyPolicy(0, 0));
+
+        Configurator.defaultConfig()
+                .addWriter(fileWriter)
+                .formatPattern("{date:yyyy-MM-dd HH:mm:ss} {level}: {message}")
+                .level(loggingConfig.getLoggingLevel())
+                .activate();
     }
 }

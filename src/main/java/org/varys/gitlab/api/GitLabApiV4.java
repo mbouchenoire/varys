@@ -18,7 +18,7 @@
 package org.varys.gitlab.api;
 
 import org.apache.http.HttpStatus;
-import org.varys.common.service.Log;
+import org.pmw.tinylog.Logger;
 import org.varys.common.service.OkHttpClientFactory;
 import org.varys.gitlab.model.GitLabApiConfig;
 import org.varys.gitlab.model.GitLabCommit;
@@ -68,7 +68,7 @@ public class GitLabApiV4 implements GitLabApi {
 
             return response.code() != HttpStatus.SC_NOT_FOUND && response.code() != HttpStatus.SC_UNAUTHORIZED;
         } catch (IOException e) {
-            Log.error(e, "Authentication query agains't GitLab v3 API failed");
+            Logger.error(e, "Authentication query agains't GitLab v3 API failed");
             return false;
         }
     }
@@ -128,7 +128,7 @@ public class GitLabApiV4 implements GitLabApi {
             if (response.isSuccessful()) {
                 final List<GitLabMergeRequestListItem> listItems = response.body();
                 assert listItems != null;
-                Log.debug("Fetched {} GitLab merge request(s) (opened)", listItems.size());
+                Logger.debug("Fetched {} GitLab merge request(s) (opened)", listItems.size());
                 return listItems.parallelStream()
                         .map(this::fetchDetails)
                         .filter(Optional::isPresent)
@@ -138,7 +138,7 @@ public class GitLabApiV4 implements GitLabApi {
                 throw new IOException(response.message());
             }
         } catch (IOException e) {
-            Log.error(e, "Failed to retreive GitLab merge requests");
+            Logger.error(e, "Failed to retreive GitLab merge requests");
             return Collections.emptyList();
         }
     }
@@ -152,13 +152,13 @@ public class GitLabApiV4 implements GitLabApi {
             if (mergeRequestListItem != null) {
                 return this.fetchDetails(mergeRequestListItem);
             } else {
-                Log.error("Failed to fetch GitLab merge request with iid={} within project with id={}",
+                Logger.error("Failed to fetch GitLab merge request with iid={} within project with id={}",
                         mergeRequestIid, projectId);
 
                 return Optional.empty();
             }
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab merge request with project_id={} and iid={}",
+            Logger.error(e, "Failed to fetch GitLab merge request with project_id={} and iid={}",
                     projectId,
                     mergeRequestIid);
 
@@ -186,11 +186,11 @@ public class GitLabApiV4 implements GitLabApi {
             if (gitLabProject != null) {
                 return Optional.of(gitLabProject);
             } else {
-                Log.error("Failed to fetch GitLab project with id={}", projectId);
+                Logger.error("Failed to fetch GitLab project with id={}", projectId);
                 return Optional.empty();
             }
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab project with id={}", projectId);
+            Logger.error(e, "Failed to fetch GitLab project with id={}", projectId);
             return Optional.empty();
         }
     }
@@ -200,7 +200,7 @@ public class GitLabApiV4 implements GitLabApi {
             return this.gitLabApiV4Retrofit.getNotes(
                     this.apiConfig.getPrivateToken(), projectId, mergeRequestIid).execute().body();
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab notes for merge request with project_id={} and iid={}",
+            Logger.error(e, "Failed to fetch GitLab notes for merge request with project_id={} and iid={}",
                     projectId,
                     mergeRequestIid);
 
@@ -213,7 +213,7 @@ public class GitLabApiV4 implements GitLabApi {
             return this.gitLabApiV4Retrofit.getCommits(
                     this.apiConfig.getPrivateToken(), projectId, mergeRequestIid).execute().body();
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab commits for merge request with project_id={} and iid={}",
+            Logger.error(e, "Failed to fetch GitLab commits for merge request with project_id={} and iid={}",
                     projectId,
                     mergeRequestIid);
 

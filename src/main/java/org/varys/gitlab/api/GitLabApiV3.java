@@ -18,7 +18,7 @@
 package org.varys.gitlab.api;
 
 import org.apache.http.HttpStatus;
-import org.varys.common.service.Log;
+import org.pmw.tinylog.Logger;
 import org.varys.common.service.OkHttpClientFactory;
 import org.varys.gitlab.model.GitLabApiConfig;
 import org.varys.gitlab.model.GitLabCommit;
@@ -69,7 +69,7 @@ public class GitLabApiV3 implements GitLabApi {
 
             return response.code() != HttpStatus.SC_GONE && response.code() != HttpStatus.SC_UNAUTHORIZED;
         } catch (IOException e) {
-            Log.error(e, "Authentication query agains't GitLab v3 API failed");
+            Logger.error(e, "Authentication query agains't GitLab v3 API failed");
             return false;
         }
     }
@@ -128,7 +128,7 @@ public class GitLabApiV3 implements GitLabApi {
                 throw new IOException(response.message());
             }
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab merge requests with state=" + state);
+            Logger.error(e, "Failed to fetch GitLab merge requests with state=" + state);
             return Collections.emptyList();
         }
     }
@@ -142,7 +142,7 @@ public class GitLabApiV3 implements GitLabApi {
                     null
             ).execute().body();
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab merge requests of project with id=" + projectId);
+            Logger.error(e, "Failed to fetch GitLab merge requests of project with id=" + projectId);
             return Collections.emptyList();
         }
     }
@@ -169,7 +169,7 @@ public class GitLabApiV3 implements GitLabApi {
                 throw new IOException(response.message());
             }
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab merge request with project_id={} and id={}",
+            Logger.error(e, "Failed to fetch GitLab merge request with project_id={} and id={}",
                     projectId,
                     mergeRequestId);
 
@@ -203,7 +203,7 @@ public class GitLabApiV3 implements GitLabApi {
                 throw new IOException(response.message());
             }
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab project with id={}", projectId);
+            Logger.error(e, "Failed to fetch GitLab project with id={}", projectId);
             return Optional.empty();
         }
     }
@@ -213,7 +213,7 @@ public class GitLabApiV3 implements GitLabApi {
             return this.gitLabApiV3Retrofit.getNotes(
                     this.apiConfig.getPrivateToken(), projectId, mergeRequestId).execute().body();
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab notes for merge request with project_id={}, id={}, iid={}",
+            Logger.error(e, "Failed to fetch GitLab notes for merge request with project_id={}, id={}, iid={}",
                     projectId,
                     mergeRequestId,
                     mergeRequestIid);
@@ -227,7 +227,7 @@ public class GitLabApiV3 implements GitLabApi {
             return this.gitLabApiV3Retrofit.getCommits(
                     this.apiConfig.getPrivateToken(), projectId, mergeRequestId).execute().body();
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch GitLab commits for merge request with project_id={}, id={}, iid={}",
+            Logger.error(e, "Failed to fetch GitLab commits for merge request with project_id={}, id={}, iid={}",
                     projectId,
                     mergeRequestId,
                     mergeRequestIid);

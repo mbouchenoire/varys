@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.pmw.tinylog.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class CacheService {
         final boolean created = this.tempDirectoryModuleRoot.mkdirs();
 
         if (created) {
-            Log.debug("Created module temp directory: " + this.tempDirectoryModuleRoot.getAbsolutePath());
+            Logger.debug("Created module temp directory: " + this.tempDirectoryModuleRoot.getAbsolutePath());
         }
 
         this.objectMapper = new ObjectMapper();
@@ -60,7 +61,7 @@ public class CacheService {
     }
 
     public void clear() {
-        Log.warn("Clearing cache for module root '{}'...", this.tempDirectoryModuleRoot);
+        Logger.warn("Clearing cache for module root '{}'...", this.tempDirectoryModuleRoot);
 
         try {
             Files.walkFileTree(this.tempDirectoryModuleRoot.toPath(), new SimpleFileVisitor<Path>() {
@@ -77,24 +78,24 @@ public class CacheService {
                 }
             });
         } catch (IOException e) {
-            Log.error(e, "Failed to clear module cache");
+            Logger.error(e, "Failed to clear module cache");
         }
     }
 
     public void delete(String path) {
-        Log.debug("Deleting cached object with path={}...", path);
+        Logger.debug("Deleting cached object with path={}...", path);
 
         final File cachedObjectFile = buildCacheFile(path);
 
         try {
             Files.delete(cachedObjectFile.toPath());
         } catch (IOException e) {
-            Log.error(e, "Failed to delete cache file: {}", cachedObjectFile.getAbsolutePath());
+            Logger.error(e, "Failed to delete cache file: {}", cachedObjectFile.getAbsolutePath());
         }
     }
 
     public void save(String path, Object object) {
-        Log.trace("Saving cached object={} with path={}...", object, path);
+        Logger.trace("Saving cached object={} with path={}...", object, path);
 
         try {
             final File cachedObjectFile = buildCacheFile(path);
@@ -102,7 +103,7 @@ public class CacheService {
             final boolean newDirectory = cachedObjectFile.getParentFile().mkdirs();
 
             if (!newDirectory) {
-                Log.trace("Cache file parent directory already exists: {}",
+                Logger.trace("Cache file parent directory already exists: {}",
                         cachedObjectFile.getParentFile().getAbsolutePath());
             }
 
@@ -111,30 +112,30 @@ public class CacheService {
             final boolean newFile = cachedObjectFile.createNewFile();
 
             if (!newFile) {
-                Log.error("Failed to findUsable empty cache file: {}",
+                Logger.error("Failed to findUsable empty cache file: {}",
                         cachedObjectFile.getAbsolutePath());
             }
 
             final ObjectWriter writer = this.objectMapper.writer(new DefaultPrettyPrinter());
             writer.writeValue(cachedObjectFile, object);
 
-            Log.debug(
+            Logger.debug(
                     "Successfuly cached object '{}' in file '{}'",
                     object,
                     cachedObjectFile.getAbsolutePath());
         } catch (JsonProcessingException e) {
-            Log.error(e,"Failed to serialize object to cache: {}", object);
+            Logger.error(e,"Failed to serialize object to cache: {}", object);
         } catch (IOException e) {
-            Log.error(e, "Failed to findUsable cache file: {}", path);
+            Logger.error(e, "Failed to findUsable cache file: {}", path);
         }
     }
 
     private static void deleteIfExists(File cachedObjectFile) {
         try {
             Files.delete(cachedObjectFile.toPath());
-            Log.debug("Cache file already existed and has been deleted: {}", cachedObjectFile);
+            Logger.debug("Cache file already existed and has been deleted: {}", cachedObjectFile);
         } catch (IOException e) {
-            Log.debug(e, "Cache file did not already exist and will be created: {}", cachedObjectFile);
+            Logger.debug(e, "Cache file did not already exist and will be created: {}", cachedObjectFile);
         }
     }
 
@@ -143,13 +144,13 @@ public class CacheService {
     }
 
     public <T> Optional<T> get(File file, Class<T> cacheClass) {
-        Log.debug("Retreiving cached {} from file={}", cacheClass.getSimpleName(), file);
+        Logger.debug("Retreiving cached {} from file={}", cacheClass.getSimpleName(), file);
 
         try {
             final T value = this.objectMapper.readValue(file, cacheClass);
             return Optional.ofNullable(value);
         } catch (IOException e) {
-            Log.error(e, "Failed to retreive cached object (file: {})", file);
+            Logger.error(e, "Failed to retreive cached object (file: {})", file);
             deleteFile(file);
             return Optional.empty();
         }
@@ -158,9 +159,9 @@ public class CacheService {
     private static void deleteFile(File file) {
         try {
             Files.delete(file.toPath());
-            Log.debug("Successfully deleted cache file (file: {})", file);
+            Logger.debug("Successfully deleted cache file (file: {})", file);
         } catch (IOException e) {
-            Log.error(e,"Failed to delete cache file ({})", file);
+            Logger.error(e,"Failed to delete cache file ({})", file);
         }
     }
 

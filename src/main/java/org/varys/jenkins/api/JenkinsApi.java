@@ -17,8 +17,8 @@
 
 package org.varys.jenkins.api;
 
+import org.pmw.tinylog.Logger;
 import org.varys.common.RestApi;
-import org.varys.common.service.Log;
 import org.varys.common.service.OkHttpClientFactory;
 import org.varys.jenkins.model.JenkinsApiConfig;
 import org.varys.jenkins.model.JenkinsBuild;
@@ -77,7 +77,7 @@ public class JenkinsApi implements RestApi {
             return Optional.ofNullable(
                     this.jenkinsRetrofitApi.getRootNode(this.apiConfig.getApiToken()).execute().body());
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch Jenkins root node");
+            Logger.error(e, "Failed to fetch Jenkins root node");
             return Optional.empty();
         }
     }
@@ -87,7 +87,7 @@ public class JenkinsApi implements RestApi {
             return Optional.ofNullable(
                     this.jenkinsRetrofitApi.getNode(url, this.apiConfig.getApiToken()).execute().body());
         } catch (IOException e) {
-            Log.error(e, "Failed to fetch Jenkins node with url={}", url);
+            Logger.error(e, "Failed to fetch Jenkins node with url={}", url);
             return Optional.empty();
         }
     }
@@ -97,7 +97,7 @@ public class JenkinsApi implements RestApi {
             return Optional.ofNullable(
                     this.jenkinsRetrofitApi.getBuild(url, this.apiConfig.getApiToken()).execute().body());
         } catch (IOException e) {
-            Log.error(e,"Failed to fetch Jenkins build with url={}", url);
+            Logger.error(e,"Failed to fetch Jenkins build with url={}", url);
             return Optional.empty();
         }
     }

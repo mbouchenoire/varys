@@ -19,8 +19,8 @@ package org.varys.git.service;
 
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.pmw.tinylog.Logger;
 import org.varys.common.model.GitConfig;
-import org.varys.common.service.Log;
 import org.varys.git.model.GitRepository;
 
 import java.io.File;
@@ -53,7 +53,7 @@ public class GitService {
 
             return Optional.ofNullable(repository);
         } catch (IOException e) {
-            Log.error(e, "Failed to parse directory as Git repository: {}", gitDirectoryPath);
+            Logger.error(e, "Failed to parse directory as Git repository: {}", gitDirectoryPath);
             return Optional.empty();
         }
     }
@@ -72,7 +72,7 @@ public class GitService {
                     .map(GitRepository::new)
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            Log.error(e, "Failed to list local Git repositories");
+            Logger.error(e, "Failed to list local Git repositories");
             return Collections.emptyList();
         }
     }

@@ -17,6 +17,8 @@
 
 package org.varys.common.service;
 
+import org.pmw.tinylog.Logger;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
@@ -30,23 +32,23 @@ public interface NotifierModule extends Callable<Void> {
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             final LocalDateTime start = LocalDateTime.now();
 
-            Log.info("Starting notification iteration for the {} module...", this.getName());
+            Logger.info("Starting notification iteration for the {} module...", this.getName());
 
             try {
                 this.iterate();
             } catch (Exception e) {
-                Log.error(e, "An unhandled error occurred while running the {} module", this.getName());
+                Logger.error(e, "An unhandled error occurred while running the {} module", this.getName());
             }
 
             final Duration between = Duration.between(start, LocalDateTime.now());
 
-            Log.info("{} module notification iteration duration: {} second(s)",
+            Logger.info("{} module notification iteration duration: {} second(s)",
                     this.getName(), between.getSeconds());
         }, 0, this.getPeriodSeconds(), TimeUnit.SECONDS);
 
-        Log.info("Successfuly started {} module", this.getName());
+        Logger.info("Successfuly started {} module", this.getName());
 
-    return null;
+        return null;
     }
 
     String getName();

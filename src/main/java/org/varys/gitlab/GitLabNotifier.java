@@ -17,8 +17,8 @@
 
 package org.varys.gitlab;
 
+import org.pmw.tinylog.Logger;
 import org.varys.common.service.CacheService;
-import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
 import org.varys.common.service.NotifierModule;
 import org.varys.common.service.RestApiService;
@@ -72,21 +72,21 @@ public final class GitLabNotifier implements NotifierModule {
     @Override
     public void iterate() {
         if (this.restApiService.isOffline()) {
-            Log.warn("No internet access, aborting GitLab notification iteration");
+            Logger.warn("No internet access, aborting GitLab notification iteration");
             return;
         }
 
         final boolean apiIsOnline = this.restApiService.notifyApiStatus(this.gitLabApi);
 
         if (!apiIsOnline) {
-            Log.error("GitLab API is down");
+            Logger.error("GitLab API is down");
             return;
         }
 
         final List<GitLabMergeRequest> liveMergeRequests =
                 this.gitLabApi.getMergeRequests(GitLabMergeRequestState.OPENED);
 
-        Log.debug("Processing {} (fetched) GitLab merge request(s) (opened)", liveMergeRequests.size());
+        Logger.debug("Processing {} (fetched) GitLab merge request(s) (opened)", liveMergeRequests.size());
 
         final GitLabUser myself = this.gitLabApi.getUser();
 
@@ -97,7 +97,7 @@ public final class GitLabNotifier implements NotifierModule {
 
         final List<GitLabMergeRequest> cachedMergeRequests = this.getCachedMergeRequests();
 
-        Log.debug("Processing {} (cached) GitLab merge request(s)", cachedMergeRequests.size());
+        Logger.debug("Processing {} (cached) GitLab merge request(s)", cachedMergeRequests.size());
 
         final Predicate<GitLabMergeRequest> notOpenedAnymore = mergeRequest -> liveMergeRequests.stream()
                 .noneMatch(openedMergeRequest -> openedMergeRequest.isSameMergeRequest(mergeRequest));
@@ -105,7 +105,7 @@ public final class GitLabNotifier implements NotifierModule {
         cachedMergeRequests.parallelStream()
                 .filter(notOpenedAnymore)
                 .map(notOpenedAnymoreCachedMergeRequest -> {
-                    Log.debug("Found a cached merge request that is not opened anymore: {}",
+                    Logger.debug("Found a cached merge request that is not opened anymore: {}",
                             notOpenedAnymoreCachedMergeRequest.getIdentifier());
 
                     return this.gitLabApi.getMergeRequest(
@@ -130,7 +130,7 @@ public final class GitLabNotifier implements NotifierModule {
         return this.getCache(liveMergeRequest)
                 .map(cachedMergeRequest -> this.notififyPotentialUpdate(liveMergeRequest, cachedMergeRequest, myself))
                 .orElseGet(() -> {
-                    Log.debug("Could not find a cached version of merge request: {}", liveMergeRequest);
+                    Logger.debug("Could not find a cached version of merge request: {}", liveMergeRequest);
 
                     if (liveMergeRequest.isWip()) {
                         return liveMergeRequest; // We don't notify new WIP merge requests
@@ -178,7 +178,7 @@ public final class GitLabNotifier implements NotifierModule {
             GitLabMergeRequest previousVersion,
             GitLabUser myself) {
 
-        Log.debug("Notifying differences for merge request: {}...", latestVersion.getIdentifier());
+        Logger.debug("Notifying differences for merge request: {}...", latestVersion.getIdentifier());
 
         final MergeRequestUpdateNotificationChain updateNotification = new MergeRequestUpdateNotificationChain(
                 latestVersion,

@@ -17,7 +17,7 @@
 
 package org.varys.gitlab.api;
 
-import org.varys.common.service.Log;
+import org.pmw.tinylog.Logger;
 
 public class GitLabApiLocator {
 
@@ -27,10 +27,10 @@ public class GitLabApiLocator {
         }
 
         if (gitLabApiV3.isCompatible()) {
-            Log.info("Using compatible GitLab API v3");
+            Logger.info("Using compatible GitLab API v3");
             return gitLabApiV3;
         } else if (gitLabApiV4.isCompatible()) {
-            Log.info("GitLab API v3 is not compatible, using compatible API v4");
+            Logger.info("GitLab API v3 is not compatible, using compatible API v4");
             return gitLabApiV4;
         } else {
             throw new UnsupportedOperationException("Cannot find compatible GitLab API version");

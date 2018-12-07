@@ -17,6 +17,7 @@
 
 package org.varys.common.service;
 
+import org.pmw.tinylog.Logger;
 import org.varys.common.model.Notification;
 
 import java.awt.*;
@@ -33,7 +34,7 @@ public class NotificationService {
     }
 
     public void send(Notification notification) {
-        Log.info("[NOTIFICATION][{}] title={}; description={}; type={}",
+        Logger.info("[NOTIFICATION][{}] title={}; description={}; type={}",
                 this.moduleName,
                 notification.getTitle(),
                 notification.getDescription(),
@@ -50,7 +51,7 @@ public class NotificationService {
                     try {
                         Desktop.getDesktop().browse(new URI(linkable.getUrl()));
                     } catch (IOException | URISyntaxException e) {
-                        Log.error(e, "Failed to start browser");
+                        Logger.error(e, "Failed to start browser");
                     }
                 }));
     }

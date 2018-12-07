@@ -17,6 +17,8 @@
 
 package org.varys.common.service;
 
+import org.pmw.tinylog.Logger;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
@@ -35,13 +37,13 @@ final class SSLUtils {
                 @Override
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                     // if the queried APIs certificates are not up to date, we don't check them
-                    Log.warn("Unsecure client trust check (auth type: {})", authType);
+                    Logger.warn("Unsecure client trust check (auth type: {})", authType);
                 }
 
                 @Override
                 public void checkServerTrusted(X509Certificate[] chain, String authType) {
                     // if the queried APIs certificates are not up to date, we don't check them
-                    Log.warn("Unsecure server trust check (auth type: {})", authType);
+                    Logger.warn("Unsecure server trust check (auth type: {})", authType);
                 }
 
                 @Override

@@ -17,6 +17,8 @@
 
 package org.varys.common.service;
 
+import org.pmw.tinylog.Logger;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
@@ -35,7 +37,7 @@ public final class VarysTrayIcon {
 
     static {
         if (SystemTray.isSupported()) {
-            Log.debug("SystemTray is supported");
+            Logger.debug("SystemTray is supported");
 
             Image trayIconImage;
 
@@ -53,14 +55,14 @@ public final class VarysTrayIcon {
                 try {
                     SystemTray.getSystemTray().add(trayIcon);
                 } catch (AWTException e) {
-                    Log.error(e, "Failed to initialize Varys tray icon");
+                    Logger.error(e, "Failed to initialize Varys tray icon");
                 }
             } else {
                 trayIcon = null;
                 popupMenu = null;
             }
         } else {
-            Log.warn("SystemTray is not supported");
+            Logger.warn("SystemTray is not supported");
             trayIcon = null;
             popupMenu = null;
         }

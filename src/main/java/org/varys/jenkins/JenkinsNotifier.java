@@ -17,8 +17,8 @@
 
 package org.varys.jenkins;
 
+import org.pmw.tinylog.Logger;
 import org.varys.common.service.CacheService;
-import org.varys.common.service.Log;
 import org.varys.common.service.NotificationService;
 import org.varys.common.service.NotifierModule;
 import org.varys.common.service.RestApiService;
@@ -77,7 +77,7 @@ public class JenkinsNotifier implements NotifierModule {
     @Override
     public void iterate() {
         if (this.restApiService.isOffline()) {
-            Log.warn("No internet access, aborting Jenkins notification iteration");
+            Logger.warn("No internet access, aborting Jenkins notification iteration");
             return;
         }
 
@@ -86,7 +86,7 @@ public class JenkinsNotifier implements NotifierModule {
         if (apiIsOnline) {
             this.jenkinsApi.getRootNode().ifPresent(this::notifyUser);
         } else {
-            Log.error("Jenkins API is down");
+            Logger.error("Jenkins API is down");
         }
     }
 
@@ -102,10 +102,10 @@ public class JenkinsNotifier implements NotifierModule {
         final long childrenCount = jenkinsNode.getChildren().size();
 
         if (childrenCount > 0) {
-            Log.debug("Processing {} children of Jenkins node '{}'",
+            Logger.debug("Processing {} children of Jenkins node '{}'",
                     jenkinsNode.getChildren().size(), jenkinsNode.getDisplayName());
         } else {
-            Log.trace("Jenkins node '{}' has no child to process", jenkinsNode.getDisplayName());
+            Logger.trace("Jenkins node '{}' has no child to process", jenkinsNode.getDisplayName());
         }
 
         return () -> jenkinsNode.getChildren().parallelStream()
@@ -114,35 +114,35 @@ public class JenkinsNotifier implements NotifierModule {
 
     private boolean branchFilter(JenkinsBuild build) {
         final boolean isLocalBranch = gitService.hasLocalBranch(build.getBranchName().orElse(""));
-        Log.debug("{} is a local git branch: {}", build.getBranchName(), isLocalBranch);
+        Logger.debug("{} is a local git branch: {}", build.getBranchName(), isLocalBranch);
         return !config.getNotificationsConfig().getFilters().localBranchesOnly() || isLocalBranch;
     }
 
     private boolean buildStatusFilter(JenkinsBuild build) {
         final boolean notSuccess = build.isNotSuccess();
-        Log.debug("Jenkins build '{}' is successful: {}", build.getFullDisplayName(), !notSuccess);
+        Logger.debug("Jenkins build '{}' is successful: {}", build.getFullDisplayName(), !notSuccess);
         return config.getNotificationsConfig().getFilters().successfulBuilds() || notSuccess;
     }
 
     private Runnable notifyLastNewFailedBuild(JenkinsNode jenkinsNode) {
         final Predicate<JenkinsBuildListItem> notCached = build -> {
             final boolean cached = this.isCached(jenkinsNode, build);
-            Log.trace("Jenkins build '{}' is already cached: {}", build.getApiUrl(), cached);
+            Logger.trace("Jenkins build '{}' is already cached: {}", build.getApiUrl(), cached);
             return !cached;
         };
 
         final Function<JenkinsBuild, JenkinsBuild> cache = build -> {
-            Log.trace("Caching jenkins build '{}'", build.getFullDisplayName());
+            Logger.trace("Caching jenkins build '{}'", build.getFullDisplayName());
             return this.cache(jenkinsNode, build);
         };
 
         final long buildCount = jenkinsNode.getBuilds().size();
 
         if (buildCount > 0) {
-            Log.debug("Processing {} builds of Jenkins node '{}'",
+            Logger.debug("Processing {} builds of Jenkins node '{}'",
                     buildCount, jenkinsNode.getDisplayName());
         } else {
-            Log.trace("Jenkins node '{}' has no build to process", jenkinsNode.getDisplayName());
+            Logger.trace("Jenkins node '{}' has no build to process", jenkinsNode.getDisplayName());
         }
 
         return () -> jenkinsNode.getBuilds().parallelStream()

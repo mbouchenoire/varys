@@ -21,6 +21,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.pmw.tinylog.Logger;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -34,13 +35,13 @@ public final class OkHttpClientFactory {
 
     private static Response loggingInterceptor(Interceptor.Chain chain) throws IOException {
         final Request request = chain.request();
-        Log.trace(request.toString());
+        Logger.trace(request.toString());
         final Response response = chain.proceed(chain.request());
 
         if (response.isSuccessful()) {
-            Log.trace(response.toString());
+            Logger.trace(response.toString());
         } else {
-            Log.error(response.toString());
+            Logger.error(response.toString());
         }
         return response;
     }
@@ -58,7 +59,7 @@ public final class OkHttpClientFactory {
 
             return okHttpClientBuilder.build();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            Log.error(e, "Failed to findUsable unsecured HTTP client, using default one instead");
+            Logger.error(e, "Failed to findUsable unsecured HTTP client, using default one instead");
 
             return new OkHttpClient().newBuilder()
                     .addInterceptor(OkHttpClientFactory::loggingInterceptor)
