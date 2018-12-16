@@ -1,9 +1,9 @@
 # Varys
 [![Build Status](https://travis-ci.org/mbouchenoire/varys.svg?branch=master)](https://travis-ci.org/mbouchenoire/varys)&nbsp;
 [![Mainainability](https://sonarcloud.io/api/project_badges/measure?project=mbouchenoire_varys&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=mbouchenoire_varys)&nbsp;
-[![Reliability](https://sonarcloud.io/api/project_badges/measure?project=mbouchenoire_varys&metric=reliability_rating)](https://coveralls.io/github/mbouchenoire/varys)&nbsp;
-[![Security](https://sonarcloud.io/api/project_badges/measure?project=mbouchenoire_varys&metric=security_rating)](https://coveralls.io/github/mbouchenoire/varys)&nbsp;
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=mbouchenoire_varys&metric=coverage)](https://coveralls.io/github/mbouchenoire/varys)
+[![Reliability](https://sonarcloud.io/api/project_badges/measure?project=mbouchenoire_varys&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=mbouchenoire_varys)&nbsp;
+[![Security](https://sonarcloud.io/api/project_badges/measure?project=mbouchenoire_varys&metric=security_rating)](https://sonarcloud.io/dashboard?id=mbouchenoire_varys)&nbsp;
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=mbouchenoire_varys&metric=coverage)](https://sonarcloud.io/dashboard?id=mbouchenoire_varys)
 
 
 **Varys** is a local process that crawls trough your dev environment (GitLab, Jenkins...) giving you instant feedback
