@@ -34,16 +34,25 @@ final class SSLUtils {
     }
 
     static final X509TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
+                private boolean clientTrustWarned = false;
+                private boolean serverTrustWarned = false;
+
                 @Override
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
-                    // if the queried APIs certificates are not up to date, we don't check them
-                    Logger.warn("Unsecure client trust check (auth type: {})", authType);
+                    if (!clientTrustWarned) {
+                        // if the queried APIs certificates are not up to date, we don't check them
+                        Logger.warn("Unsecure client trust check (auth type: {})", authType);
+                        clientTrustWarned = true;
+                    }
                 }
 
                 @Override
                 public void checkServerTrusted(X509Certificate[] chain, String authType) {
-                    // if the queried APIs certificates are not up to date, we don't check them
-                    Logger.warn("Unsecure server trust check (auth type: {})", authType);
+                    if (!serverTrustWarned) {
+                        // if the queried APIs certificates are not up to date, we don't check them
+                        Logger.warn("Unsecure server trust check (auth type: {})", authType);
+                        serverTrustWarned = true;
+                    }
                 }
 
                 @Override
