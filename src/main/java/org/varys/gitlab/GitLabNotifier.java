@@ -136,7 +136,7 @@ public final class GitLabNotifier implements NotifierModule {
                         return liveMergeRequest; // We don't notify new WIP merge requests
                     }
 
-                    if (liveMergeRequest.getAssignee().equals(myself)) {
+                    if (liveMergeRequest.getOptionalAssignee().map(assignee -> assignee.equals(myself)).orElse(false)) {
                         this.notificationService.send(new NewMergeRequestNotification(liveMergeRequest));
                         return liveMergeRequest.notified();
                     }

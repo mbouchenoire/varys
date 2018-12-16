@@ -19,6 +19,7 @@ package org.varys.gitlab.model.notification;
 
 import org.varys.common.model.NotificationType;
 import org.varys.gitlab.model.GitLabMergeRequest;
+import org.varys.gitlab.model.GitLabUser;
 
 public class NewMergeRequestNotification extends MergeRequestNotification {
 
@@ -31,8 +32,10 @@ public class NewMergeRequestNotification extends MergeRequestNotification {
 
     @Override
     public String getTitle() {
-        final String authorName = mergeRequest.getAuthor().getName().split(" ")[0];
-        final String assigneeName = mergeRequest.getAssignee().getName().split(" ")[0];
+        final String authorName = mergeRequest.getAuthor().getNickname();
+
+        final String assigneeName = mergeRequest.getOptionalAssignee()
+                .map(GitLabUser::getNickname).orElse("Nobody");
 
         return "New merge request on " + this.mergeRequest.getProject().getName() + "\n"
                 + "By " + authorName + " for " + assigneeName;

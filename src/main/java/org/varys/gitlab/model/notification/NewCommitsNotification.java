@@ -35,7 +35,9 @@ class NewCommitsNotification extends MergeRequestUpdateNotification {
         final GitLabMergeRequest mr = this.getMergeRequest();
         final GitLabMergeRequest previousVersion = this.getPreviousVersion();
 
-        return mr.getAssignee().equals(myself) && !mr.isWip() && mr.addedCommitsCount(previousVersion) > 0;
+        return mr.getOptionalAssignee()
+                .map(assignee -> assignee.equals(myself) && !mr.isWip() && mr.addedCommitsCount(previousVersion) > 0)
+                .orElse(false);
     }
 
     @Override

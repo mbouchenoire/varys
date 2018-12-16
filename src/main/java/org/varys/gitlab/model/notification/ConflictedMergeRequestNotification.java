@@ -44,7 +44,7 @@ public class ConflictedMergeRequestNotification extends MergeRequestUpdateNotifi
         if (mr.hasConflict()) {
             return mr.getAuthor().equals(myself);
         } else {
-            return mr.getAssignee().equals(myself);
+            return mr.getOptionalAssignee().map(assignee -> assignee.equals(myself)).orElse(false);
         }
     }
 

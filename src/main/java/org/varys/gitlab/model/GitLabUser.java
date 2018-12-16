@@ -19,7 +19,9 @@ package org.varys.gitlab.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.beans.Transient;
 import java.util.Objects;
+import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GitLabUser {
@@ -46,6 +48,11 @@ public class GitLabUser {
 
     public String getName() {
         return name;
+    }
+
+    @Transient
+    public String getNickname() {
+        return Optional.ofNullable(this.name).map(n -> n.split(" ")[0]).orElse("?");
     }
 
     @Override

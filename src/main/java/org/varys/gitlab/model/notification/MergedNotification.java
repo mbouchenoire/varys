@@ -40,7 +40,8 @@ public class MergedNotification extends MergeRequestUpdateNotification {
 
     @Override
     public String getTitle() {
-        final String assigneeName = this.getMergeRequest().getAssignee().getName().split(" ")[0];
+        final String assigneeName = this.getMergeRequest().getOptionalAssignee()
+                .map(GitLabUser::getNickname).orElse("Nobody");
 
         return String.format("Merge request on %s has been merged by %s",
                 this.getMergeRequest().getProject().getName(), assigneeName);

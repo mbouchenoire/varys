@@ -35,7 +35,8 @@ public class WipNotification extends MergeRequestUpdateNotification {
         final GitLabMergeRequest mr = this.getMergeRequest();
         final GitLabMergeRequest previousVersion = getPreviousVersion();
 
-        return mr.getAssignee().equals(myself) && mr.isWip() != previousVersion.isWip();
+        return mr.getOptionalAssignee()
+                .map(assignee -> assignee.equals(myself) && mr.isWip() != previousVersion.isWip()).orElse(false);
     }
 
     @Override

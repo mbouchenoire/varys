@@ -19,6 +19,7 @@ package org.varys.gitlab.model.notification;
 
 import org.varys.common.model.NotificationType;
 import org.varys.gitlab.model.GitLabMergeRequest;
+import org.varys.gitlab.model.GitLabUser;
 
 class ChangedAssigneeNotification extends MergeRequestUpdateNotification {
 
@@ -33,8 +34,11 @@ class ChangedAssigneeNotification extends MergeRequestUpdateNotification {
 
     @Override
     public String getTitle() {
-        final String previousAssignee = this.getPreviousVersion().getAssignee().getName().split(" ")[0];
-        final String newAssignee = this.getMergeRequest().getAssignee().getName().split(" ")[0];
+        final String previousAssignee = this.getPreviousVersion().getOptionalAssignee()
+                .map(GitLabUser::getNickname).orElse("Nobody");
+
+        final String newAssignee = this.getMergeRequest().getOptionalAssignee()
+                .map(assignee -> assignee.getName().split(" ")[0]).orElse("Nobody");
 
         return "Merge request changed assignee\n"
                 + previousAssignee + " -> " + newAssignee;

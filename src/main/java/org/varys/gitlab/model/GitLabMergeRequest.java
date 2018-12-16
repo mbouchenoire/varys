@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GitLabMergeRequest implements MergeRequest, Linkable {
@@ -197,16 +198,19 @@ public class GitLabMergeRequest implements MergeRequest, Linkable {
         return author;
     }
 
+    @SuppressWarnings("unused")
     public GitLabUser getAssignee() {
         return assignee;
     }
 
     @Transient
-    public boolean isRelevantUser(GitLabUser user) {
-        final GitLabUser assignee = this.getAssignee();
-        final GitLabUser author = this.getAuthor();
+    public Optional<GitLabUser> getOptionalAssignee() {
+        return Optional.ofNullable(this.assignee);
+    }
 
-        return (assignee != null && assignee.equals(user)) || author.equals(user);
+    @Transient
+    public boolean isRelevantUser(GitLabUser user) {
+        return getOptionalAssignee().map(assignee -> assignee.equals(user)).orElse(author.equals(user));
     }
 
     public boolean sameAssignee(GitLabMergeRequest mergeRequest) {
