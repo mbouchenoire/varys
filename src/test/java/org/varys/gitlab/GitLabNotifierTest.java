@@ -18,6 +18,7 @@
 package org.varys.gitlab;
 
 import org.junit.Test;
+import org.varys.common.model.RestApiStatus;
 import org.varys.common.service.CacheService;
 import org.varys.common.service.NotificationService;
 import org.varys.gitlab.api.GitLabApi;
@@ -82,7 +83,7 @@ public class GitLabNotifierTest {
         final GitLabUser userFoo = new GitLabUser(2, "foo");
 
         final GitLabApi gitLabApi = mock(GitLabApi.class);
-        when(gitLabApi.isOnline()).thenReturn(true);
+        when(gitLabApi.getStatus()).thenReturn(new RestApiStatus(true, true, true, true));
         when(gitLabApi.getUser()).thenReturn(userMaxime);
 
         final GitLabProject project = new GitLabProject(1, "pro1", "pro/pro1");

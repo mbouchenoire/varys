@@ -23,7 +23,7 @@ import org.varys.common.service.OkHttpClientFactory;
 import org.varys.jenkins.model.JenkinsApiConfig;
 import org.varys.jenkins.model.JenkinsBuild;
 import org.varys.jenkins.model.JenkinsNode;
-import retrofit2.Response;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -61,15 +61,13 @@ public class JenkinsApi implements RestApi {
     }
 
     @Override
-    public boolean isOnline() {
-        try {
-            final Response<JenkinsNode> response =
-                    this.jenkinsRetrofitApi.getRootNode(this.apiConfig.getApiToken()).execute();
+    public boolean isCompatible() {
+        return true;
+    }
 
-            return response.isSuccessful();
-        } catch (IOException e) {
-            return false;
-        }
+    @Override
+    public Call buildStatusCall() {
+        return this.jenkinsRetrofitApi.getRootNode(this.apiConfig.getApiToken());
     }
 
     public Optional<JenkinsNode> getRootNode() {

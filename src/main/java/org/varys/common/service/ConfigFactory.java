@@ -23,6 +23,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.pmw.tinylog.Logger;
 import org.varys.common.model.GitConfig;
 import org.varys.common.model.LoggingConfig;
+import org.varys.common.model.exception.ConfigurationException;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,12 +66,16 @@ public final class ConfigFactory {
         }
     }
 
-    private static JsonNode getConfigRootNode(File configFile) throws IOException {
+    private static JsonNode getConfigRootNode(File configFile) throws ConfigurationException {
         if (!configFile.getAbsolutePath().endsWith(".yml")) {
             throw new IllegalArgumentException("Configuration file must be in YAML format");
         }
 
-        return OBECT_MAPPER.readValue(configFile, JsonNode.class);
+        try {
+            return OBECT_MAPPER.readValue(configFile, JsonNode.class);
+        } catch (IOException e) {
+            throw new ConfigurationException("Failed to read configuration file", e);
+        }
     }
 
     static String getString(JsonNode root, String path, String defaultValue) {
@@ -85,12 +90,12 @@ public final class ConfigFactory {
         return getValue(root, path, JsonNode::asLong, defaultValue);
     }
 
-    public static int getThreadPoolSize(File configFile) throws IOException {
+    public static int getThreadPoolSize(File configFile) throws ConfigurationException {
         final JsonNode configRootNode = getConfigRootNode(configFile);
         return (int) getLong(configRootNode,"thread_pool_size", Runtime.getRuntime().availableProcessors());
     }
 
-    public static LoggingConfig createLoggingConfig(File configFile) throws IOException {
+    public static LoggingConfig createLoggingConfig(File configFile) throws ConfigurationException {
         Logger.debug("Retreiving logging config from file: {}...", configFile);
         final JsonNode configRootNode = getConfigRootNode(configFile);
         final String loggingFilePath = getString(configRootNode, "logging.file", "varys.log");
@@ -98,7 +103,7 @@ public final class ConfigFactory {
         return new LoggingConfig(loggingFilePath, loggingLevel);
     }
 
-    public static GitConfig createGitConfig(File configFile) throws IOException {
+    public static GitConfig createGitConfig(File configFile) throws ConfigurationException {
         Logger.debug("Retreiving git config from file: {}...", configFile);
         final JsonNode configRootNode = getConfigRootNode(configFile);
         final String rootDirectoryString = getString(configRootNode, "git_projects_directory", "");
@@ -106,7 +111,7 @@ public final class ConfigFactory {
         return new GitConfig(rootDirectory);
     }
 
-    public static Collection<JsonNode> findModuleNodes(File configFile) throws IOException {
+    public static Collection<JsonNode> findModuleNodes(File configFile) throws ConfigurationException {
         Logger.debug("Retreiving modules from config file: {}...", configFile);
         final JsonNode configRootNode = getConfigRootNode(configFile);
         final Iterator<JsonNode> moduleConfigNodesIterator = configRootNode.get("modules").elements();

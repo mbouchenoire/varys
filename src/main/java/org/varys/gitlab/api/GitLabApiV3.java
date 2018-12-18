@@ -30,6 +30,7 @@ import org.varys.gitlab.model.GitLabProject;
 import org.varys.gitlab.model.GitLabProjectListItem;
 import org.varys.gitlab.model.GitLabUser;
 import org.varys.gitlab.model.GitLabVersion;
+import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -62,19 +63,6 @@ public class GitLabApiV3 implements GitLabApi {
     }
 
     @Override
-    public boolean isAuthorized() {
-        try {
-            final Response<GitLabVersion> response =
-                    this.gitLabApiV3Retrofit.getVersion(this.apiConfig.getPrivateToken()).execute();
-
-            return response.code() != HttpStatus.SC_GONE && response.code() != HttpStatus.SC_UNAUTHORIZED;
-        } catch (IOException e) {
-            Logger.error(e, "Authentication query agains't GitLab v3 API failed");
-            return false;
-        }
-    }
-
-    @Override
     public boolean isCompatible() {
         try {
             final Response<GitLabVersion> response =
@@ -87,15 +75,8 @@ public class GitLabApiV3 implements GitLabApi {
     }
 
     @Override
-    public boolean isOnline() {
-        try {
-            final Response<GitLabUser> response =
-                    this.gitLabApiV3Retrofit.getUser(this.apiConfig.getPrivateToken()).execute();
-
-            return response.isSuccessful();
-        } catch (IOException e) {
-            return false;
-        }
+    public Call buildStatusCall() {
+        return this.gitLabApiV3Retrofit.getUser(this.apiConfig.getPrivateToken());
     }
 
     @Override

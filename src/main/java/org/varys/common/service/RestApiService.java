@@ -52,7 +52,7 @@ public final class RestApiService {
     }
 
     public boolean notifyApiStatus(RestApi api) {
-        final boolean apiIsOnline = api.isOnline();
+        final boolean apiIsOnline = api.getStatus().isOnline();
         final String apiStatusPath = buildApiStatusPath(api);
 
         return this.cacheService.get(apiStatusPath, Boolean.class)

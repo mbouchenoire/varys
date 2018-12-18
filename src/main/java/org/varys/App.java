@@ -23,9 +23,11 @@ import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.policies.DailyPolicy;
 import org.pmw.tinylog.policies.SizePolicy;
 import org.pmw.tinylog.writers.RollingFileWriter;
+import org.varys.common.model.BadConfigurationNotification;
 import org.varys.common.model.GitConfig;
 import org.varys.common.model.LoggingConfig;
 import org.varys.common.model.StartupNotification;
+import org.varys.common.model.exception.ConfigurationException;
 import org.varys.common.service.ConfigFactory;
 import org.varys.common.service.NotificationService;
 import org.varys.common.service.NotifierModule;
@@ -42,6 +44,14 @@ import java.util.concurrent.ForkJoinPool;
 public class App {
 
     public static void main(String[] args) throws IOException {
+        try {
+            start(args);
+        } catch (ConfigurationException e) {
+            new NotificationService("varys").send(new BadConfigurationNotification(e));
+        }
+    }
+
+    private static void start(String[] args) throws ConfigurationException, IOException {
         final String configFilePath = args[0];
         final File configFile = new File(configFilePath);
 

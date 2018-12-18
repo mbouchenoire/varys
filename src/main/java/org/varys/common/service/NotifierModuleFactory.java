@@ -20,6 +20,11 @@ package org.varys.common.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.pmw.tinylog.Logger;
 import org.varys.common.model.GitConfig;
+import org.varys.common.model.RestApiStatus;
+import org.varys.common.model.exception.BadPrivateTokenConfigurationException;
+import org.varys.common.model.exception.BadSslConfigurationException;
+import org.varys.common.model.exception.ConfigurationException;
+import org.varys.common.model.exception.UnreachableApiConfigurationException;
 import org.varys.git.service.GitService;
 import org.varys.gitlab.GitLabNotifier;
 import org.varys.gitlab.api.GitLabApiLocator;
@@ -36,12 +41,12 @@ import org.varys.jenkins.model.JenkinsBuildNotifierNotificationsFiltersConfig;
 import org.varys.jenkins.model.JenkinsNotifierConfig;
 import org.varys.jenkins.model.JenkinsNotifierNotificationsConfig;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import static org.varys.common.service.ConfigFactory.*;
 
@@ -60,7 +65,7 @@ public class NotifierModuleFactory {
 
     private final GitConfig gitConfig;
     private final GitLabApiLocator gitLabApiLocator;
-    private final Map<String, BiFunction<JsonNode, GitConfig, NotifierModule>> moduleFactories;
+    private final Map<String, ModuleFactory> moduleFactories;
 
     public NotifierModuleFactory(GitConfig gitConfig, GitLabApiLocator gitLabApiLocator) {
         this.gitConfig = gitConfig;
@@ -70,15 +75,18 @@ public class NotifierModuleFactory {
         this.moduleFactories.put("gitlab", this::createGitLab);
     }
 
-    public Collection<NotifierModule> createAll(Collection<JsonNode> moduleNodes) {
-        return moduleNodes.stream()
-                .map(this::create)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+    public Collection<NotifierModule> createAll(Collection<JsonNode> moduleNodes) throws ConfigurationException {
+        final List<NotifierModule> modules = new ArrayList<>();
+
+        for (JsonNode moduleNode : moduleNodes) {
+            final Optional<NotifierModule> notifierModule = create(moduleNode);
+            notifierModule.ifPresent(modules::add);
+        }
+
+        return modules;
     }
 
-    private Optional<NotifierModule> create(JsonNode moduleRootNode) {
+    private Optional<NotifierModule> create(JsonNode moduleRootNode) throws ConfigurationException {
         final String moduleName = moduleRootNode.fieldNames().next();
 
         Logger.debug("Found module with name '{}'...", moduleName);
@@ -92,21 +100,21 @@ public class NotifierModuleFactory {
             return Optional.empty();
         }
 
-        final BiFunction<JsonNode, GitConfig, NotifierModule> moduleFactory = this.moduleFactories.get(moduleName);
+        final ModuleFactory moduleFactory = this.moduleFactories.get(moduleName);
 
         if (moduleFactory == null) {
             Logger.error("Cannot find module with name '{}'", moduleName);
             return Optional.empty();
         }
 
-        final NotifierModule module = moduleFactory.apply(moduleNode, this.gitConfig);
+        final NotifierModule module = moduleFactory.create(moduleNode, this.gitConfig);
 
         Logger.info("Initialized module: {}", module);
 
         return Optional.of(module);
     }
 
-    private JenkinsNotifier createJenkins(JsonNode moduleNode, GitConfig gitConfig) {
+    private JenkinsNotifier createJenkins(JsonNode moduleNode, GitConfig gitConfig) throws ConfigurationException {
         final String moduleName = getString(moduleNode, "name", "jenkins");
 
         final String apiBaseUrl = getString(moduleNode, "config.jenkins_api.base_url", EMPTY_STRING);
@@ -132,6 +140,20 @@ public class NotifierModuleFactory {
 
         final JenkinsApi jenkinsApi = new JenkinsApi(apiConfig);
 
+        final RestApiStatus jenkinsApiStatus = jenkinsApi.getStatus();
+
+        if (!jenkinsApiStatus.isOnline()) {
+            throw new UnreachableApiConfigurationException(jenkinsApi);
+        }
+
+        if (!jenkinsApiStatus.isValidPrivateToken()) {
+            throw new BadPrivateTokenConfigurationException(jenkinsApi);
+        }
+
+        if (!jenkinsApiStatus.isValidSslCertificate()) {
+            throw new BadSslConfigurationException(jenkinsApi);
+        }
+
         return new JenkinsNotifier(
                 jenkinsApi,
                 notifierConfig,
@@ -140,7 +162,7 @@ public class NotifierModuleFactory {
                 new NotificationService(moduleName));
     }
 
-    private GitLabNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) {
+    private GitLabNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) throws ConfigurationException {
         Logger.trace("Unused git config for GitLab module: {}", gitConfig);
 
         final String moduleName = getString(moduleNode, "name", "gitlab");

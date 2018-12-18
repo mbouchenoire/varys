@@ -38,8 +38,6 @@ public interface GitLabApi extends RestApi {
     }
 
     int getVersion();
-    boolean isAuthorized();
-    boolean isCompatible();
     GitLabUser getUser();
     List<GitLabMergeRequest> getMergeRequests(GitLabMergeRequestState state);
     Optional<GitLabMergeRequest> getMergeRequest(long projectId, long mergeRequestId, long mergeRequestIid);

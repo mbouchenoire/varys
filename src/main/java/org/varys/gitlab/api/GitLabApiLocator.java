@@ -18,22 +18,39 @@
 package org.varys.gitlab.api;
 
 import org.pmw.tinylog.Logger;
+import org.varys.common.model.RestApiStatus;
+import org.varys.common.model.exception.BadPrivateTokenConfigurationException;
+import org.varys.common.model.exception.BadSslConfigurationException;
+import org.varys.common.model.exception.ConfigurationException;
+import org.varys.common.model.exception.UnreachableApiConfigurationException;
+import org.varys.gitlab.model.UnsupportedGitLabApiVersionException;
 
 public class GitLabApiLocator {
 
-    public GitLabApi findUsable(GitLabApiV3 gitLabApiV3, GitLabApiV4 gitLabApiV4) {
-        if (!gitLabApiV3.isAuthorized() && !gitLabApiV4.isAuthorized()) {
-            throw new IllegalArgumentException("Failed to authenticate agains't GitLab API (verify your private token)");
+    public GitLabApi findUsable(GitLabApiV3 gitLabApiV3, GitLabApiV4 gitLabApiV4) throws ConfigurationException {
+        final RestApiStatus v3Status = gitLabApiV3.getStatus();
+        final RestApiStatus v4Status = gitLabApiV4.getStatus();
+
+        if (!v3Status.isOnline() && !v4Status.isOnline()) {
+            throw new UnreachableApiConfigurationException(gitLabApiV3);
         }
 
-        if (gitLabApiV3.isCompatible()) {
+        if (!v3Status.isValidPrivateToken() && !v4Status.isValidPrivateToken()) {
+            throw new BadPrivateTokenConfigurationException(gitLabApiV3);
+        }
+
+        if (!v3Status.isValidSslCertificate() && !v4Status.isValidSslCertificate()) {
+            throw new BadSslConfigurationException(gitLabApiV3);
+        }
+
+        if (v3Status.isCompatible()) {
             Logger.info("Using compatible GitLab API v3");
             return gitLabApiV3;
-        } else if (gitLabApiV4.isCompatible()) {
+        } else if (v4Status.isCompatible()) {
             Logger.info("GitLab API v3 is not compatible, using compatible API v4");
             return gitLabApiV4;
         } else {
-            throw new UnsupportedOperationException("Cannot find compatible GitLab API version");
+            throw new UnsupportedGitLabApiVersionException();
         }
     }
 }

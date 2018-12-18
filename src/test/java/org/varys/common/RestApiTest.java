@@ -18,6 +18,7 @@
 package org.varys.common;
 
 import org.junit.Test;
+import retrofit2.Call;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,6 +35,16 @@ public class RestApiTest {
             @Override
             public String getBaseUrl() {
                 return "http://example.com/test";
+            }
+
+            @Override
+            public boolean isCompatible() {
+                return false;
+            }
+
+            @Override
+            public Call buildStatusCall() {
+                return null;
             }
 
             @Override

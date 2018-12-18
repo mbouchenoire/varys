@@ -17,16 +17,61 @@
 
 package org.varys.common;
 
+import org.apache.http.HttpStatus;
+import org.varys.common.model.RestApiStatus;
+import retrofit2.Call;
+import retrofit2.Response;
+
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public interface RestApi {
 
     String getLabel();
-
     String getBaseUrl();
+    boolean isCompatible();
+    Call buildStatusCall();
 
-    boolean isOnline();
+    /**
+     * We check twice for the API status to avoid occasional timeouts.
+     *
+     * @return true if the API is online, false otherwise
+     */
+    default boolean isOnline() {
+        final Call statusCall = buildStatusCall();
+
+        try {
+            statusCall.execute();
+            return true;
+        } catch (IOException e) {
+            try {
+                statusCall.execute();
+                return true;
+            } catch (IOException e2) {
+                return e.getMessage().contains("cert");
+            }
+        }
+    }
+
+    default RestApiStatus getStatus() {
+        try {
+            final Call statusCall = buildStatusCall();
+            final Response response = statusCall.execute();
+
+            final boolean online = isOnline();
+            final boolean validPrivateToken = response.code() != HttpStatus.SC_UNAUTHORIZED;
+            final boolean compatible = isCompatible();
+
+            return new RestApiStatus(online, compatible, true, validPrivateToken);
+        } catch (IOException e) {
+            if (e.getMessage().contains("cert")) {
+                return new RestApiStatus(true, true, false, true);
+            } else {
+                return new RestApiStatus(false, true, true, true);
+            }
+        }
+    }
 
     default String getDomainName() {
         try {

@@ -19,6 +19,7 @@ package org.varys.jenkins;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.varys.common.model.RestApiStatus;
 import org.varys.common.service.CacheService;
 import org.varys.common.service.NotificationService;
 import org.varys.git.service.GitService;
@@ -69,7 +70,7 @@ public class JenkinsNotifierTest {
     public void iterate() {
         final JenkinsApi jenkinsApi = mock(JenkinsApi.class);
 
-        when(jenkinsApi.isOnline()).thenReturn(true);
+        when(jenkinsApi.getStatus()).thenReturn(new RestApiStatus(true, true, true, true));
         when(jenkinsApi.getBaseUrl()).thenReturn("http://example.com");
 
         when(jenkinsApi.getRootNode())

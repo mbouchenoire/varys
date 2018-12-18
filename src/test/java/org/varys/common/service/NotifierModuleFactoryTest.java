@@ -20,10 +20,10 @@ package org.varys.common.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.varys.common.model.GitConfig;
+import org.varys.common.model.exception.ConfigurationException;
 import org.varys.gitlab.api.GitLabApiLocator;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
@@ -42,7 +42,7 @@ public class NotifierModuleFactoryTest {
     }
 
     @Test
-    public void createAll() throws IOException {
+    public void createAll() throws ConfigurationException {
         final GitConfig gitConfig = ConfigFactory.createGitConfig(this.configFile);
         final Collection<JsonNode> moduleNodes = ConfigFactory.findModuleNodes(configFile);
 

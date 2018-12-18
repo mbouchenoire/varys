@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.varys.common.RestApi;
 import org.varys.common.model.ApiBackOnlineNotification;
 import org.varys.common.model.ApiDownNotification;
+import org.varys.common.model.RestApiStatus;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,9 +32,10 @@ public class RestApiServiceTest {
     @Test
     public void notifyApiStatus() {
         final RestApi api = mock(RestApi.class);
-        when(api.isOnline()).thenReturn(true);
+        when(api.getStatus()).thenReturn(new RestApiStatus(true, true, true, true));
 
         final CacheService cacheService = new CacheService("RestApiServiceTest");
+        cacheService.clear();
         final NotificationService notificationService = mock(NotificationService.class);
 
         final RestApiService restApiService = new RestApiService(cacheService, notificationService);
@@ -41,11 +43,11 @@ public class RestApiServiceTest {
         assertTrue(restApiService.notifyApiStatus(api));
         verify(notificationService, times(0)).send(any());
 
-        when(api.isOnline()).thenReturn(false);
+        when(api.getStatus()).thenReturn(new RestApiStatus(false, true, true, true));
         assertFalse(restApiService.notifyApiStatus(api));
         verify(notificationService, times(1)).send(new ApiDownNotification(api));
 
-        when(api.isOnline()).thenReturn(true);
+        when(api.getStatus()).thenReturn(new RestApiStatus(true, true, true, true));
         assertTrue(restApiService.notifyApiStatus(api));
         verify(notificationService, times(1)).send(new ApiBackOnlineNotification(api));
     }
