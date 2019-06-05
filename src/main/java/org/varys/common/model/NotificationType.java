@@ -17,21 +17,32 @@
 
 package org.varys.common.model;
 
+import fr.jcgay.notification.Notification;
+
 import java.awt.*;
 
 public enum NotificationType {
-    NONE(TrayIcon.MessageType.NONE),
-    INFO(TrayIcon.MessageType.INFO),
-    WARNING(TrayIcon.MessageType.WARNING),
-    ERROR(TrayIcon.MessageType.ERROR);
+    NONE(TrayIcon.MessageType.NONE, Notification.Level.INFO),
+    INFO(TrayIcon.MessageType.INFO, Notification.Level.INFO),
+    WARNING(TrayIcon.MessageType.WARNING, Notification.Level.WARNING),
+    ERROR(TrayIcon.MessageType.ERROR, Notification.Level.ERROR);
 
     private final TrayIcon.MessageType trayIconMessageType;
+    private final fr.jcgay.notification.Notification.Level jcgayNotificationLevel;
 
-    NotificationType(TrayIcon.MessageType trayIconMessageType) {
+    NotificationType(
+            TrayIcon.MessageType trayIconMessageType,
+            fr.jcgay.notification.Notification.Level jcgayNotificationLevel) {
+
         this.trayIconMessageType = trayIconMessageType;
+        this.jcgayNotificationLevel = jcgayNotificationLevel;
     }
 
     public TrayIcon.MessageType getTrayIconMessageType() {
         return trayIconMessageType;
+    }
+
+    public Notification.Level getJcgayNotificationLevel() {
+        return jcgayNotificationLevel;
     }
 }

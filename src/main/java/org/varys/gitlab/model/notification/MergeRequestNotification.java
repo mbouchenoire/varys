@@ -17,6 +17,7 @@
 
 package org.varys.gitlab.model.notification;
 
+import org.varys.common.Constants;
 import org.varys.common.model.Linkable;
 import org.varys.common.model.Notification;
 import org.varys.gitlab.model.GitLabMergeRequest;
@@ -46,6 +47,11 @@ public abstract class MergeRequestNotification implements Notification {
     @Override
     public Optional<Linkable> getLinkable() {
         return Optional.of(this.mergeRequest);
+    }
+
+    @Override
+    public Optional<String> getIconUrl() {
+        return Optional.of(Constants.GITLAB_FAVICON_URL);
     }
 
     private static String formatMergeRequestDescription(GitLabMergeRequest mergeRequest) {

@@ -34,4 +34,8 @@ public interface Notification {
     default Optional<Linkable> getLinkable() {
         return Optional.empty();
     }
+
+    default Optional<String> getIconUrl() {
+        return Optional.empty();
+    }
 }

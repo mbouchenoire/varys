@@ -19,6 +19,7 @@ package org.varys.jenkins.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.varys.common.Constants;
 import org.varys.common.model.Linkable;
 import org.varys.common.model.Notification;
 import org.varys.common.model.NotificationType;
@@ -198,6 +199,12 @@ public class JenkinsBuild implements JenkinsBuildNumber, Notification, Linkable 
     @Override
     public Optional<Linkable> getLinkable() {
         return Optional.of(this);
+    }
+
+    @Transient
+    @Override
+    public Optional<String> getIconUrl() {
+        return Optional.of(Constants.JENKINS_FAVICON_URL);
     }
 
     @Override

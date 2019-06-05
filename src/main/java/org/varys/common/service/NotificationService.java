@@ -17,20 +17,37 @@
 
 package org.varys.common.service;
 
+import fr.jcgay.notification.Application;
+import fr.jcgay.notification.Icon;
+import fr.jcgay.notification.Notifier;
+import fr.jcgay.notification.SendNotification;
 import org.pmw.tinylog.Logger;
 import org.varys.common.model.Notification;
 
 import java.awt.*;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+
+import static org.varys.common.Constants.*;
 
 public class NotificationService {
 
     private final String moduleName;
+    private final Notifier notifier;
 
-    public NotificationService(String moduleName) {
+    public NotificationService(String moduleName) throws MalformedURLException {
         this.moduleName = moduleName;
+
+        this.notifier = new SendNotification()
+                .setApplication(Application.builder()
+                        .icon(Icon.create(new URL(VARYS_FAVICON_URL), String.valueOf(VARYS_FAVICON_URL.hashCode())))
+                        .id("varys")
+                        .name("Varys")
+                        .build())
+                .initNotifier();
     }
 
     public void send(Notification notification) {
@@ -40,19 +57,35 @@ public class NotificationService {
                 notification.getDescription(),
                 notification.getType());
 
-        VarysTrayIcon.notify(
-                notification.getTitle(),
-                notification.getDescription().orElse(null),
-                notification.getType().getTrayIconMessageType());
+        if (VarysTrayIcon.isSupported()) {
+            VarysTrayIcon.notify(
+                    notification.getTitle(),
+                    notification.getDescription().orElse(null),
+                    notification.getType().getTrayIconMessageType());
 
-        notification.getLinkable().ifPresent(linkable -> VarysTrayIcon.addTemporaryClickableMenu(
-                linkable.getLabel(),
-                () -> {
-                    try {
-                        Desktop.getDesktop().browse(new URI(linkable.getUrl()));
-                    } catch (IOException | URISyntaxException e) {
-                        Logger.error(e, "Failed to start browser");
-                    }
-                }));
+            notification.getLinkable().ifPresent(linkable -> VarysTrayIcon.addTemporaryClickableMenu(
+                    linkable.getLabel(),
+                    () -> {
+                        try {
+                            Desktop.getDesktop().browse(new URI(linkable.getUrl()));
+                        } catch (IOException | URISyntaxException e) {
+                            Logger.error(e, "Failed to start browser");
+                        }
+                    }));
+        } else {
+            try {
+                final String iconUrl = notification.getIconUrl().orElse(VARYS_FAVICON_URL);
+
+                this.notifier.send(fr.jcgay.notification.Notification.builder()
+                        .title(notification.getTitle())
+                        .message(notification.getDescription().orElse(""))
+                        .level(notification.getType().getJcgayNotificationLevel())
+                        .icon(Icon.create(new URL(iconUrl), String.valueOf(iconUrl.hashCode())))
+                        .build());
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

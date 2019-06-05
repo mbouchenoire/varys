@@ -41,6 +41,7 @@ import org.varys.jenkins.model.JenkinsBuildNotifierNotificationsFiltersConfig;
 import org.varys.jenkins.model.JenkinsNotifierConfig;
 import org.varys.jenkins.model.JenkinsNotifierNotificationsConfig;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public class NotifierModuleFactory {
         this.moduleFactories.put("gitlab", this::createGitLab);
     }
 
-    public Collection<NotifierModule> createAll(Collection<JsonNode> moduleNodes) throws ConfigurationException {
+    public Collection<NotifierModule> createAll(Collection<JsonNode> moduleNodes) throws ConfigurationException, MalformedURLException {
         final List<NotifierModule> modules = new ArrayList<>();
 
         for (JsonNode moduleNode : moduleNodes) {
@@ -86,7 +87,7 @@ public class NotifierModuleFactory {
         return modules;
     }
 
-    private Optional<NotifierModule> create(JsonNode moduleRootNode) throws ConfigurationException {
+    private Optional<NotifierModule> create(JsonNode moduleRootNode) throws ConfigurationException, MalformedURLException {
         final String moduleName = moduleRootNode.fieldNames().next();
 
         Logger.debug("Found module with name '{}'...", moduleName);
@@ -114,7 +115,7 @@ public class NotifierModuleFactory {
         return Optional.of(module);
     }
 
-    private JenkinsNotifier createJenkins(JsonNode moduleNode, GitConfig gitConfig) throws ConfigurationException {
+    private JenkinsNotifier createJenkins(JsonNode moduleNode, GitConfig gitConfig) throws ConfigurationException, MalformedURLException {
         final String moduleName = getString(moduleNode, "name", "jenkins");
 
         final String apiBaseUrl = getString(moduleNode, "config.jenkins_api.base_url", EMPTY_STRING);
@@ -162,7 +163,7 @@ public class NotifierModuleFactory {
                 new NotificationService(moduleName));
     }
 
-    private GitLabNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) throws ConfigurationException {
+    private GitLabNotifier createGitLab(JsonNode moduleNode, GitConfig gitConfig) throws ConfigurationException, MalformedURLException {
         Logger.trace("Unused git config for GitLab module: {}", gitConfig);
 
         final String moduleName = getString(moduleNode, "name", "gitlab");

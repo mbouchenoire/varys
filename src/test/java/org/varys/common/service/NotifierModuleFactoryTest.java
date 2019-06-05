@@ -24,6 +24,7 @@ import org.varys.common.model.exception.ConfigurationException;
 import org.varys.gitlab.api.GitLabApiLocator;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
@@ -42,7 +43,7 @@ public class NotifierModuleFactoryTest {
     }
 
     @Test
-    public void createAll() throws ConfigurationException {
+    public void createAll() throws ConfigurationException, MalformedURLException {
         final GitConfig gitConfig = ConfigFactory.createGitConfig(this.configFile);
         final Collection<JsonNode> moduleNodes = ConfigFactory.findModuleNodes(configFile);
 
