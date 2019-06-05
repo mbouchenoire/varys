@@ -20,6 +20,13 @@
 
 ## Build & Run from sources
 
+### Linux
+```console
+user:~$ git clone https://github.com/mbouchenoire/varys.git && cd varys
+user:~/varys$ mvnw clean package
+user:~/varys$ bin/varys-start.sh config/config.yml # See the Configuration section
+```
+
 ### Windows
 ```console
 C:\Users\user\git> git clone https://github.com/mbouchenoire/varys.git && cd varys

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 config_file_path=$1
 
 if [$1 = ""] 
